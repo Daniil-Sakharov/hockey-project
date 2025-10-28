@@ -164,6 +164,8 @@
   },
   "active": "2d802ebc8b054979",
   "lastOpenFiles": [
+    "Taskfile.yml",
+    "platform/Taskfile.yml",
     "README.md",
     "PROJECT_STRUCTURE.md",
     "platform/pkg/grpc/health/health.go",
@@ -175,7 +177,6 @@
     "platform/pkg/testcontainers/mongo/connect.go",
     "platform/pkg/testcontainers/mongo/config.go",
     "platform/pkg/testcontainers/app/opts.go",
-    "platform/pkg/testcontainers/app/app.go",
     "docs/architecture/README.md",
     "docs/architecture/06-development-roadmap.md",
     "docs/architecture/05-deployment-options.md",
