@@ -1,0 +1,89 @@
+---
+description: Guidelines for web scraping implementation
+---
+
+# Web Scraping Guidelines
+
+## Рекомендуемые библиотеки
+
+### Для HTTP запросов и парсинга HTML
+- `net/http` - стандартная библиотека для HTTP
+- `github.com/PuerkitoBio/goquery` - jQuery-подобный парсинг HTML
+- `github.com/chromedp/chromedp` - для сайтов с JavaScript (headless Chrome)
+- `github.com/gocolly/colly` - фреймворк для скрейпинга
+
+### Для навигации по сайтам
+- `chromedp` - для симуляции кликов и взаимодействия с динамическими сайтами
+- Альтернатива: `github.com/go-rod/rod` - DevTools Protocol для автоматизации браузера
+
+## Архитектура парсеров
+
+### Интерфейс Scraper
+```go
+type Scraper interface {
+    Name() string
+    Scrape(ctx context.Context) ([]*Player, error)
+}
+```
+
+### Базовая структура парсера
+```go
+type BaseScraper struct {
+    BaseURL string
+    Client  *http.Client
+}
+
+type PlayerScraper struct {
+    BaseScraper
+    // специфичные поля
+}
+```
+
+## Best Practices
+
+### 1. Rate Limiting
+- Уважать сервера - не более 1-2 запросов в секунду
+- Использовать задержки между запросами
+- Реализовать exponential backoff при ошибках
+
+### 2. User-Agent
+- Всегда устанавливать корректный User-Agent
+- Не притворяться популярными браузерами без необходимости
+
+### 3. Обработка ошибок
+- Логировать все ошибки парсинга
+- Продолжать работу даже если один сайт недоступен
+- Сохранять частичные результаты
+
+### 4. Кэширование
+- Кэшировать HTML страницы для отладки
+- Не парсить повторно одни и те же данные
+
+### 5. Селекторы
+- Использовать надежные CSS селекторы
+- Добавлять fallback селекторы
+- Документировать структуру HTML для каждого сайта
+
+### 6. Валидация данных
+- Проверять полученные данные перед сохранением
+- Обрабатывать некорректные/неполные данные
+
+## Пример структуры
+```go
+func (s *PlayerScraper) ScrapePlayerStats(ctx context.Context, url string) (*PlayerStats, error) {
+    // 1. Fetch HTML
+    // 2. Parse with goquery
+    // 3. Extract data
+    // 4. Validate
+    // 5. Return structured data
+}
+```
+
+## Конкурентность
+- Парсить несколько сайтов параллельно
+- Ограничивать количество одновременных запросов
+- Использовать worker pool pattern
+
+```go
+sem := make(chan struct{}, 3) // max 3 concurrent scrapers
+```

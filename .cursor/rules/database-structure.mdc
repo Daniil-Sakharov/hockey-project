@@ -1,0 +1,115 @@
+---
+description: Database design and models for hockey statistics
+---
+
+# Database Structure
+
+## Выбор БД для MVP
+
+### Рекомендуемые варианты
+1. **PostgreSQL** - наилучший выбор для структурированных данных
+   - Отличная поддержка JSON для гибкости
+   - ACID транзакции
+   - Расширяемость
+   
+2. **SQLite** - для быстрого MVP
+   - Не требует отдельного сервера
+   - Легко мигрировать на PostgreSQL позже
+
+## Основные модели данных
+
+### Player (Игрок)
+```go
+type Player struct {
+    ID          int64     `db:"id"`
+    ExternalID  string    `db:"external_id"` // ID на источнике
+    FirstName   string    `db:"first_name"`
+    LastName    string    `db:"last_name"`
+    BirthDate   time.Time `db:"birth_date"`
+    Position    string    `db:"position"`    // Forward, Defense, Goalie
+    Number      int       `db:"number"`
+    Team        string    `db:"team"`
+    CreatedAt   time.Time `db:"created_at"`
+    UpdatedAt   time.Time `db:"updated_at"`
+}
+```
+
+### GameStats (Статистика матча)
+```go
+type GameStats struct {
+    ID           int64     `db:"id"`
+    PlayerID     int64     `db:"player_id"`
+    GameID       int64     `db:"game_id"`
+    Goals        int       `db:"goals"`
+    Assists      int       `db:"assists"`
+    Points       int       `db:"points"`
+    PlusMinus    int       `db:"plus_minus"`
+    PenaltyMin   int       `db:"penalty_minutes"`
+    Shots        int       `db:"shots"`
+    TimeOnIce    int       `db:"time_on_ice"` // seconds
+    CreatedAt    time.Time `db:"created_at"`
+}
+```
+
+### Game (Матч)
+```go
+type Game struct {
+    ID         int64     `db:"id"`
+    ExternalID string    `db:"external_id"`
+    Date       time.Time `db:"date"`
+    HomeTeam   string    `db:"home_team"`
+    AwayTeam   string    `db:"away_team"`
+    HomeScore  int       `db:"home_score"`
+    AwayScore  int       `db:"away_score"`
+    Season     string    `db:"season"`
+    CreatedAt  time.Time `db:"created_at"`
+}
+```
+
+### Source (Источник данных)
+```go
+type Source struct {
+    ID          int64     `db:"id"`
+    Name        string    `db:"name"`
+    URL         string    `db:"url"`
+    LastScraped time.Time `db:"last_scraped"`
+    IsActive    bool      `db:"is_active"`
+}
+```
+
+## Библиотеки для работы с БД
+
+### Рекомендуемые варианты
+1. **sqlx** - расширение database/sql с удобными функциями
+2. **gorm** - полноценный ORM (для быстрой разработки)
+3. **ent** - entity framework от Facebook
+
+### Для миграций
+- `golang-migrate/migrate` - управление миграциями БД
+
+## Индексы
+```sql
+-- Для быстрого поиска игроков
+CREATE INDEX idx_players_last_name ON players(last_name);
+CREATE INDEX idx_players_birth_date ON players(birth_date);
+CREATE INDEX idx_players_team ON players(team);
+
+-- Для статистики
+CREATE INDEX idx_game_stats_player_id ON game_stats(player_id);
+CREATE INDEX idx_game_stats_game_id ON game_stats(game_id);
+CREATE INDEX idx_games_date ON games(date);
+```
+
+## Транзакции
+- Использовать транзакции при сохранении связанных данных
+- Откатывать изменения при ошибках парсинга
+
+## Repository Pattern
+```go
+type PlayerRepository interface {
+    Create(ctx context.Context, player *Player) error
+    FindByID(ctx context.Context, id int64) (*Player, error)
+    FindByAge(ctx context.Context, minAge, maxAge int) ([]*Player, error)
+    Update(ctx context.Context, player *Player) error
+}
+```

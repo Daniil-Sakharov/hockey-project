@@ -1,0 +1,143 @@
+---
+description: Deployment, operations and DevOps practices
+---
+
+# Deployment & Operations
+
+## Конфигурация приложения
+
+### Переменные окружения
+```go
+type Config struct {
+    // Database
+    DatabaseURL      string `env:"DATABASE_URL"`
+    
+    // Telegram Bot
+    TelegramToken    string `env:"TELEGRAM_BOT_TOKEN"`
+    
+    // Scraping
+    ScrapingInterval string `env:"SCRAPING_INTERVAL" envDefault:"24h"`
+    MaxConcurrent    int    `env:"MAX_CONCURRENT_SCRAPERS" envDefault:"3"`
+    
+    // Logging
+    LogLevel         string `env:"LOG_LEVEL" envDefault:"info"`
+}
+```
+
+### Библиотека для работы с env
+- `github.com/caarlos0/env` - простая и удобная
+- Альтернатива: `github.com/spf13/viper` - более функциональная
+
+## Структура запуска
+
+### Docker для MVP
+```dockerfile
+FROM golang:1.21-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN go mod download
+RUN go build -o parser ./cmd/parser
+RUN go build -o bot ./cmd/bot
+
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+WORKDIR /root/
+COPY --from=builder /app/parser .
+COPY --from=builder /app/bot .
+```
+
+### Docker Compose
+```yaml
+version: '3.8'
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: hockey
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  
+  parser:
+    build: .
+    command: ./parser
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      - db
+  
+  bot:
+    build: .
+    command: ./bot
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+    depends_on:
+      - db
+```
+
+## Планировщик задач
+
+### Для ежедневного парсинга
+1. **Встроенный планировщик в Go**
+   - `github.com/robfig/cron` - cron-подобный планировщик
+   
+2. **Системный cron**
+   - Для простоты в MVP
+
+3. **Пример встроенного планировщика**
+```go
+c := cron.New()
+c.AddFunc("0 2 * * *", func() { // каждый день в 2 AM
+    runScrapers()
+})
+c.Start()
+```
+
+## Логирование
+
+### Библиотеки
+- `github.com/sirupsen/logrus` - структурированное логирование
+- `go.uber.org/zap` - быстрое логирование
+
+### Уровни логов
+- ERROR - критические ошибки
+- WARN - предупреждения (недоступен сайт)
+- INFO - важные события (начало/конец парсинга)
+- DEBUG - детальная информация
+
+## Мониторинг (для будущего)
+
+### Метрики
+- Количество успешных/неудачных парсингов
+- Время выполнения парсинга
+- Количество новых записей в БД
+- Активность пользователей бота
+
+### Инструменты
+- Prometheus + Grafana (когда станет нужно)
+
+## Backup базы данных
+```bash
+# Ежедневный backup PostgreSQL
+pg_dump hockey > backup_$(date +%Y%m%d).sql
+```
+
+## Graceful Shutdown
+```go
+sigChan := make(chan os.Signal, 1)
+signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+
+<-sigChan
+log.Info("Shutting down gracefully...")
+// cleanup
+```
+
+## Здоровье приложения
+- Простой HTTP endpoint для health check
+- Проверка соединения с БД
+
+## Секреты
+- Никогда не коммитить токены и пароли
+- Использовать `.env` файл (в `.gitignore`)
+- Пример `.env.example` для документации
