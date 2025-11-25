@@ -1,0 +1,64 @@
+run:
+  timeout: 5m
+  tests: true
+  skip-dirs:
+    - bin
+    - vendor
+  modules-download-mode: readonly
+
+linters-settings:
+  govet:
+    enable-all: true
+    disable:
+      - shadow
+  gofumpt:
+    extra-rules: true
+  gci:
+    sections:
+      - standard
+      - default
+  revive:
+    rules:
+      - name: exported
+        disabled: true
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+    disabled-checks:
+      - unnecessaryDefer
+  gosec:
+    excludes:
+      - G404 # Weak random number generator (можно для тестов)
+
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gofumpt
+    - gci
+    - revive
+    - gocritic
+    - gosec
+    - misspell
+    - unconvert
+    - unparam
+    - gocyclo
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
+        - gosec
