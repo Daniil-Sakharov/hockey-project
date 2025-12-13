@@ -1,6 +1,9 @@
 package player_statistics
 
-import "context"
+import (
+	"context"
+	"strings"
+)
 
 // Repository определяет интерфейс для работы с хранилищем статистики игроков
 type Repository interface {
@@ -46,4 +49,9 @@ type TournamentStat struct {
 	PenaltyMinutes   int     `db:"penalty_minutes"`
 	HatTricks        int     `db:"hat_tricks"`
 	GameWinningGoals int     `db:"game_winning_goals"`
+}
+
+// CheckIsChampionship проверяет является ли турнир первенством по названию
+func (t *TournamentStat) CheckIsChampionship() {
+	t.IsChampionship = strings.Contains(strings.ToLower(t.TournamentName), "первенство")
 }

@@ -2,7 +2,6 @@ package player_statistics
 
 import (
 	"context"
-	"strings"
 
 	"github.com/Daniil-Sakharov/HockeyProject/internal/domain/player_statistics"
 )
@@ -60,15 +59,13 @@ func (r *repository) GetRecentTournaments(ctx context.Context, playerID string, 
 		return nil, err
 	}
 
-	// Конвертируем в доменную модель
 	tournaments := make([]*player_statistics.TournamentStat, 0, len(results))
 	for _, res := range results {
-		tournaments = append(tournaments, &player_statistics.TournamentStat{
+		stat := &player_statistics.TournamentStat{
 			TournamentID:     res.TournamentID,
 			TournamentName:   res.TournamentName,
 			GroupName:        res.GroupName,
 			Season:           res.Season,
-			IsChampionship:   isChampionship(res.TournamentName),
 			StartDate:        res.StartDate,
 			Games:            res.Games,
 			Goals:            res.Goals,
@@ -78,14 +75,10 @@ func (r *repository) GetRecentTournaments(ctx context.Context, playerID string, 
 			PenaltyMinutes:   res.PenaltyMinutes,
 			HatTricks:        res.HatTricks,
 			GameWinningGoals: res.GameWinningGoals,
-		})
+		}
+		stat.CheckIsChampionship()
+		tournaments = append(tournaments, stat)
 	}
 
 	return tournaments, nil
-}
-
-// isChampionship проверяет является ли турнир первенством
-func isChampionship(name string) bool {
-	lowerName := strings.ToLower(name)
-	return strings.Contains(lowerName, "первенство")
 }
