@@ -4,10 +4,9 @@ import (
 	"context"
 	"time"
 
+	def "github.com/Daniil-Sakharov/HockeyProject/pkg/cache"
 	redigo "github.com/gomodule/redigo/redis"
 	"go.uber.org/zap"
-
-	def "github.com/Daniil-Sakharov/HockeyProject/pkg/cache"
 )
 
 var _ def.RedisClient = (*client)(nil)

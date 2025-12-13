@@ -1,0 +1,49 @@
+👤 {{.BasicInfo.Name}}
+
+📋 ОСНОВНАЯ ИНФОРМАЦИЯ
+━━━━━━━━━━━━━━━━━━━━━━
+📅 Год рождения: {{.BasicInfo.BirthYear}}
+🏒 Позиция: {{.BasicInfo.Position}}
+📏 Рост: {{if .BasicInfo.Height}}{{.BasicInfo.Height}} см{{else}}—{{end}} | ⚖️ Вес: {{if .BasicInfo.Weight}}{{.BasicInfo.Weight}} кг{{else}}—{{end}}
+🏢 Команда: {{.BasicInfo.Team}}
+📍 Регион: {{.BasicInfo.Region}}
+{{if .AllTimeStats}}
+━━━━━━━━━━━━━━━━━━━━━━
+📊 СТАТИСТИКА ЗА ВСЁ ВРЕМЯ
+
+🎮 Турниров: {{.AllTimeStats.Tournaments}} | Игр: {{.AllTimeStats.Games}}
+⚽ Голы: {{.AllTimeStats.Goals}} ({{printf "%.2f" .AllTimeStats.GoalsPerGame}} за игру)
+🎯 Пасы: {{.AllTimeStats.Assists}} ({{printf "%.2f" .AllTimeStats.AssistsPerGame}} за игру)
+💎 Очки: {{.AllTimeStats.Points}} ({{printf "%.2f" .AllTimeStats.PointsPerGame}} за игру)
+➕ Плюс/минус: {{if ge .AllTimeStats.PlusMinus 0}}+{{end}}{{.AllTimeStats.PlusMinus}}
+🔶 Штрафы: {{.AllTimeStats.Penalties}} мин ({{printf "%.2f" .AllTimeStats.PenaltiesPerGame}} за игру)
+{{if or (gt .AllTimeStats.HatTricks 0) (gt .AllTimeStats.GameWinningGoals 0)}}
+🏆 Достижения:
+{{if gt .AllTimeStats.HatTricks 0}}• Хет-трики: {{.AllTimeStats.HatTricks}}
+{{end}}{{if gt .AllTimeStats.GameWinningGoals 0}}• Победные голы: {{.AllTimeStats.GameWinningGoals}}
+{{end}}{{end}}{{end}}{{if .CurrentSeasonStats}}
+━━━━━━━━━━━━━━━━━━━━━━
+📅 СТАТИСТИКА СЕЗОНА {{.CurrentSeasonStats.Season}}
+
+🎮 Турниров: {{.CurrentSeasonStats.Tournaments}} | Игр: {{.CurrentSeasonStats.Games}}
+⚽ Голы: {{.CurrentSeasonStats.Goals}} ({{printf "%.2f" .CurrentSeasonStats.GoalsPerGame}} за игру)
+🎯 Пасы: {{.CurrentSeasonStats.Assists}} ({{printf "%.2f" .CurrentSeasonStats.AssistsPerGame}} за игру)
+💎 Очки: {{.CurrentSeasonStats.Points}} ({{printf "%.2f" .CurrentSeasonStats.PointsPerGame}} за игру)
+➕ Плюс/минус: {{if ge .CurrentSeasonStats.PlusMinus 0}}+{{end}}{{.CurrentSeasonStats.PlusMinus}}
+🔶 Штрафы: {{.CurrentSeasonStats.Penalties}} мин ({{printf "%.2f" .CurrentSeasonStats.PenaltiesPerGame}} за игру)
+{{if or (gt .CurrentSeasonStats.HatTricks 0) (gt .CurrentSeasonStats.GameWinningGoals 0)}}
+🏆 Достижения в сезоне:
+{{if gt .CurrentSeasonStats.HatTricks 0}}• Хет-трики: {{.CurrentSeasonStats.HatTricks}}
+{{end}}{{if gt .CurrentSeasonStats.GameWinningGoals 0}}• Победные голы: {{.CurrentSeasonStats.GameWinningGoals}}
+{{end}}{{end}}{{end}}{{if .RecentTournaments}}
+━━━━━━━━━━━━━━━━━━━━━━
+📅 ПОСЛЕДНИЕ 5 ТУРНИРОВ
+{{range $seasonIdx, $season := .TournamentsBySeason}}{{if ne $seasonIdx 0}}
+{{end}}{{$season.Season}}
+─────────
+{{range $season.Tournaments}}{{if .IsChampionship}}🏆{{else}}🥇{{end}} {{.TournamentName}}{{if .GroupName}} • {{.GroupName}}{{end}}
+  Игры: {{.Games}} | Очки: {{.Points}} ({{.Goals}} {{pluralizeGoals .Goals}} + {{.Assists}} пасов)
+  +/- : {{if ge .PlusMinus 0}}+{{end}}{{.PlusMinus}} | Штрафы: {{.Penalties}} мин
+{{if or (gt .HatTricks 0) (gt .WinningGoals 0)}}  {{if gt .HatTricks 0}}💥 {{.HatTricks}} хет-трик{{if gt .HatTricks 1}}а{{end}}{{end}}{{if and (gt .HatTricks 0) (gt .WinningGoals 0)}} • {{end}}{{if gt .WinningGoals 0}}🏅 {{.WinningGoals}} {{pluralizeWinningGoals .WinningGoals}}{{end}}
+{{end}}
+{{end}}{{end}}{{end}}

@@ -108,6 +108,26 @@ tasks:
         echo "🤖 Запускаем bot..."
         go run ./cmd/bot
 
+  run:stats:
+    desc: "Запускает stats_parser процесс"
+    cmds:
+      - |
+        if [ -f .env ]; then
+          export $(cat .env | grep -v '^#' | xargs)
+        fi
+        echo "📊 Запускаем stats parser..."
+        go run ./cmd/stats_parser
+
+  run:fhspb:
+    desc: "Запускает fhspb_parser процесс"
+    cmds:
+      - |
+        if [ -f .env ]; then
+          export $(cat .env | grep -v '^#' | xargs)
+        fi
+        echo "🏒 Запускаем fhspb parser..."
+        go run ./cmd/fhspb_parser
+
   build:parser:
     desc: "Собирает бинарник parser"
     cmds:
@@ -124,9 +144,25 @@ tasks:
         mkdir -p {{.BIN_DIR}}
         go build -o {{.BIN_DIR}}/bot ./cmd/bot
 
+  build:stats:
+    desc: "Собирает бинарник stats_parser"
+    cmds:
+      - |
+        echo "🔨 Собираем stats_parser..."
+        mkdir -p {{.BIN_DIR}}
+        go build -o {{.BIN_DIR}}/stats_parser ./cmd/stats_parser
+
+  build:fhspb:
+    desc: "Собирает бинарник fhspb_parser"
+    cmds:
+      - |
+        echo "🔨 Собираем fhspb_parser..."
+        mkdir -p {{.BIN_DIR}}
+        go build -o {{.BIN_DIR}}/fhspb_parser ./cmd/fhspb_parser
+
   build:all:
     desc: "Собирает все бинарники"
-    deps: [build:parser, build:bot]
+    deps: [build:parser, build:bot, build:stats, build:fhspb]
     cmds:
       - echo "✅ Все бинарники собраны"
 
@@ -138,6 +174,86 @@ tasks:
         rm -rf {{.BIN_DIR}}
         rm -f coverage.out coverage.html
         echo "✅ Очистка завершена"
+
+  db:clear:
+    desc: "Очищает все таблицы в БД"
+    cmds:
+      - |
+        echo "🗑️  Очистка БД..."
+        go run ./scripts/db_clear.go
+
+  db:stats:
+    desc: "Показывает быструю статистику БД"
+    cmds:
+      - go run ./scripts/db_stats.go
+
+  db:report:
+    desc: "Генерирует полный отчет по данным в БД"
+    cmds:
+      - go run ./scripts/db_report.go
+
+  db:verify-stats:
+    desc: "Проверяет покрытие статистики игроков"
+    cmds:
+      - |
+        echo "🔍 Проверка покрытия статистики игроков..."
+        go run ./scripts/verify_player_stats.go
+
+  db:verify-tournaments:
+    desc: "Проверяет покрытие статистики по турнирам"
+    cmds:
+      - |
+        echo "🔍 Проверка покрытия по турнирам..."
+        go run ./scripts/verify_tournament_stats.go
+
+  db:migrate:
+    desc: "Запускает миграции БД"
+    cmds:
+      - |
+        echo "🔄 Запускаем миграции..."
+        go run ./cmd/migrate
+        echo "✅ Миграции применены"
+
+  parser:full:
+    desc: "Полный цикл парсинга (очистка БД + миграции + парсинг всех доменов)"
+    cmds:
+      - |
+        echo "🔧 Компиляция парсера..."
+        task build:parser
+        echo ""
+        echo "🗑️  Очистка БД..."
+        go run ./scripts/db_clear.go
+        echo ""
+        echo "🔄 Применение миграций..."
+        task db:migrate
+        echo ""
+        echo "🚀 Запускаю парсер всех 23 доменов..."
+        echo ""
+        if [ -f .env ]; then
+          export $(cat .env | grep -v '^#' | xargs)
+        fi
+        ./bin/parser
+        echo ""
+        echo "✅ Парсинг завершен! Проверь результаты: task db:stats"
+
+  stats:full:
+    desc: "Полный цикл парсинга статистики турниров"
+    cmds:
+      - |
+        echo "🔧 Компиляция stats_parser..."
+        task build:stats
+        echo ""
+        echo "📊 Запускаю парсинг статистики всех турниров..."
+        if [ -f .env ]; then
+          export $(cat .env | grep -v '^#' | xargs)
+        fi
+        ./bin/stats_parser
+        echo ""
+        echo "✅ Парсинг статистики завершен!"
+        echo "📊 Проверь результаты:"
+        echo "   task db:stats              # Общая статистика"
+        echo "   task db:verify-stats       # Покрытие игроков"
+        echo "   task db:verify-tournaments # Покрытие турниров"
 
   help:
     desc: "Показывает список всех доступных задач"

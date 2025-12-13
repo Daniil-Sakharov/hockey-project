@@ -9,9 +9,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Daniil-Sakharov/HockeyProject/pkg/logger"
 	"go.uber.org/zap"
-
-	"github.com/Daniil-Sakharov/RocketFactory/platform/pkg/logger"
 )
 
 const shutdownTimeout = 5 * time.Second
