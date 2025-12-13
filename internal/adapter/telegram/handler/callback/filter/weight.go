@@ -7,7 +7,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-// HandleWeightSelect открывает меню выбора веса
 func (h *FilterHandler) HandleWeightSelect(ctx context.Context, botAPI *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery) error {
 	edit := tgbotapi.NewEditMessageText(
 		query.Message.Chat.ID,
@@ -26,7 +25,6 @@ func (h *FilterHandler) HandleWeightSelect(ctx context.Context, botAPI *tgbotapi
 	return nil
 }
 
-// HandleWeightValue обрабатывает выбор веса
 func (h *FilterHandler) HandleWeightValue(ctx context.Context, botAPI *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery, value string) error {
 	userID := query.From.ID
 	state := h.stateManager.GetState(userID)

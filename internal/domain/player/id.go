@@ -9,20 +9,8 @@ import (
 type ID string
 
 // NewID создает новый ID из строки
-func NewID(id string) (ID, error) {
-	if id == "" {
-		return "", fmt.Errorf("player id cannot be empty")
-	}
-	return ID(id), nil
-}
-
-// MustNewID создает ID или паникует
-func MustNewID(id string) ID {
-	pid, err := NewID(id)
-	if err != nil {
-		panic(err)
-	}
-	return pid
+func NewID(id string) ID {
+	return ID(id)
 }
 
 // String возвращает строковое представление
@@ -36,12 +24,31 @@ func (id ID) IsEmpty() bool {
 }
 
 // ExtractFromURL извлекает ID из URL профиля
-// Пример: /player/abdrashitov-daniyar-rustamovich-2008-05-13-924040/ -> "924040"
-func ExtractFromURL(profileURL string) (ID, error) {
+// Пример: /player/abdrashitov-daniyar-2008-05-13-924040/ -> "924040"
+func ExtractFromURL(profileURL string) ID {
 	re := regexp.MustCompile(`-(\d+)/?$`)
 	matches := re.FindStringSubmatch(profileURL)
 	if len(matches) > 1 {
-		return NewID(matches[1])
+		return ID(matches[1])
 	}
-	return "", fmt.Errorf("cannot extract id from url: %s", profileURL)
+	return ""
+}
+
+// ExtractIDFromURL - deprecated, use ExtractFromURL
+// Сохранено для обратной совместимости
+func ExtractIDFromURL(profileURL string) string {
+	re := regexp.MustCompile(`-(\d+)/?$`)
+	matches := re.FindStringSubmatch(profileURL)
+	if len(matches) > 1 {
+		return matches[1]
+	}
+	return ""
+}
+
+// Validate проверяет валидность ID
+func (id ID) Validate() error {
+	if id == "" {
+		return fmt.Errorf("player id cannot be empty")
+	}
+	return nil
 }

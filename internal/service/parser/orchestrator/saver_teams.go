@@ -13,38 +13,29 @@ import (
 // SaveTeams сохраняет команды в БД (с дедупликацией)
 func (s *orchestratorService) SaveTeams(ctx context.Context, teamsDTO []junior.TeamDTO) ([]*team.Team, error) {
 	var saved []*team.Team
-	
-	// Логируем начало сохранения
+
 	logger.Debug(ctx, fmt.Sprintf("  🔧 SaveTeams: начинаем сохранение %d команд", len(teamsDTO)))
 
 	for i, dto := range teamsDTO {
-		// Конвертируем DTO → Entity
 		t := convertTeamDTO(dto)
-		
-		logger.Debug(ctx, fmt.Sprintf("    [%d/%d] Обработка команды: ID=%s, Name=%s, URL=%s", 
-			i+1, len(teamsDTO), t.ID, t.Name, dto.URL))
-		
-		logger.Debug(ctx, fmt.Sprintf("    💾 Upsert команды: ID=%s, Name=%s", t.ID, t.Name))
 
-		// Используем UPSERT - атомарная операция без race condition!
-		result, err := s.teamRepo.Upsert(ctx, t)
-		if err != nil {
-			logger.Error(ctx, fmt.Sprintf("    ❌ UPSERT FAILED! ID=%s, Name=%s, URL=%s, Error: %v", 
+		logger.Debug(ctx, fmt.Sprintf("    [%d/%d] Обработка команды: ID=%s, Name=%s, URL=%s",
+			i+1, len(teamsDTO), t.ID, t.Name, dto.URL))
+
+		if err := s.teamRepo.Upsert(ctx, t); err != nil {
+			logger.Error(ctx, fmt.Sprintf("    ❌ UPSERT FAILED! ID=%s, Name=%s, URL=%s, Error: %v",
 				t.ID, t.Name, dto.URL, err))
 			return nil, fmt.Errorf("failed to upsert team: %w", err)
 		}
-		
-		logger.Debug(ctx, fmt.Sprintf("    ✅ Команда upsert: ID=%s, Name=%s", result.ID, result.Name))
 
-		saved = append(saved, result)
+		logger.Debug(ctx, fmt.Sprintf("    ✅ Команда upsert: ID=%s, Name=%s", t.ID, t.Name))
+		saved = append(saved, t)
 	}
-	
-	logger.Debug(ctx, fmt.Sprintf("  🔧 SaveTeams: завершено. Сохранено %d команд", len(saved)))
 
+	logger.Debug(ctx, fmt.Sprintf("  🔧 SaveTeams: завершено. Сохранено %d команд", len(saved)))
 	return saved, nil
 }
 
-// convertTeamDTO конвертирует DTO в domain entity
 func convertTeamDTO(dto junior.TeamDTO) *team.Team {
 	return &team.Team{
 		ID:        team.ExtractIDFromURL(dto.URL),

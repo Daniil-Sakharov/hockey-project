@@ -2,12 +2,12 @@ package keyboard
 
 import (
 	cb "github.com/Daniil-Sakharov/HockeyProject/internal/adapter/telegram/callback"
-	domainBot "github.com/Daniil-Sakharov/HockeyProject/internal/domain/bot"
+	"github.com/Daniil-Sakharov/HockeyProject/internal/domain/bot"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 // FioMenu создает клавиатуру для панели ФИО
-func (p *KeyboardPresenter) FioMenu(fio domainBot.TempFioData) tgbotapi.InlineKeyboardMarkup {
+func (p *KeyboardPresenter) FioMenu(fio bot.TempFioData) tgbotapi.InlineKeyboardMarkup {
 	rows := [][]tgbotapi.InlineKeyboardButton{}
 
 	// Ряд 1: Фамилия

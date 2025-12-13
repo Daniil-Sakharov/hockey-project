@@ -1,35 +1,17 @@
 package team
 
-import (
-	"crypto/md5"
-	"fmt"
-	"regexp"
-	"time"
-)
+import "time"
 
-// Team представляет команду
+// Team представляет команду (Domain Entity)
 type Team struct {
-	ID        string    `db:"id"`         // ID (hash от URL или извлеченный из URL)
-	URL       string    `db:"url"`        // /tournaments/.../buran_5136295/
-	Name      string    `db:"name"`       // БУРАН
-	City      string    `db:"city"`       // Воронеж
-	CreatedAt time.Time `db:"created_at"` // Дата создания
+	ID        string    `db:"id"`
+	URL       string    `db:"url"`
+	Name      string    `db:"name"`
+	City      string    `db:"city"`
+	CreatedAt time.Time `db:"created_at"`
 }
 
-// ExtractIDFromURL извлекает ID из URL команды
-// Пример: /tournaments/pervenstvo/.../buran_5136295/ -> "5136295"
+// ExtractIDFromURL извлекает ID из URL команды (deprecated, use id.ExtractFromURL)
 func ExtractIDFromURL(url string) string {
-	re := regexp.MustCompile(`_(\d+)/?$`)
-	matches := re.FindStringSubmatch(url)
-	if len(matches) > 1 {
-		return matches[1]
-	}
-	// Fallback: используем hash от URL
-	return generateHashID(url)
-}
-
-// generateHashID генерирует MD5 hash от URL (первые 8 символов)
-func generateHashID(url string) string {
-	hash := md5.Sum([]byte(url))
-	return fmt.Sprintf("%x", hash)[:8]
+	return ExtractFromURL(url).String()
 }

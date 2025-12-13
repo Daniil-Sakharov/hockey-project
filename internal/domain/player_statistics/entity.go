@@ -57,20 +57,12 @@ func (ps *PlayerStatistic) Validate() error {
 	if ps.GroupName == "" {
 		return fmt.Errorf("group_name is required")
 	}
-	// BirthYear: 0 = неизвестный год, 2000-2020 = юниорский хоккей
 	if ps.BirthYear != 0 && (ps.BirthYear < 2000 || ps.BirthYear > 2020) {
-		return fmt.Errorf("birth_year must be 0 (unknown) or between 2000 and 2020")
+		return fmt.Errorf("birth_year must be 0 or between 2000 and 2020")
 	}
-	if ps.Games < 0 {
-		return fmt.Errorf("games cannot be negative")
+	if ps.Games < 0 || ps.Goals < 0 || ps.Assists < 0 {
+		return fmt.Errorf("stats cannot be negative")
 	}
-	if ps.Goals < 0 {
-		return fmt.Errorf("goals cannot be negative")
-	}
-	if ps.Assists < 0 {
-		return fmt.Errorf("assists cannot be negative")
-	}
-
 	return nil
 }
 

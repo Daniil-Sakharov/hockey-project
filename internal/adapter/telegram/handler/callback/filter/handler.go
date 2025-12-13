@@ -12,14 +12,12 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-// FilterHandler обрабатывает все действия с фильтрами
 type FilterHandler struct {
 	msgPresenter      *message.MessagePresenter
 	keyboardPresenter *keyboard.KeyboardPresenter
 	stateManager      bot.StateManager
 }
 
-// NewFilterHandler создает новый FilterHandler
 func NewFilterHandler(
 	msgPresenter *message.MessagePresenter,
 	keyboardPresenter *keyboard.KeyboardPresenter,
@@ -32,23 +30,19 @@ func NewFilterHandler(
 	}
 }
 
-// HandleFilterMenu открывает меню фильтров (редактирует текущее сообщение)
 func (h *FilterHandler) HandleFilterMenu(ctx context.Context, botAPI *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery) error {
 	userID := query.From.ID
 	state := h.stateManager.GetState(userID)
 
-	// Сохраняем ID сообщения для EditMessageText
 	h.stateManager.SetLastMsgID(userID, query.Message.MessageID)
 	h.stateManager.SetCurrentView(userID, "filter_menu")
 
-	// Рендерим меню фильтров
 	text, err := h.renderFilterMenu(state.Filters)
 	if err != nil {
 		log.Printf("Error rendering filter menu: %v", err)
 		return err
 	}
 
-	// Обновляем сообщение
 	edit := tgbotapi.NewEditMessageText(query.Message.Chat.ID, query.Message.MessageID, text)
 	edit.ParseMode = "Markdown"
 	markup := h.keyboardPresenter.FilterMenu(state.Filters.HasFilters())
@@ -62,21 +56,18 @@ func (h *FilterHandler) HandleFilterMenu(ctx context.Context, botAPI *tgbotapi.B
 	return nil
 }
 
-// HandleFilterMenuNew отправляет новое сообщение с меню фильтров (используется после удаления результатов)
 func (h *FilterHandler) HandleFilterMenuNew(ctx context.Context, botAPI *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery) error {
 	userID := query.From.ID
 	state := h.stateManager.GetState(userID)
 
 	h.stateManager.SetCurrentView(userID, "filter_menu")
 
-	// Рендерим меню фильтров
 	text, err := h.renderFilterMenu(state.Filters)
 	if err != nil {
 		log.Printf("Error rendering filter menu: %v", err)
 		return err
 	}
 
-	// Отправляем НОВОЕ сообщение
 	msg := tgbotapi.NewMessage(query.Message.Chat.ID, text)
 	msg.ParseMode = "Markdown"
 	markup := h.keyboardPresenter.FilterMenu(state.Filters.HasFilters())
@@ -88,28 +79,20 @@ func (h *FilterHandler) HandleFilterMenuNew(ctx context.Context, botAPI *tgbotap
 		return err
 	}
 
-	// Сохраняем ID нового сообщения
 	h.stateManager.SetLastMsgID(userID, sent.MessageID)
-
 	return nil
 }
 
-// HandleFilterReset сбрасывает все фильтры
 func (h *FilterHandler) HandleFilterReset(ctx context.Context, botAPI *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery) error {
 	userID := query.From.ID
 	h.stateManager.ResetFilters(userID)
 	return h.HandleFilterMenu(ctx, botAPI, query)
 }
 
-// HandleFilterApply применяет фильтры и запускает поиск
-// ВАЖНО: реальный поиск выполняется в search handler, этот метод только редиректит
 func (h *FilterHandler) HandleFilterApply(ctx context.Context, botAPI *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery) error {
-	// Callback filter:apply перенаправляется на search:execute через router
-	// Сам поиск выполняет SearchHandler.HandleSearch()
 	return nil
 }
 
-// renderFilterMenu рендерит меню фильтров
 func (h *FilterHandler) renderFilterMenu(filters domainBot.SearchFilters) (string, error) {
 	data := message.FilterMenuData{
 		FIO:                filters.GetFIODisplay(),
@@ -120,12 +103,10 @@ func (h *FilterHandler) renderFilterMenu(filters domainBot.SearchFilters) (strin
 		ActiveFiltersCount: filters.CountActiveFilters(),
 	}
 
-	// Форматируем рост
 	if filters.Height != nil {
 		data.Height = fmt.Sprintf("%d-%d", filters.Height.Min, filters.Height.Max)
 	}
 
-	// Форматируем вес
 	if filters.Weight != nil {
 		data.Weight = fmt.Sprintf("%d-%d", filters.Weight.Min, filters.Weight.Max)
 	}
@@ -133,12 +114,10 @@ func (h *FilterHandler) renderFilterMenu(filters domainBot.SearchFilters) (strin
 	return h.msgPresenter.RenderFilterMenu(data)
 }
 
-// RenderFioMenuText рендерит текст панели ФИО (для FioInputHandler)
 func (h *FilterHandler) RenderFioMenuText(fio domainBot.TempFioData) (string, error) {
 	return h.msgPresenter.RenderFioMenu(fio)
 }
 
-// GetFioKeyboard возвращает клавиатуру панели ФИО (для FioInputHandler)
 func (h *FilterHandler) GetFioKeyboard(fio domainBot.TempFioData) tgbotapi.InlineKeyboardMarkup {
 	return h.keyboardPresenter.FioMenu(fio)
 }

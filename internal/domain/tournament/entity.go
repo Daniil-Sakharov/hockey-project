@@ -1,30 +1,22 @@
 package tournament
 
-import (
-	"regexp"
-	"time"
-)
+import "time"
 
-// Tournament представляет турнир
+// Tournament представляет турнир (Domain Entity)
 type Tournament struct {
-	ID        string     `db:"id"`         // ID извлеченный из URL
-	URL       string     `db:"url"`        // /tournaments/pervenstvo-tsfo-18171615-let-16756891/
-	Name      string     `db:"name"`       // Первенство ЦФО 18/17/16/15 лет
-	Domain    string     `db:"domain"`     // https://cfo.fhr.ru
-	Season    string     `db:"season"`     // 2025/2026
-	StartDate *time.Time `db:"start_date"` // Дата начала турнира
-	EndDate   *time.Time `db:"end_date"`   // Дата окончания турнира (NULL если активен)
-	IsEnded   bool       `db:"is_ended"`   // Флаг завершенности турнира
-	CreatedAt time.Time  `db:"created_at"` // Дата создания
+	ID        string     `db:"id"`
+	URL       string     `db:"url"`
+	Name      string     `db:"name"`
+	Domain    string     `db:"domain"`
+	Season    string     `db:"season"`
+	StartDate *time.Time `db:"start_date"`
+	EndDate   *time.Time `db:"end_date"`
+	IsEnded   bool       `db:"is_ended"`
+	CreatedAt time.Time  `db:"created_at"`
 }
 
-// ExtractIDFromURL извлекает ID турнира из URL
-// Пример: /tournaments/pervenstvo-tsfo-18171615-let-16756891/ -> "16756891"
+// ExtractIDFromURL извлекает ID турнира из URL (deprecated, use id.ExtractFromURL)
 func ExtractIDFromURL(url string) string {
-	re := regexp.MustCompile(`-(\d+)/?$`)
-	matches := re.FindStringSubmatch(url)
-	if len(matches) > 1 {
-		return matches[1]
-	}
-	return ""
+	id, _ := ExtractFromURL(url)
+	return id.String()
 }

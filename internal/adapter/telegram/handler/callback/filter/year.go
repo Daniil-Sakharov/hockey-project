@@ -8,7 +8,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-// HandleYearSelect открывает меню выбора года
 func (h *FilterHandler) HandleYearSelect(ctx context.Context, botAPI *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery) error {
 	edit := tgbotapi.NewEditMessageText(
 		query.Message.Chat.ID,
@@ -27,16 +26,13 @@ func (h *FilterHandler) HandleYearSelect(ctx context.Context, botAPI *tgbotapi.B
 	return nil
 }
 
-// HandleYearValue обрабатывает выбор года
 func (h *FilterHandler) HandleYearValue(ctx context.Context, botAPI *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery, value string) error {
 	userID := query.From.ID
 	state := h.stateManager.GetState(userID)
 
 	if value == "any" {
-		// Сбрасываем фильтр года
 		state.Filters.Year = nil
 	} else {
-		// Парсим год
 		year, err := strconv.Atoi(value)
 		if err != nil {
 			log.Printf("Invalid year value: %v", err)
@@ -45,9 +41,6 @@ func (h *FilterHandler) HandleYearValue(ctx context.Context, botAPI *tgbotapi.Bo
 		state.Filters.Year = &year
 	}
 
-	// Обновляем состояние
 	h.stateManager.UpdateFilters(userID, state.Filters)
-
-	// Возвращаемся к меню фильтров
 	return h.HandleFilterMenu(ctx, botAPI, query)
 }

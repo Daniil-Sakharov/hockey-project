@@ -14,24 +14,19 @@ type WeightRange struct {
 
 // SearchFilters фильтры поиска игроков
 type SearchFilters struct {
-	FirstName *string      // Имя игрока
-	LastName  *string      // Фамилия игрока
-	Year      *int         // Год рождения
-	Position  *string      // Позиция (Нападающий/Защитник/Вратарь)
-	Height    *HeightRange // Диапазон роста
-	Weight    *WeightRange // Диапазон веса
-	Region    *string      // Федеральный округ
+	FirstName *string
+	LastName  *string
+	Year      *int
+	Position  *string
+	Height    *HeightRange
+	Weight    *WeightRange
+	Region    *string
 }
 
 // HasFilters проверяет есть ли активные фильтры
 func (f *SearchFilters) HasFilters() bool {
-	return f.FirstName != nil ||
-		f.LastName != nil ||
-		f.Year != nil ||
-		f.Position != nil ||
-		f.Height != nil ||
-		f.Weight != nil ||
-		f.Region != nil
+	return f.FirstName != nil || f.LastName != nil || f.Year != nil ||
+		f.Position != nil || f.Height != nil || f.Weight != nil || f.Region != nil
 }
 
 // CountActiveFilters возвращает количество активных фильтров

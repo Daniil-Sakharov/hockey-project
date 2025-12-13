@@ -20,7 +20,7 @@ func (s *service) Run(ctx context.Context) error {
 	s.logger.Println("✅ Таблица очищена")
 
 	// 2. Получаем все турниры из БД
-	tournaments, err := s.tournamentRepo.List(ctx, 10000, 0)
+	tournaments, err := s.tournamentRepo.List(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get tournaments: %w", err)
 	}
@@ -47,7 +47,7 @@ func (s *service) Run(ctx context.Context) error {
 		pool.Close()
 	}()
 
-	// 5. Ждём завершения (в отдельной goroutine)
+	// 5. Ждём завершения
 	go pool.Wait()
 
 	// 6. Собираем результаты
@@ -55,7 +55,6 @@ func (s *service) Run(ctx context.Context) error {
 	successCount := 0
 	errorCount := 0
 
-	// Структура для детальной статистики
 	type tournamentStats struct {
 		name  string
 		id    string
@@ -104,8 +103,7 @@ func (s *service) Run(ctx context.Context) error {
 	s.logger.Println("\n" + strings.Repeat("=", 60))
 	s.logger.Println("📊 ДЕТАЛЬНАЯ СТАТИСТИКА ПО ТУРНИРАМ:")
 	s.logger.Println(strings.Repeat("=", 60))
-	
-	// Сортируем по убыванию количества записей
+
 	for i := 0; i < len(tournamentResults)-1; i++ {
 		for j := i + 1; j < len(tournamentResults); j++ {
 			if tournamentResults[j].count > tournamentResults[i].count {
@@ -113,8 +111,7 @@ func (s *service) Run(ctx context.Context) error {
 			}
 		}
 	}
-	
-	// Выводим все турниры
+
 	for i, tr := range tournamentResults {
 		if tr.count > 0 {
 			s.logger.Printf("%2d. [%s] %s: %d записей", i+1, tr.id, tr.name, tr.count)

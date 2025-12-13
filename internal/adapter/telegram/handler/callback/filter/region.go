@@ -7,7 +7,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-// HandleRegionSelect открывает меню выбора региона
 func (h *FilterHandler) HandleRegionSelect(ctx context.Context, botAPI *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery) error {
 	edit := tgbotapi.NewEditMessageText(
 		query.Message.Chat.ID,
@@ -26,7 +25,6 @@ func (h *FilterHandler) HandleRegionSelect(ctx context.Context, botAPI *tgbotapi
 	return nil
 }
 
-// HandleRegionValue обрабатывает выбор региона
 func (h *FilterHandler) HandleRegionValue(ctx context.Context, botAPI *tgbotapi.BotAPI, query *tgbotapi.CallbackQuery, value string) error {
 	userID := query.From.ID
 	state := h.stateManager.GetState(userID)

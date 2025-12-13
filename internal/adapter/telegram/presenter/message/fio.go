@@ -3,12 +3,11 @@ package message
 import (
 	"fmt"
 
-	domainBot "github.com/Daniil-Sakharov/HockeyProject/internal/domain/bot"
+	"github.com/Daniil-Sakharov/HockeyProject/internal/domain/bot"
 )
 
 // RenderFioMenu рендерит панель ввода ФИО
-func (p *MessagePresenter) RenderFioMenu(fio domainBot.TempFioData) (string, error) {
-	// Формируем значения для отображения
+func (p *MessagePresenter) RenderFioMenu(fio bot.TempFioData) (string, error) {
 	lastName := fio.LastName
 	if lastName == "" {
 		lastName = "-"

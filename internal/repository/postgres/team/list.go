@@ -7,17 +7,15 @@ import (
 	"github.com/Daniil-Sakharov/HockeyProject/internal/domain/team"
 )
 
-// List возвращает список всех команд
-func (r *repository) List(ctx context.Context, limit, offset int) ([]*team.Team, error) {
+func (r *repository) List(ctx context.Context) ([]*team.Team, error) {
 	query := `
 		SELECT id, url, name, city, created_at
 		FROM teams
 		ORDER BY name
-		LIMIT $1 OFFSET $2
 	`
 
 	var teams []*team.Team
-	err := r.db.SelectContext(ctx, &teams, query, limit, offset)
+	err := r.db.SelectContext(ctx, &teams, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list teams: %w", err)
 	}

@@ -3,94 +3,84 @@ package bot
 import (
 	"sync"
 
-	domainBot "github.com/Daniil-Sakharov/HockeyProject/internal/domain/bot"
+	"github.com/Daniil-Sakharov/HockeyProject/internal/domain/bot"
 )
 
-// stateManager реализация StateManager (in-memory)
 type stateManager struct {
 	mu     sync.RWMutex
-	states map[int64]*domainBot.UserState
+	states map[int64]*bot.UserState
 }
 
-// NewStateManager создает новый StateManager
 func NewStateManager() StateManager {
 	return &stateManager{
-		states: make(map[int64]*domainBot.UserState),
+		states: make(map[int64]*bot.UserState),
 	}
 }
 
-// GetState возвращает состояние пользователя (создает если не существует)
-func (sm *stateManager) GetState(userID int64) *domainBot.UserState {
+func (sm *stateManager) GetState(userID int64) *bot.UserState {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
-	if state, exists := sm.states[userID]; exists {
-		return state
+	if s, exists := sm.states[userID]; exists {
+		return s
 	}
 
-	// Создаем новое состояние
-	state := &domainBot.UserState{
+	s := &bot.UserState{
 		UserID:      userID,
-		Filters:     domainBot.SearchFilters{},
+		Filters:     bot.SearchFilters{},
 		CurrentView: "",
-		CurrentPage: 1, // По умолчанию первая страница
+		CurrentPage: 1,
 	}
-	sm.states[userID] = state
-	return state
+	sm.states[userID] = s
+	return s
 }
 
-// UpdateFilters обновляет фильтры пользователя
-func (sm *stateManager) UpdateFilters(userID int64, filters domainBot.SearchFilters) {
+func (sm *stateManager) UpdateFilters(userID int64, filters bot.SearchFilters) {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
-	if state, exists := sm.states[userID]; exists {
-		state.Filters = filters
+	if s, exists := sm.states[userID]; exists {
+		s.Filters = filters
 	}
 }
 
-// SetLastMsgID сохраняет ID последнего сообщения
 func (sm *stateManager) SetLastMsgID(userID int64, msgID int) {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
-	if state, exists := sm.states[userID]; exists {
-		state.LastMsgID = msgID
+	if s, exists := sm.states[userID]; exists {
+		s.LastMsgID = msgID
 	}
 }
 
-// SetCurrentView устанавливает текущий экран
 func (sm *stateManager) SetCurrentView(userID int64, view string) {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
-	if state, exists := sm.states[userID]; exists {
-		state.CurrentView = view
+	if s, exists := sm.states[userID]; exists {
+		s.CurrentView = view
 	}
 }
 
-// SetWaitingForInput устанавливает режим ожидания ввода
 func (sm *stateManager) SetWaitingForInput(userID int64, input string) {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
-	if state, exists := sm.states[userID]; exists {
-		state.WaitingForInput = input
+	if s, exists := sm.states[userID]; exists {
+		s.WaitingForInput = input
 	}
 }
 
-// ResetFilters сбрасывает все фильтры пользователя
 func (sm *stateManager) ResetFilters(userID int64) {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
-	if state, exists := sm.states[userID]; exists {
-		state.Filters = domainBot.SearchFilters{}
-		state.CurrentView = ""
+	if s, exists := sm.states[userID]; exists {
+		s.Filters = bot.SearchFilters{}
+		s.CurrentView = ""
 	}
 }
 
-// ClearState удаляет состояние пользователя
 func (sm *stateManager) ClearState(userID int64) {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()

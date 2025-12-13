@@ -28,13 +28,12 @@ func (o *Orchestrator) processTeamSafe(ctx context.Context, tournamentID int, t 
 }
 
 func (o *Orchestrator) saveTeam(ctx context.Context, t dto.TeamDTO) error {
-	_, err := o.teamRepo.Upsert(ctx, &team.Team{
+	return o.teamRepo.Upsert(ctx, &team.Team{
 		ID:        t.ID,
 		URL:       fmt.Sprintf("fhspb://team/%s", t.ID),
 		Name:      t.Name,
 		CreatedAt: time.Now(),
 	})
-	return err
 }
 
 func (o *Orchestrator) processTeam(ctx context.Context, tournamentID int, t dto.TeamDTO) (int, error) {
@@ -43,7 +42,6 @@ func (o *Orchestrator) processTeam(ctx context.Context, tournamentID int, t dto.
 		return 0, fmt.Errorf("get player urls: %w", err)
 	}
 
-	// Воркер пул для игроков
 	var (
 		savedCount int
 		mu         sync.Mutex

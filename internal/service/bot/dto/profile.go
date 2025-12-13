@@ -1,7 +1,6 @@
-package player
+package dto
 
-// Profile представляет полный профиль игрока для отображения
-// Deprecated: используйте service/bot/dto.Profile
+// Profile представляет полный профиль игрока для отображения (Presentation DTO)
 type Profile struct {
 	BasicInfo          PlayerBasicInfo
 	AllTimeStats       *PlayerStats
