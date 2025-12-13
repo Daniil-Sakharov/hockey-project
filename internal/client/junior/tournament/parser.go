@@ -1,19 +1,29 @@
-package junior
+package tournament
 
 import (
 	"fmt"
 	"strings"
 
-	"github.com/PuerkitoBio/goquery"
-
 	"github.com/Daniil-Sakharov/HockeyProject/internal/client/junior/parsing"
+	"github.com/Daniil-Sakharov/HockeyProject/internal/client/junior/types"
+	"github.com/PuerkitoBio/goquery"
 )
 
-// ParseTournamentsFromDomain парсит турниры с конкретного домена
-func (c *Client) ParseTournamentsFromDomain(domain string) ([]TournamentDTO, error) {
+// Parser парсер турниров
+type Parser struct {
+	http types.HTTPRequester
+}
+
+// NewParser создает новый парсер турниров
+func NewParser(http types.HTTPRequester) *Parser {
+	return &Parser{http: http}
+}
+
+// ParseFromDomain парсит турниры с конкретного домена
+func (p *Parser) ParseFromDomain(domain string) ([]types.TournamentDTO, error) {
 	tournamentURL := domain + "/tournaments/"
 
-	resp, err := c.makeRequest(tournamentURL)
+	resp, err := p.http.MakeRequest(tournamentURL)
 	if err != nil {
 		return nil, fmt.Errorf("ошибка HTTP запроса: %w", err)
 	}
@@ -28,40 +38,29 @@ func (c *Client) ParseTournamentsFromDomain(domain string) ([]TournamentDTO, err
 		return nil, fmt.Errorf("ошибка парсинга HTML: %w", err)
 	}
 
-	// Извлекаем глобальный сезон (один для всех турниров на странице)
 	globalSeason := parsing.ExtractGlobalSeason(doc)
 
-	var tournaments []TournamentDTO
-	parsedURLs := make(map[string]bool) // Дедупликация
+	var tournaments []types.TournamentDTO
+	parsedURLs := make(map[string]bool)
 
-	// Парсим турниры (comp-card блоки)
 	doc.Find(`a.comp-age[href^="/tournaments/"]`).Each(func(i int, s *goquery.Selection) {
 		href, exists := s.Attr("href")
-		if !exists || href == "" {
+		if !exists || href == "" || href == "/tournaments/" || href == "/tournaments" {
 			return
 		}
 
-		// Пропускаем саму страницу /tournaments/
-		if href == "/tournaments/" || href == "/tournaments" {
-			return
-		}
-
-		// Убираем часть -year-XXXXX чтобы получить родительский URL
 		parentURL := href
 		if strings.Contains(href, "-year-") {
-			yearIndex := strings.Index(href, "-year-")
-			if yearIndex != -1 {
+			if yearIndex := strings.Index(href, "-year-"); yearIndex != -1 {
 				parentURL = href[:yearIndex] + "/"
 			}
 		}
 
-		// Дедупликация
 		if parsedURLs[parentURL] {
 			return
 		}
 		parsedURLs[parentURL] = true
 
-		// Извлекаем название из родительского блока comp-card
 		name := ""
 		s.Parents().EachWithBreak(func(j int, parent *goquery.Selection) bool {
 			if parent.HasClass("comp-card") {
@@ -73,37 +72,31 @@ func (c *Client) ParseTournamentsFromDomain(domain string) ([]TournamentDTO, err
 			return true
 		})
 
-		// Fallback: текст ссылки
 		if name == "" {
 			name = strings.TrimSpace(s.Text())
 		}
 
-		// Извлекаем ID турнира
 		tournamentID := parsing.ExtractTournamentID(parentURL)
 		if tournamentID == "" {
 			tournamentID = parentURL
 		}
 
-		// Парсим даты из comp-period
 		startDate, endDate, isEnded := parsing.ParseTournamentMetadata(s)
 
-		// Если глобальный сезон не найден - пропускаем турнир
 		if globalSeason == "" {
 			return
 		}
 
-		tournament := TournamentDTO{
+		tournaments = append(tournaments, types.TournamentDTO{
 			ID:        tournamentID,
 			Name:      name,
 			URL:       parentURL,
 			Domain:    domain,
-			Season:    globalSeason, // ← Глобальный сезон
+			Season:    globalSeason,
 			StartDate: startDate,
 			EndDate:   endDate,
 			IsEnded:   isEnded,
-		}
-
-		tournaments = append(tournaments, tournament)
+		})
 	})
 
 	return tournaments, nil

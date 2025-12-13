@@ -13,7 +13,7 @@ import (
 func (c *Client) ExtractAllSeasons(domain string) ([]SeasonInfo, error) {
 	tournamentURL := domain + "/tournaments/"
 
-	resp, err := c.makeRequest(tournamentURL)
+	resp, err := c.MakeRequest(tournamentURL)
 	if err != nil {
 		return nil, fmt.Errorf("ошибка HTTP запроса: %w", err)
 	}
@@ -50,7 +50,7 @@ func (c *Client) ExtractAllSeasons(domain string) ([]SeasonInfo, error) {
 func (c *Client) ParseSeasonTournaments(domain, season, ajaxURL string) ([]TournamentDTO, error) {
 	fullURL := domain + ajaxURL
 
-	resp, err := c.makeRequest(fullURL)
+	resp, err := c.MakeRequest(fullURL)
 	if err != nil {
 		return nil, fmt.Errorf("ошибка HTTP запроса: %w", err)
 	}

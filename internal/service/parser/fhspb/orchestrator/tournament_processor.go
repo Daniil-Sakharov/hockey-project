@@ -45,6 +45,10 @@ func (o *Orchestrator) saveTournament(ctx context.Context, t dto.TournamentDTO) 
 		URL:       fmt.Sprintf("fhspb://tournament/%d", t.ID),
 		Name:      t.Name,
 		Domain:    "fhspb.ru",
+		Season:    t.Season,
+		StartDate: t.StartDate,
+		EndDate:   t.EndDate,
+		IsEnded:   t.IsEnded,
 		CreatedAt: time.Now(),
 	})
 }
