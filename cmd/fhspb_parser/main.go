@@ -7,15 +7,13 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/Daniil-Sakharov/HockeyProject/internal/initializer"
+	"github.com/Daniil-Sakharov/HockeyProject/internal/initializer/app"
 )
 
 func main() {
-	// Создаем контекст с отменой по сигналу
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	// Обработка сигналов завершения
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
@@ -24,14 +22,12 @@ func main() {
 		cancel()
 	}()
 
-	// Создаем приложение
-	application, err := initializer.New(ctx)
+	fhspbApp, err := app.NewFHSPBParserApp(ctx)
 	if err != nil {
-		log.Fatalf("Failed to create initializer: %v", err)
+		log.Fatalf("Failed to create fhspb parser app: %v", err)
 	}
 
-	// Запускаем парсер
-	if err := application.RunFHSPBParser(ctx); err != nil {
+	if err := fhspbApp.Run(ctx); err != nil {
 		log.Fatalf("Parser failed: %v", err)
 	}
 

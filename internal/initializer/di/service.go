@@ -1,4 +1,4 @@
-package module
+package di
 
 import (
 	"context"
@@ -11,9 +11,9 @@ import (
 	reportService "github.com/Daniil-Sakharov/HockeyProject/internal/service/bot/report"
 	"github.com/Daniil-Sakharov/HockeyProject/internal/service/parser"
 	juniorService "github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/junior"
-	"github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/orchestrator"
-	statsService "github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/stats"
-	"github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/stats_orchestrator"
+	juniorOrchestrator "github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/junior/orchestrator"
+	statsService "github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/junior/stats"
+	statsOrchestrator "github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/junior/stats/orchestrator"
 	"go.uber.org/zap"
 )
 
@@ -46,7 +46,7 @@ func (s *Service) JuniorParser(ctx context.Context) parser.JuniorParserService {
 
 func (s *Service) Orchestrator(ctx context.Context) parser.OrchestratorService {
 	if s.orchestratorService == nil {
-		s.orchestratorService = orchestrator.NewOrchestratorService(
+		s.orchestratorService = juniorOrchestrator.NewOrchestratorService(
 			s.JuniorParser(ctx),
 			s.repo.Player(ctx),
 			s.repo.Team(ctx),
@@ -75,7 +75,7 @@ func (s *Service) StatsParser(ctx context.Context) parser.StatsParserService {
 func (s *Service) StatsOrchestrator(ctx context.Context) parser.StatsOrchestratorService {
 	if s.statsOrchestratorService == nil {
 		logger := log.New(os.Stdout, "[STATS] ", log.LstdFlags|log.Lmsgprefix)
-		s.statsOrchestratorService = stats_orchestrator.NewStatsOrchestratorService(
+		s.statsOrchestratorService = statsOrchestrator.NewStatsOrchestratorService(
 			s.StatsParser(ctx),
 			s.repo.PlayerStatistics(ctx),
 			s.repo.Tournament(ctx),

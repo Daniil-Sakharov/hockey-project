@@ -4,15 +4,15 @@ import (
 	"context"
 	"log"
 
-	"github.com/Daniil-Sakharov/HockeyProject/internal/initializer"
+	"github.com/Daniil-Sakharov/HockeyProject/internal/initializer/app"
 )
 
 func main() {
 	ctx := context.Background()
 
-	statsParserApp, err := initializer.NewStatsParserApp(ctx)
+	statsParserApp, err := app.NewStatsParserApp(ctx)
 	if err != nil {
-		log.Fatalf("Failed to create stats parser initializer: %v", err)
+		log.Fatalf("Failed to create stats parser app: %v", err)
 	}
 
 	if err := statsParserApp.Run(ctx); err != nil {

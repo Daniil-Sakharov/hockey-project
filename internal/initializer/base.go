@@ -5,14 +5,15 @@ import (
 	"fmt"
 
 	"github.com/Daniil-Sakharov/HockeyProject/internal/config"
+	"github.com/Daniil-Sakharov/HockeyProject/internal/initializer/di"
 	"github.com/Daniil-Sakharov/HockeyProject/pkg/closer"
 	"github.com/Daniil-Sakharov/HockeyProject/pkg/logger"
 )
 
 // App базовая структура приложения (общая для parser и bot)
 type App struct {
-	config      *config.Config
-	diContainer *diContainer
+	Config      *config.Config
+	DiContainer *di.Container
 }
 
 // New создает базовое приложение
@@ -48,12 +49,12 @@ func (a *App) initConfig(ctx context.Context) error {
 	if err := config.Load(); err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
-	a.config = config.AppConfig()
+	a.Config = config.AppConfig()
 	return nil
 }
 
 func (a *App) initLogger(ctx context.Context) error {
-	if err := logger.Init(a.config.Logger.Level(), a.config.Logger.AsJson(), nil); err != nil {
+	if err := logger.Init(a.Config.Logger.Level(), a.Config.Logger.AsJson(), nil); err != nil {
 		return fmt.Errorf("failed to initialize logger: %w", err)
 	}
 
@@ -66,7 +67,7 @@ func (a *App) initLogger(ctx context.Context) error {
 }
 
 func (a *App) initDI(ctx context.Context) error {
-	a.diContainer = NewDiContainer(a.config)
+	a.DiContainer = di.NewContainer(a.Config)
 	logger.Info(ctx, "✅ DI container initialized")
 	return nil
 }

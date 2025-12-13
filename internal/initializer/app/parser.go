@@ -1,28 +1,28 @@
-package initializer
+package app
 
 import (
 	"context"
+
+	"github.com/Daniil-Sakharov/HockeyProject/internal/initializer"
 )
 
 // ParserApp расширение App для parser процесса
 type ParserApp struct {
-	*App
+	*initializer.App
 }
 
 // NewParserApp создает parser приложение
 func NewParserApp(ctx context.Context) (*ParserApp, error) {
-	baseApp, err := New(ctx)
+	baseApp, err := initializer.New(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return &ParserApp{
-		App: baseApp,
-	}, nil
+	return &ParserApp{App: baseApp}, nil
 }
 
 // Run запускает парсинг через OrchestratorService
 func (a *ParserApp) Run(ctx context.Context) error {
-	orchestrator := a.diContainer.OrchestratorService(ctx)
+	orchestrator := a.DiContainer.OrchestratorService(ctx)
 	return orchestrator.Run(ctx)
 }

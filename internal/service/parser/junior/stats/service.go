@@ -6,8 +6,8 @@ import (
 	"github.com/Daniil-Sakharov/HockeyProject/internal/client/junior/stats"
 	"github.com/Daniil-Sakharov/HockeyProject/internal/domain/player_statistics"
 	"github.com/Daniil-Sakharov/HockeyProject/internal/service/parser"
-	"github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/stats/detailed"
-	"github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/stats/logger"
+	"github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/junior/stats/detailed"
+	"github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/junior/stats/logger"
 	"go.uber.org/zap"
 )
 
