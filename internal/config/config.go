@@ -15,6 +15,7 @@ type Config struct {
 	Postgres PostgresConfig
 	Telegram TelegramConfig
 	FHSPB    FHSPBConfig
+	Junior   JuniorConfig
 }
 
 // Load загружает конфигурацию из .env файла и переменных окружения
@@ -44,11 +45,17 @@ func Load(path ...string) error {
 		return err
 	}
 
+	juniorCfg, err := env.NewJuniorConfig()
+	if err != nil {
+		return err
+	}
+
 	appConfig = &Config{
 		Logger:   loggerCfg,
 		Postgres: postgresCfg,
 		Telegram: telegramCfg,
 		FHSPB:    fhspbCfg,
+		Junior:   juniorCfg,
 	}
 
 	return nil

@@ -49,7 +49,7 @@ func (s *orchestratorService) SavePlayers(ctx context.Context, teamURL, teamID, 
 		logger.Info(ctx, fmt.Sprintf("    [%d/%d] Processing: %s (%s)", i+1, len(playersDTO), dto.Name, dto.ProfileURL))
 
 		// Конвертируем DTO → Entity
-		p, err := convertPlayerDTO(dto, currentSeason)
+		p, err := s.convertPlayerDTO(dto, currentSeason)
 		if err != nil {
 			// Проверяем причину ошибки - пропуск по возрасту или другая ошибка
 			if strings.Contains(err.Error(), "too old") {
@@ -136,12 +136,13 @@ func (s *orchestratorService) SavePlayers(ctx context.Context, teamURL, teamID, 
 	return nil
 }
 
-// MinBirthYear минимальный год рождения игроков для парсинга
-// Игроки с годом рождения < MinBirthYear будут пропущены
-const MinBirthYear = 2008
+// MinBirthYear возвращает минимальный год рождения из конфига
+func (s *orchestratorService) MinBirthYear() int {
+	return s.config.MinBirthYear()
+}
 
 // convertPlayerDTO конвертирует DTO в domain entity
-func convertPlayerDTO(dto junior.PlayerDTO, season string) (*player.Player, error) {
+func (s *orchestratorService) convertPlayerDTO(dto junior.PlayerDTO, season string) (*player.Player, error) {
 	// Извлекаем ID из URL
 	id := player.ExtractIDFromURL(dto.ProfileURL)
 	if id == "" {
@@ -154,9 +155,10 @@ func convertPlayerDTO(dto junior.PlayerDTO, season string) (*player.Player, erro
 		return nil, fmt.Errorf("failed to parse birth date %s: %w", dto.BirthDate, err)
 	}
 
+	minYear := s.MinBirthYear()
 	// ФИЛЬТРАЦИЯ: пропускаем игроков с годом рождения < MinBirthYear
-	if birthDate.Year() < MinBirthYear {
-		return nil, fmt.Errorf("birth year %d < %d (too old)", birthDate.Year(), MinBirthYear)
+	if birthDate.Year() < minYear {
+		return nil, fmt.Errorf("birth year %d < %d (too old)", birthDate.Year(), minYear)
 	}
 
 	// Парсим рост

@@ -22,8 +22,8 @@ func (s *orchestratorService) RunJuniorParsing(ctx context.Context) error {
 	// ЭТАП 2: Глобальная дедупликация турниров по ID
 	var globalTournamentDedup sync.Map
 
-	// ЭТАП 3: Worker Pool для доменов (5 параллельно)
-	pool := NewDomainWorkerPool(ctx, s, domainWorkers, &globalTournamentDedup)
+	// ЭТАП 3: Worker Pool для доменов
+	pool := NewDomainWorkerPool(ctx, s, s.config.DomainWorkers(), &globalTournamentDedup)
 	pool.Start()
 
 	// ЭТАП 4: Добавляем домены в очередь

@@ -47,3 +47,10 @@ type FHSPBConfig interface {
 	PlayerWorkers() int
 	RequestDelay() time.Duration
 }
+
+// JuniorConfig конфигурация парсера junior.fhr.ru
+type JuniorConfig interface {
+	BaseURL() string
+	DomainWorkers() int
+	MinBirthYear() int
+}
