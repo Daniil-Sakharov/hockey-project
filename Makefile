@@ -11,13 +11,10 @@ COMPOSE_FILE = docker-compose.yml
 .PHONY: help local-up local-migrate local-bot local-parser local-down local-logs
 .PHONY: logs logs-tail status stats restart stop start
 .PHONY: run-junior-parser run-junior-stats run-fhspb-parser run-fhspb-stats
-.PHONY: run-parser run-stats run-fhspb
 .PHONY: run-junior-parser-bg run-junior-stats-bg run-fhspb-parser-bg run-fhspb-stats-bg
-.PHONY: run-all-junior-bg run-all-fhspb-bg run-all-parsers-bg
-.PHONY: run-parser-bg run-stats-bg run-all-bg stop-parsers
+.PHONY: run-all-parsers-bg stop-parsers
 .PHONY: logs-junior-parser-file logs-junior-stats-file logs-fhspb-parser-file logs-fhspb-stats-file
-.PHONY: logs-junior-parser logs-junior-stats logs-fhspb-parser logs-fhspb-stats
-.PHONY: logs-parser logs-stats logs-parser-file logs-stats-file logs-fhspb-file logs-fhspb
+.PHONY: logs-list logs-clean logs-size
 .PHONY: db-tunnel db-shell deploy deploy-manual
 .PHONY: deploy-monitoring logs-monitoring stop-monitoring
 
@@ -29,9 +26,10 @@ help: ## Показать все доступные команды
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 	@echo ""
 	@echo "📖 Примеры использования:"
-	@echo "  make status          # Проверить статус контейнеров"
-	@echo "  make run-junior-parser-bg   # Запустить Junior парсер в фоне"
-	@echo "  make logs-junior-parser     # Посмотреть логи парсера"
+	@echo "  make status                    # Проверить статус контейнеров"
+	@echo "  make run-junior-parser-bg      # Запустить Junior парсер в фоне"
+	@echo "  make logs-junior-parser-file   # Посмотреть логи парсера из файла"
+	@echo "  make logs                      # Логи бота в реальном времени"
 
 # === ЛОКАЛЬНАЯ РАЗРАБОТКА ===
 
@@ -101,11 +99,6 @@ run-fhspb-stats: ## Запустить FHSPB Stats парсер (статист�
 	@echo "📊 Запуск FHSPB Stats парсера..."
 	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm fhspb-stats-parser"
 
-# Алиасы для обратной совместимости
-run-parser: run-junior-parser ## Алиас для run-junior-parser
-run-stats: run-junior-stats ## Алиас для run-junior-stats
-run-fhspb: run-fhspb-parser ## Алиас для run-fhspb-parser
-
 # === ФОНОВЫЕ ПАРСЕРЫ (ПРОДАКШН) ===
 
 run-junior-parser-bg: ## Запустить Junior парсер в фоне на сервере
@@ -128,25 +121,10 @@ run-fhspb-stats-bg: ## Запустить FHSPB Stats парсер в фоне �
 	ssh $(SERVER) "cd $(REMOTE_DIR) && mkdir -p logs && nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm fhspb-stats-parser > logs/fhspb-stats.log 2>&1 &"
 	@echo "✅ FHSPB Stats парсер запущен в фоне. Логи: make logs-fhspb-stats-file"
 
-run-all-junior-bg: ## Запустить все Junior парсеры в фоне на сервере
-	@echo "🚀 Запуск всех Junior парсеров в фоне на сервере..."
-	ssh $(SERVER) "cd $(REMOTE_DIR) && mkdir -p logs && nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm junior-parser > logs/junior-parser.log 2>&1 & nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm junior-stats-parser > logs/junior-stats.log 2>&1 &"
-	@echo "✅ Все Junior парсеры запущены в фоне"
-
-run-all-fhspb-bg: ## Запустить все FHSPB парсеры в фоне на сервере
-	@echo "🏒 Запуск всех FHSPB парсеров в фоне на сервере..."
-	ssh $(SERVER) "cd $(REMOTE_DIR) && mkdir -p logs && nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm fhspb-parser > logs/fhspb-parser.log 2>&1 & nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm fhspb-stats-parser > logs/fhspb-stats.log 2>&1 &"
-	@echo "✅ Все FHSPB парсеры запущены в фоне"
-
 run-all-parsers-bg: ## Запустить ВСЕ парсеры в фоне на сервере
 	@echo "🚀 Запуск ВСЕХ парсеров в фоне на сервере..."
 	ssh $(SERVER) "cd $(REMOTE_DIR) && mkdir -p logs && nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm junior-parser > logs/junior-parser.log 2>&1 & nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm junior-stats-parser > logs/junior-stats.log 2>&1 & nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm fhspb-parser > logs/fhspb-parser.log 2>&1 & nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm fhspb-stats-parser > logs/fhspb-stats.log 2>&1 &"
 	@echo "✅ Все парсеры запущены в фоне"
-
-# Алиасы для обратной совместимости
-run-parser-bg: run-junior-parser-bg ## Алиас для run-junior-parser-bg
-run-stats-bg: run-junior-stats-bg ## Алиас для run-junior-stats-bg
-run-all-bg: run-all-parsers-bg ## Алиас для run-all-parsers-bg
 
 stop-parsers: ## Остановить все запущенные парсеры
 	@echo "🛑 Остановка всех парсеров..."
@@ -179,28 +157,6 @@ logs-clean: ## Очистить все файлы логов на сервере
 logs-size: ## Показать размер файлов логов
 	@echo "📊 Размер файлов логов:"
 	ssh $(SERVER) "du -h $(REMOTE_DIR)/logs/*.log 2>/dev/null || echo 'Нет файлов логов'"
-
-# === ЛОГИ DOCKER КОНТЕЙНЕРОВ ===
-
-logs-junior-parser: ## Показать логи Junior парсера из Docker
-	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) logs -f junior-parser"
-
-logs-junior-stats: ## Показать логи Junior Stats парсера из Docker
-	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) logs -f junior-stats-parser"
-
-logs-fhspb-parser: ## Показать логи FHSPB парсера из Docker
-	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) logs -f fhspb-parser"
-
-logs-fhspb-stats: ## Показать логи FHSPB Stats парсера из Docker
-	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) logs -f fhspb-stats-parser"
-
-# Алиасы для обратной совместимости
-logs-parser: logs-junior-parser ## Алиас для logs-junior-parser
-logs-stats: logs-junior-stats ## Алиас для logs-junior-stats
-logs-parser-file: logs-junior-parser-file ## Алиас для logs-junior-parser-file
-logs-stats-file: logs-junior-stats-file ## Алиас для logs-junior-stats-file
-logs-fhspb-file: logs-fhspb-parser-file ## Алиас для logs-fhspb-parser-file
-logs-fhspb: logs-fhspb-parser ## Алиас для logs-fhspb-parser
 
 # === БАЗА ДАННЫХ ===
 

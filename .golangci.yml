@@ -53,6 +53,7 @@ issues:
   max-same-issues: 10
   exclude-dirs:
     - scripts
+    - internal/initializer/app  # Старые app файлы, заменены на новые DI контейнеры
   exclude-rules:
     - linters:
         - errcheck
