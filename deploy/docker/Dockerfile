@@ -29,7 +29,9 @@ COPY --from=builder /bin/parser /app/parser
 COPY --from=builder /bin/stats_parser /app/stats_parser
 COPY --from=builder /bin/fhspb_parser /app/fhspb_parser
 COPY --from=builder /bin/fhspb_stats_parser /app/fhspb_stats_parser
+COPY --from=builder /app/migrations /app/migrations
 
 ENV TZ=Europe/Moscow
+WORKDIR /app
 
 CMD ["/app/bot"]
