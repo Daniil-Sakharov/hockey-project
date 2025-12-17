@@ -1,0 +1,133 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hockey-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - /opt/hockey-bot/data/postgres:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bot:
+    image: ghcr.io/${GITHUB_REPOSITORY}:latest
+    container_name: hockey-bot
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_SSL_MODE: disable
+      APP_ENV: ${APP_ENV:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    command: ["/app/bot"]
+
+  migrate:
+    image: ghcr.io/${GITHUB_REPOSITORY}:latest
+    container_name: hockey-migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_SSL_MODE: disable
+    command: ["/app/migrate"]
+    restart: "no"
+
+  parser:
+    image: ghcr.io/${GITHUB_REPOSITORY}:latest
+    container_name: hockey-parser
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_SSL_MODE: disable
+      FHR_URL: ${FHR_URL:-https://junior.fhr.ru}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    command: ["/app/parser"]
+    restart: "no"
+    profiles: ["parser"]
+
+  stats-parser:
+    image: ghcr.io/${GITHUB_REPOSITORY}:latest
+    container_name: hockey-stats-parser
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_SSL_MODE: disable
+      FHR_URL: ${FHR_URL:-https://junior.fhr.ru}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    command: ["/app/stats_parser"]
+    restart: "no"
+    profiles: ["parser"]
+
+  fhspb-parser:
+    image: ghcr.io/${GITHUB_REPOSITORY}:latest
+    container_name: hockey-fhspb-parser
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_SSL_MODE: disable
+      FHSPB_MAX_BIRTH_YEAR: ${FHSPB_MAX_BIRTH_YEAR:-2008}
+      FHSPB_TOURNAMENT_WORKERS: ${FHSPB_TOURNAMENT_WORKERS:-2}
+      FHSPB_TEAM_WORKERS: ${FHSPB_TEAM_WORKERS:-3}
+      FHSPB_PLAYER_WORKERS: ${FHSPB_PLAYER_WORKERS:-3}
+      FHSPB_REQUEST_DELAY: ${FHSPB_REQUEST_DELAY:-200ms}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    command: ["/app/fhspb_parser"]
+    restart: "no"
+    profiles: ["parser"]
+
+  fhspb-stats-parser:
+    image: ghcr.io/${GITHUB_REPOSITORY}:latest
+    container_name: hockey-fhspb-stats
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_SSL_MODE: disable
+      FHSPB_MAX_BIRTH_YEAR: ${FHSPB_MAX_BIRTH_YEAR:-2008}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    command: ["/app/fhspb_stats_parser"]
+    restart: "no"
+    profiles: ["parser"]
