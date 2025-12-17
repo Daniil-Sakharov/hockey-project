@@ -4,6 +4,7 @@ import (
 	"context"
 
 	cb "github.com/Daniil-Sakharov/HockeyProject/internal/adapter/telegram/callback"
+	"github.com/Daniil-Sakharov/HockeyProject/pkg/logger"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go.uber.org/zap"
 )
@@ -42,38 +43,38 @@ func Handle(r Router, ctx context.Context, bot *tgbotapi.BotAPI, query *tgbotapi
 
 	filterType := parts[1]
 
-	// Создаем zap logger для обработки callback
-	logger, _ := zap.NewProduction()
-	defer func() { _ = logger.Sync() }()
+	logger.Info(ctx, "🔍 Handling filter callback",
+		zap.String("filter_type", filterType),
+		zap.Int64("user_id", query.From.ID))
 
 	switch filterType {
 	case cb.FilterBack:
 		// Возврат к меню фильтров
 		if err := r.FilterHandler().HandleFilterMenu(ctx, bot, query); err != nil {
-			logger.Error("Error handling filter menu", zap.Error(err))
+			logger.Error(ctx, "❌ Error handling filter menu", zap.Error(err))
 		}
 	case cb.FilterReset:
 		if err := r.FilterHandler().HandleFilterReset(ctx, bot, query); err != nil {
-			logger.Error("Error handling filter reset", zap.Error(err))
+			logger.Error(ctx, "❌ Error handling filter reset", zap.Error(err))
 		}
 	case cb.FilterApply:
 		// Перенаправляем на search handler
 		if err := r.SearchHandler().HandleSearch(ctx, bot, query); err != nil {
-			logger.Error("Error handling search", zap.Error(err))
+			logger.Error(ctx, "❌ Error handling search", zap.Error(err))
 		}
 	case cb.FilterYear:
-		HandleYear(r, ctx, bot, query, parts, logger)
+		HandleYear(r, ctx, bot, query, parts)
 	case cb.FilterPosition:
-		HandlePosition(r, ctx, bot, query, parts, logger)
+		HandlePosition(r, ctx, bot, query, parts)
 	case cb.FilterHeight:
-		HandleHeight(r, ctx, bot, query, parts, logger)
+		HandleHeight(r, ctx, bot, query, parts)
 	case cb.FilterWeight:
-		HandleWeight(r, ctx, bot, query, parts, logger)
+		HandleWeight(r, ctx, bot, query, parts)
 	case cb.FilterRegion:
-		HandleRegion(r, ctx, bot, query, parts, logger)
+		HandleRegion(r, ctx, bot, query, parts)
 	case cb.FilterFio:
-		HandleFio(r, ctx, bot, query, parts, logger)
+		HandleFio(r, ctx, bot, query, parts)
 	default:
-		logger.Warn("Unknown filter type", zap.String("filter_type", filterType))
+		logger.Warn(ctx, "❓ Unknown filter type", zap.String("filter_type", filterType))
 	}
 }

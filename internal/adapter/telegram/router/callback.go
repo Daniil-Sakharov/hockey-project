@@ -2,11 +2,11 @@ package router
 
 import (
 	"context"
-	"log"
 	"strings"
 
 	cb "github.com/Daniil-Sakharov/HockeyProject/internal/adapter/telegram/callback"
 	"github.com/Daniil-Sakharov/HockeyProject/internal/adapter/telegram/router/callback"
+	"github.com/Daniil-Sakharov/HockeyProject/pkg/logger"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go.uber.org/zap"
 )
@@ -20,16 +20,16 @@ func (r *Router) handleCallback(ctx context.Context, bot *tgbotapi.BotAPI, query
 
 	action := parts[0]
 
+	logger.Info(ctx, "🔘 Routing callback",
+		zap.String("action", action),
+		zap.Int64("user_id", query.From.ID))
+
 	// Отправляем ответ на callback (убирает "часики" загрузки)
 	callbackResp := tgbotapi.NewCallback(query.ID, "")
 	if _, err := bot.Request(callbackResp); err != nil {
-		log.Printf("Error answering callback: %v", err)
+		logger.Error(ctx, "❌ Error answering callback", zap.Error(err))
 		return
 	}
-
-	// Создаем logger для callback handlers
-	logger, _ := zap.NewProduction()
-	defer func() { _ = logger.Sync() }()
 
 	// Маршрутизация по типу действия
 	switch action {
@@ -40,10 +40,10 @@ func (r *Router) handleCallback(ctx context.Context, bot *tgbotapi.BotAPI, query
 	case cb.ActionSearch:
 		callback.HandleSearch(r, ctx, bot, query, parts)
 	case cb.ActionPlayer:
-		callback.HandleProfile(r, ctx, bot, query, parts, logger)
+		callback.HandleProfile(r, ctx, bot, query, parts)
 	case cb.ActionReport:
-		callback.HandleReport(r, ctx, bot, query, logger)
+		callback.HandleReport(r, ctx, bot, query)
 	default:
-		log.Printf("Unknown callback action: %s", action)
+		logger.Warn(ctx, "❓ Unknown callback action", zap.String("action", action))
 	}
 }

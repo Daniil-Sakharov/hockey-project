@@ -7,6 +7,20 @@ COMPOSE_FILE = docker-compose.yml
 
 .DEFAULT_GOAL := help
 
+# Команды, которые не создают файлы
+.PHONY: help local-up local-migrate local-bot local-parser local-down local-logs
+.PHONY: logs logs-tail status stats restart stop start
+.PHONY: run-junior-parser run-junior-stats run-fhspb-parser run-fhspb-stats
+.PHONY: run-parser run-stats run-fhspb
+.PHONY: run-junior-parser-bg run-junior-stats-bg run-fhspb-parser-bg run-fhspb-stats-bg
+.PHONY: run-all-junior-bg run-all-fhspb-bg run-all-parsers-bg
+.PHONY: run-parser-bg run-stats-bg run-all-bg stop-parsers
+.PHONY: logs-junior-parser-file logs-junior-stats-file logs-fhspb-parser-file logs-fhspb-stats-file
+.PHONY: logs-junior-parser logs-junior-stats logs-fhspb-parser logs-fhspb-stats
+.PHONY: logs-parser logs-stats logs-parser-file logs-stats-file logs-fhspb-file logs-fhspb
+.PHONY: db-tunnel db-shell deploy deploy-manual
+.PHONY: deploy-monitoring logs-monitoring stop-monitoring
+
 # === ПОМОЩЬ ===
 help: ## Показать все доступные команды
 	@echo "🏒 Hockey Bot - Управление"
@@ -94,44 +108,39 @@ run-fhspb: run-fhspb-parser ## Алиас для run-fhspb-parser
 
 # === ФОНОВЫЕ ПАРСЕРЫ (ПРОДАКШН) ===
 
-run-junior-parser-bg: ## Запустить Junior парсер в фоне
-	@echo "🏒 Запуск Junior парсера в фоне..."
-	nohup make run-junior-parser > junior-parser.log 2>&1 &
-	@echo "✅ Junior парсер запущен в фоне. Логи: tail -f junior-parser.log"
+run-junior-parser-bg: ## Запустить Junior парсер в фоне на сервере
+	@echo "🏒 Запуск Junior парсера в фоне на сервере..."
+	ssh $(SERVER) "cd $(REMOTE_DIR) && mkdir -p logs && nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm junior-parser > logs/junior-parser.log 2>&1 &"
+	@echo "✅ Junior парсер запущен в фоне. Логи: make logs-junior-parser-file"
 
-run-junior-stats-bg: ## Запустить Junior Stats парсер в фоне
-	@echo "📊 Запуск Junior Stats парсера в фоне..."
-	nohup make run-junior-stats > junior-stats.log 2>&1 &
-	@echo "✅ Junior Stats парсер запущен в фоне. Логи: tail -f junior-stats.log"
+run-junior-stats-bg: ## Запустить Junior Stats парсер в фоне на сервере
+	@echo "📊 Запуск Junior Stats парсера в фоне на сервере..."
+	ssh $(SERVER) "cd $(REMOTE_DIR) && mkdir -p logs && nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm junior-stats-parser > logs/junior-stats.log 2>&1 &"
+	@echo "✅ Junior Stats парсер запущен в фоне. Логи: make logs-junior-stats-file"
 
-run-fhspb-parser-bg: ## Запустить FHSPB парсер в фоне
-	@echo "🏒 Запуск FHSPB парсера в фоне..."
-	nohup make run-fhspb-parser > fhspb-parser.log 2>&1 &
-	@echo "✅ FHSPB парсер запущен в фоне. Логи: tail -f fhspb-parser.log"
+run-fhspb-parser-bg: ## Запустить FHSPB парсер в фоне на сервере
+	@echo "🏒 Запуск FHSPB парсера в фоне на сервере..."
+	ssh $(SERVER) "cd $(REMOTE_DIR) && mkdir -p logs && nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm fhspb-parser > logs/fhspb-parser.log 2>&1 &"
+	@echo "✅ FHSPB парсер запущен в фоне. Логи: make logs-fhspb-parser-file"
 
-run-fhspb-stats-bg: ## Запустить FHSPB Stats парсер в фоне
-	@echo "📊 Запуск FHSPB Stats парсера в фоне..."
-	nohup make run-fhspb-stats > fhspb-stats.log 2>&1 &
-	@echo "✅ FHSPB Stats парсер запущен в фоне. Логи: tail -f fhspb-stats.log"
+run-fhspb-stats-bg: ## Запустить FHSPB Stats парсер в фоне на сервере
+	@echo "📊 Запуск FHSPB Stats парсера в фоне на сервере..."
+	ssh $(SERVER) "cd $(REMOTE_DIR) && mkdir -p logs && nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm fhspb-stats-parser > logs/fhspb-stats.log 2>&1 &"
+	@echo "✅ FHSPB Stats парсер запущен в фоне. Логи: make logs-fhspb-stats-file"
 
-run-all-junior-bg: ## Запустить все Junior парсеры в фоне
-	@echo "🚀 Запуск всех Junior парсеров в фоне..."
-	nohup make run-junior-parser > junior-parser.log 2>&1 &
-	nohup make run-junior-stats > junior-stats.log 2>&1 &
+run-all-junior-bg: ## Запустить все Junior парсеры в фоне на сервере
+	@echo "🚀 Запуск всех Junior парсеров в фоне на сервере..."
+	ssh $(SERVER) "cd $(REMOTE_DIR) && mkdir -p logs && nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm junior-parser > logs/junior-parser.log 2>&1 & nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm junior-stats-parser > logs/junior-stats.log 2>&1 &"
 	@echo "✅ Все Junior парсеры запущены в фоне"
 
-run-all-fhspb-bg: ## Запустить все FHSPB парсеры в фоне
-	@echo "🏒 Запуск всех FHSPB парсеров в фоне..."
-	nohup make run-fhspb-parser > fhspb-parser.log 2>&1 &
-	nohup make run-fhspb-stats > fhspb-stats.log 2>&1 &
+run-all-fhspb-bg: ## Запустить все FHSPB парсеры в фоне на сервере
+	@echo "🏒 Запуск всех FHSPB парсеров в фоне на сервере..."
+	ssh $(SERVER) "cd $(REMOTE_DIR) && mkdir -p logs && nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm fhspb-parser > logs/fhspb-parser.log 2>&1 & nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm fhspb-stats-parser > logs/fhspb-stats.log 2>&1 &"
 	@echo "✅ Все FHSPB парсеры запущены в фоне"
 
-run-all-parsers-bg: ## Запустить ВСЕ парсеры в фоне
-	@echo "🚀 Запуск ВСЕХ парсеров в фоне..."
-	nohup make run-junior-parser > junior-parser.log 2>&1 &
-	nohup make run-junior-stats > junior-stats.log 2>&1 &
-	nohup make run-fhspb-parser > fhspb-parser.log 2>&1 &
-	nohup make run-fhspb-stats > fhspb-stats.log 2>&1 &
+run-all-parsers-bg: ## Запустить ВСЕ парсеры в фоне на сервере
+	@echo "🚀 Запуск ВСЕХ парсеров в фоне на сервере..."
+	ssh $(SERVER) "cd $(REMOTE_DIR) && mkdir -p logs && nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm junior-parser > logs/junior-parser.log 2>&1 & nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm junior-stats-parser > logs/junior-stats.log 2>&1 & nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm fhspb-parser > logs/fhspb-parser.log 2>&1 & nohup docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm fhspb-stats-parser > logs/fhspb-stats.log 2>&1 &"
 	@echo "✅ Все парсеры запущены в фоне"
 
 # Алиасы для обратной совместимости
@@ -143,19 +152,33 @@ stop-parsers: ## Остановить все запущенные парсеры
 	@echo "🛑 Остановка всех парсеров..."
 	ssh $(SERVER) "docker ps | grep parser | awk '{print \$$1}' | xargs -r docker stop"
 
-# === ЛОГИ ЛОКАЛЬНЫХ ФАЙЛОВ ===
+# === ЛОГИ ФАЙЛОВ С СЕРВЕРА ===
 
-logs-junior-parser-file: ## Показать логи Junior парсера из локального файла
-	tail -f junior-parser.log
+logs-junior-parser-file: ## Показать логи Junior парсера из файла на сервере
+	ssh $(SERVER) "tail -f $(REMOTE_DIR)/logs/junior-parser.log"
 
-logs-junior-stats-file: ## Показать логи Junior Stats парсера из локального файла
-	tail -f junior-stats.log
+logs-junior-stats-file: ## Показать логи Junior Stats парсера из файла на сервере
+	ssh $(SERVER) "tail -f $(REMOTE_DIR)/logs/junior-stats.log"
 
-logs-fhspb-parser-file: ## Показать логи FHSPB парсера из локального файла
-	tail -f fhspb-parser.log
+logs-fhspb-parser-file: ## Показать логи FHSPB парсера из файла на сервере
+	ssh $(SERVER) "tail -f $(REMOTE_DIR)/logs/fhspb-parser.log"
 
-logs-fhspb-stats-file: ## Показать логи FHSPB Stats парсера из локального файла
-	tail -f fhspb-stats.log
+logs-fhspb-stats-file: ## Показать логи FHSPB Stats парсера из файла на сервере
+	ssh $(SERVER) "tail -f $(REMOTE_DIR)/logs/fhspb-stats.log"
+
+# === УПРАВЛЕНИЕ ЛОГАМИ ===
+
+logs-list: ## Показать список всех файлов логов на сервере
+	@echo "📋 Файлы логов на сервере:"
+	ssh $(SERVER) "ls -la $(REMOTE_DIR)/logs/ 2>/dev/null || echo 'Папка logs не существует'"
+
+logs-clean: ## Очистить все файлы логов на сервере
+	@echo "🧹 Очистка логов на сервере..."
+	ssh $(SERVER) "rm -f $(REMOTE_DIR)/logs/*.log && echo '✅ Логи очищены'"
+
+logs-size: ## Показать размер файлов логов
+	@echo "📊 Размер файлов логов:"
+	ssh $(SERVER) "du -h $(REMOTE_DIR)/logs/*.log 2>/dev/null || echo 'Нет файлов логов'"
 
 # === ЛОГИ DOCKER КОНТЕЙНЕРОВ ===
 
