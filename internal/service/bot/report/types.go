@@ -9,9 +9,9 @@ type FullPlayerReport struct {
 	TotalStats TotalStatistics
 
 	// Данные для графиков
-	GoalsByType   GoalsBreakdown   // Распределение голов (ESG, PPG, SHG)
-	GoalsByPeriod PeriodGoals      // Голы по периодам
-	SeasonStats   []SeasonSummary  // Статистика по сезонам (для линейного графика)
+	GoalsByType   GoalsBreakdown  // Распределение голов (ESG, PPG, SHG)
+	GoalsByPeriod PeriodGoals     // Голы по периодам
+	SeasonStats   []SeasonSummary // Статистика по сезонам (для линейного графика)
 
 	// Полная история турниров (ВСЕ турниры)
 	Tournaments []TournamentFullStats
@@ -45,9 +45,9 @@ type TotalStatistics struct {
 	TotalPenalties   int
 
 	// Средние показатели
-	GoalsPerGame    float64
-	AssistsPerGame  float64
-	PointsPerGame   float64
+	GoalsPerGame     float64
+	AssistsPerGame   float64
+	PointsPerGame    float64
 	PenaltiesPerGame float64
 
 	// Детальная статистика голов
@@ -120,7 +120,7 @@ type TournamentFullStats struct {
 	GoalsOvertime     int
 
 	// Достижения
-	HatTricks       int
+	HatTricks        int
 	GameWinningGoals int
 
 	// Средние показатели

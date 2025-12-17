@@ -35,7 +35,7 @@ func (s *Service) getAllTimeStats(ctx context.Context, playerID string) (*domain
 }
 
 // getSeasonStats преобразует статистику сезона в доменную модель
-func (s *Service) getSeasonStats(ctx context.Context, playerID string, season string) (*domainPlayer.SeasonStats, error) {
+func (s *Service) getSeasonStats(ctx context.Context, playerID, season string) (*domainPlayer.SeasonStats, error) {
 	stats, err := s.statsRepo.GetSeasonStats(ctx, playerID, season)
 	if err != nil {
 		return nil, err

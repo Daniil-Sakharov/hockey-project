@@ -7,10 +7,10 @@ import (
 
 // PieChartOptions настройки круговой диаграммы
 type PieChartOptions struct {
-	Size       Size
-	Colors     []string
-	ShowLegend bool
-	DonutMode  bool
+	Size        Size
+	Colors      []string
+	ShowLegend  bool
+	DonutMode   bool
 	InnerRadius float64
 }
 
@@ -49,12 +49,12 @@ func GeneratePieChart(labels []string, values []int, opts *PieChartOptions) stri
 	if opts.ShowLegend {
 		legendWidth = 100
 	}
-	
+
 	chartAreaWidth := width - legendWidth
 	cx := float64(chartAreaWidth) / 2
 	cy := float64(height) / 2
 	radius := min(cx, cy) - 10
-	
+
 	innerRadius := 0.0
 	if opts.DonutMode {
 		innerRadius = radius * opts.InnerRadius
@@ -80,7 +80,7 @@ func GeneratePieChart(labels []string, values []int, opts *PieChartOptions) stri
 		sweepAngle := percentage * 360
 
 		color := opts.Colors[i%len(opts.Colors)]
-		
+
 		if opts.DonutMode {
 			sb.WriteString(generateDonutSegment(cx, cy, radius, innerRadius, startAngle, startAngle+sweepAngle, color))
 		} else {

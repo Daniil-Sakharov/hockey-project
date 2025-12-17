@@ -70,21 +70,21 @@ tasks:
     cmds:
       - |
         echo "🔍 Запускаем golangci-lint..."
-        {{.GOLANGCI_LINT}} run ./... --config=.golangci.yml
+        {{.GOLANGCI_LINT}} run ./cmd/... ./internal/... ./pkg/... --config=.golangci.yml
 
   test:
     desc: "Запускает все тесты проекта"
     cmds:
       - |
         echo "🧪 Запускаем тесты..."
-        go test -v -race -cover ./...
+        go test -v -race -cover ./cmd/... ./internal/... ./pkg/...
 
   test:coverage:
     desc: "Запускает тесты с детальным покрытием"
     cmds:
       - |
         echo "🧪 Запускаем тесты с покрытием..."
-        go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+        go test -v -race -coverprofile=coverage.out -covermode=atomic ./cmd/... ./internal/... ./pkg/...
         go tool cover -html=coverage.out -o coverage.html
         echo "📊 Отчет сохранен в coverage.html"
 

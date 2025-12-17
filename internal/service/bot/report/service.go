@@ -2,10 +2,9 @@ package report
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"html/template"
-
-	"context"
 
 	domainPlayer "github.com/Daniil-Sakharov/HockeyProject/internal/domain/player"
 	domainPlayerStats "github.com/Daniil-Sakharov/HockeyProject/internal/domain/player_statistics"
@@ -105,7 +104,7 @@ func (s *Service) generateSVGCharts(report *FullPlayerReport) SVGCharts {
 			report.GoalsByType.PowerPlay,
 			report.GoalsByType.ShortHanded,
 		}
-		charts.GoalsTypePie = template.HTML(svg.GeneratePieChart(labels, values, nil))
+		charts.GoalsTypePie = template.HTML(svg.GeneratePieChart(labels, values, nil)) //nolint:gosec // SVG генерируется из доверенных данных
 	}
 
 	// Столбчатая диаграмма - голы по периодам
@@ -116,7 +115,7 @@ func (s *Service) generateSVGCharts(report *FullPlayerReport) SVGCharts {
 		report.GoalsByPeriod.Period3,
 		report.GoalsByPeriod.Overtime,
 	}
-	charts.PeriodBar = template.HTML(svg.GenerateBarChart(periodLabels, periodValues, nil))
+	charts.PeriodBar = template.HTML(svg.GenerateBarChart(periodLabels, periodValues, nil)) //nolint:gosec // SVG генерируется из доверенных данных
 
 	// Линейный график - прогресс по сезонам
 	if report.HasMultipleSeasons && len(report.SeasonStats) > 1 {
@@ -133,7 +132,7 @@ func (s *Service) generateSVGCharts(report *FullPlayerReport) SVGCharts {
 			{Label: "Очки", Values: pointsValues, Color: svg.Colors.Primary},
 			{Label: "Голы", Values: goalsValues, Color: svg.Colors.Accent},
 		}
-		charts.ProgressLine = template.HTML(svg.GenerateLineChart(seasonLabels, datasets, nil))
+		charts.ProgressLine = template.HTML(svg.GenerateLineChart(seasonLabels, datasets, nil)) //nolint:gosec // SVG генерируется из доверенных данных
 	}
 
 	// Radar диаграмма - профиль игрока
@@ -145,7 +144,7 @@ func (s *Service) generateSVGCharts(report *FullPlayerReport) SVGCharts {
 		float64(report.TotalStats.TotalHatTricks) * 10, // Масштабируем для наглядности
 		float64(report.TotalStats.TotalWinningGoals),
 	}
-	charts.ProfileRadar = template.HTML(svg.GenerateRadarChart(radarLabels, radarValues, nil))
+	charts.ProfileRadar = template.HTML(svg.GenerateRadarChart(radarLabels, radarValues, nil)) //nolint:gosec // SVG генерируется из доверенных данных
 
 	return charts
 }

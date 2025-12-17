@@ -25,7 +25,7 @@ func (s *orchestratorService) processTournaments(
 
 	// Для КАЖДОГО турнира (пока последовательно)
 	for idx, t := range tournaments {
-		logger.Info(ctx, fmt.Sprintf("  🏆 Tournament %d/%d: %s (ID: %s, URL: %s)", 
+		logger.Info(ctx, fmt.Sprintf("  🏆 Tournament %d/%d: %s (ID: %s, URL: %s)",
 			idx+1, len(tournaments), t.Name, t.ID, t.URL))
 
 		// Парсим команды
@@ -95,7 +95,7 @@ func (s *orchestratorService) processTournaments(
 		totalErrors += teamErrors
 
 		logger.Info(ctx, fmt.Sprintf("    📊 Tournament result: %d teams processed, %d errors", teamProcessed, teamErrors))
-		logger.Info(ctx, fmt.Sprintf("    ✅ Tournament COMPLETED"))
+		logger.Info(ctx, "    ✅ Tournament COMPLETED")
 	}
 
 	logger.Info(ctx, "")

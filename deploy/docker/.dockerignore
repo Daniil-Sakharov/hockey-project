@@ -1,0 +1,13 @@
+.git
+.gitignore
+.env
+.env.*
+*.md
+docs/
+bin/
+.idea/
+.vscode/
+*.log
+tmp/
+.DS_Store
+deploy/

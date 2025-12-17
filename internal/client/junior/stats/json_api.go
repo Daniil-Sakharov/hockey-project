@@ -34,7 +34,7 @@ func FetchStatistics(
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch statistics: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
@@ -61,19 +61,19 @@ func buildAPIURL(domain, tournamentID, yearID, groupID string) string {
 	params.Set("key", "scorers")
 	params.Set("comp", tournamentID)
 	params.Set("year", yearID)
-	
+
 	// КРИТИЧНО: "Общая статистика" = БЕЗ параметра group!
 	// API НЕ поддерживает group=all, он возвращает 0 записей
 	// Правильно: для "Общей статистики" вообще НЕ передавать параметр group
 	if groupID != "all" && groupID != "" {
 		params.Set("group", groupID)
 	}
-	
+
 	params.Set("season", "2025-2026")
-	
+
 	// КРИТИЧНО: Пагинация для получения ВСЕХ записей
 	params.Set("start", "0")
-	params.Set("length", "9999")  // Максимальное количество записей
+	params.Set("length", "9999") // Максимальное количество записей
 
 	return fmt.Sprintf("%s?%s", baseURL, params.Encode())
 }

@@ -346,7 +346,7 @@ func (dc *DataCollector) PrepareChartData(report *FullPlayerReport) ChartData {
 
 	// Radar chart - нормализуем значения для наглядности
 	data.RadarLabels = []string{"Голы", "Пасы", "+/-", "Хет-трики", "Поб. голы"}
-	
+
 	// Нормализация для radar chart (приводим к шкале 0-100)
 	maxGoals := float64(report.TotalStats.TotalGoals)
 	maxAssists := float64(report.TotalStats.TotalAssists)

@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 	"sync"
-	"time"
 
 	"github.com/Daniil-Sakharov/HockeyProject/internal/client/fhspb/dto"
-	"github.com/Daniil-Sakharov/HockeyProject/internal/domain/tournament"
+	fhspbRepo "github.com/Daniil-Sakharov/HockeyProject/internal/repository/postgres/fhspb"
 	"github.com/Daniil-Sakharov/HockeyProject/pkg/logger"
 	"go.uber.org/zap"
 )
@@ -20,13 +20,20 @@ func (o *Orchestrator) processTournamentSafe(ctx context.Context, t dto.Tourname
 		zap.String("name", t.Name),
 	)
 
-	if err := o.saveTournament(ctx, t); err != nil {
+	tournamentID, err := o.saveTournament(ctx, t)
+	if err != nil {
 		logger.Debug(ctx, "⚠️ Save tournament failed", zap.Error(err))
+		return 0, 0
 	}
 
-	teams, players, err := o.processTournament(ctx, t)
+	teams, players, err := o.processTournament(ctx, t, tournamentID)
 	if err != nil {
-		logger.Error(ctx, "❌ Tournament failed", zap.Int("id", t.ID), zap.Error(err))
+		// 404 - турнир удалён или недоступен, это нормально
+		if strings.Contains(err.Error(), "404") {
+			logger.Warn(ctx, "⚠️ Tournament not found", zap.Int("id", t.ID), zap.Error(err))
+		} else {
+			logger.Error(ctx, "❌ Tournament failed", zap.Int("id", t.ID), zap.Error(err))
+		}
 		return 0, 0
 	}
 
@@ -39,21 +46,25 @@ func (o *Orchestrator) processTournamentSafe(ctx context.Context, t dto.Tourname
 	return teams, players
 }
 
-func (o *Orchestrator) saveTournament(ctx context.Context, t dto.TournamentDTO) error {
-	return o.tournamentRepo.Create(ctx, &tournament.Tournament{
-		ID:        strconv.Itoa(t.ID),
-		URL:       fmt.Sprintf("fhspb://tournament/%d", t.ID),
-		Name:      t.Name,
-		Domain:    "fhspb.ru",
-		Season:    t.Season,
-		StartDate: t.StartDate,
-		EndDate:   t.EndDate,
-		IsEnded:   t.IsEnded,
-		CreatedAt: time.Now(),
-	})
+func (o *Orchestrator) saveTournament(ctx context.Context, t dto.TournamentDTO) (string, error) {
+	tournament := &fhspbRepo.Tournament{
+		ExternalID: strconv.Itoa(t.ID),
+		Name:       t.Name,
+		Season:     &t.Season,
+		StartDate:  t.StartDate,
+		EndDate:    t.EndDate,
+		IsEnded:    t.IsEnded,
+	}
+	if t.BirthYear > 0 {
+		tournament.BirthYear = &t.BirthYear
+	}
+	if t.GroupName != "" {
+		tournament.GroupName = &t.GroupName
+	}
+	return o.tournamentRepo.Upsert(ctx, tournament)
 }
 
-func (o *Orchestrator) processTournament(ctx context.Context, t dto.TournamentDTO) (int, int, error) {
+func (o *Orchestrator) processTournament(ctx context.Context, t dto.TournamentDTO, tournamentID string) (int, int, error) {
 	teams, err := o.client.GetTeamsByTournament(t.ID)
 	if err != nil {
 		return 0, 0, fmt.Errorf("get teams: %w", err)
@@ -61,7 +72,6 @@ func (o *Orchestrator) processTournament(ctx context.Context, t dto.TournamentDT
 
 	logger.Info(ctx, "👥 Teams found", zap.Int("count", len(teams)))
 
-	// Воркер пул для команд
 	var (
 		totalPlayers int
 		mu           sync.Mutex
@@ -75,6 +85,7 @@ func (o *Orchestrator) processTournament(ctx context.Context, t dto.TournamentDT
 
 	var wg sync.WaitGroup
 	for i := 0; i < o.config.TeamWorkers; i++ {
+		workerID := i + 1
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
@@ -85,7 +96,8 @@ func (o *Orchestrator) processTournament(ctx context.Context, t dto.TournamentDT
 				default:
 				}
 
-				players := o.processTeamSafe(ctx, t.ID, team)
+				logger.Debug(ctx, "👷 Team worker processing", zap.Int("worker_id", workerID), zap.String("team", team.Name))
+				players := o.processTeamSafe(ctx, tournamentID, team)
 				mu.Lock()
 				totalPlayers += players
 				mu.Unlock()

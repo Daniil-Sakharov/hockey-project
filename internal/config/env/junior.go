@@ -20,6 +20,6 @@ func NewJuniorConfig() (*juniorConfig, error) {
 	return &juniorConfig{raw: raw}, nil
 }
 
-func (c *juniorConfig) BaseURL() string     { return c.raw.BaseURL }
-func (c *juniorConfig) DomainWorkers() int  { return c.raw.DomainWorkers }
-func (c *juniorConfig) MinBirthYear() int   { return c.raw.MinBirthYear }
+func (c *juniorConfig) BaseURL() string    { return c.raw.BaseURL }
+func (c *juniorConfig) DomainWorkers() int { return c.raw.DomainWorkers }
+func (c *juniorConfig) MinBirthYear() int  { return c.raw.MinBirthYear }

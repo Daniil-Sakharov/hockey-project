@@ -56,6 +56,9 @@ func (s *searchPlayerService) Search(ctx context.Context, filters bot.SearchFilt
 		repoFilters.MinWeight = &filters.Weight.Min
 		repoFilters.MaxWeight = &filters.Weight.Max
 	}
+	if filters.Region != nil {
+		repoFilters.Region = *filters.Region
+	}
 
 	players, totalCount, err := s.playerRepo.SearchWithTeam(ctx, repoFilters)
 	if err != nil {

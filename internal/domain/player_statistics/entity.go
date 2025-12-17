@@ -38,9 +38,11 @@ type PlayerStatistic struct {
 	GameWinningGoals  int `db:"game_winning_goals"`
 
 	// Средние показатели
-	GoalsPerGame          float64 `db:"goals_per_game"`
-	PointsPerGame         float64 `db:"points_per_game"`
-	PenaltyMinutesPerGame float64 `db:"penalty_minutes_per_game"`
+	GoalsPerGame          float64  `db:"goals_per_game"`
+	PointsPerGame         float64  `db:"points_per_game"`
+	PenaltyMinutesPerGame float64  `db:"penalty_minutes_per_game"`
+	PointsAvg             *float64 `db:"points_avg"`
+	PenaltyAvg            *float64 `db:"penalty_avg"`
 }
 
 // Validate проверяет валидность данных статистики

@@ -134,18 +134,21 @@ func (p *KeyboardPresenter) WeightSelect() tgbotapi.InlineKeyboardMarkup {
 func (p *KeyboardPresenter) RegionSelect() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("ЦФО", "filter:region:ЦФО"),
-			tgbotapi.NewInlineKeyboardButtonData("СФО", "filter:region:СФО"),
-			tgbotapi.NewInlineKeyboardButtonData("УФО", "filter:region:УФО"),
+			tgbotapi.NewInlineKeyboardButtonData("ФХР", "filter:region:ФХР"),
+			tgbotapi.NewInlineKeyboardButtonData("СПБ", "filter:region:СПБ"),
 		),
 		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("ЦФО", "filter:region:ЦФО"),
 			tgbotapi.NewInlineKeyboardButtonData("СЗФО", "filter:region:СЗФО"),
 			tgbotapi.NewInlineKeyboardButtonData("ЮФО", "filter:region:ЮФО"),
+		),
+		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("ПФО", "filter:region:ПФО"),
+			tgbotapi.NewInlineKeyboardButtonData("УФО", "filter:region:УФО"),
+			tgbotapi.NewInlineKeyboardButtonData("СФО", "filter:region:СФО"),
 		),
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("ДВФО", "filter:region:ДВФО"),
-			tgbotapi.NewInlineKeyboardButtonData("СКФО", "filter:region:СКФО"),
 		),
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("Любой", "filter:region:any"),

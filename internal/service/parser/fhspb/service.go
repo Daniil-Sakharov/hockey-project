@@ -4,9 +4,7 @@ import (
 	"context"
 
 	"github.com/Daniil-Sakharov/HockeyProject/internal/client/fhspb"
-	"github.com/Daniil-Sakharov/HockeyProject/internal/domain/player"
-	"github.com/Daniil-Sakharov/HockeyProject/internal/domain/team"
-	"github.com/Daniil-Sakharov/HockeyProject/internal/domain/tournament"
+	fhspbRepo "github.com/Daniil-Sakharov/HockeyProject/internal/repository/postgres/fhspb"
 )
 
 // Service интерфейс сервиса парсинга fhspb.ru
@@ -25,7 +23,8 @@ type Config struct {
 // Dependencies зависимости сервиса
 type Dependencies struct {
 	Client         *fhspb.Client
-	PlayerRepo     player.Repository
-	TeamRepo       team.Repository
-	TournamentRepo tournament.Repository
+	TournamentRepo *fhspbRepo.TournamentRepository
+	TeamRepo       *fhspbRepo.TeamRepository
+	PlayerRepo     *fhspbRepo.PlayerRepository
+	PlayerTeamRepo *fhspbRepo.PlayerTeamRepository
 }

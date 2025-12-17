@@ -5,12 +5,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/PuerkitoBio/goquery"
-
 	"github.com/Daniil-Sakharov/HockeyProject/internal/client/fhspb/dto"
+	"github.com/PuerkitoBio/goquery"
 )
-
-var numberRegex = regexp.MustCompile(`№(\d+)`)
 
 // ParsePlayer парсит профиль игрока из HTML
 func ParsePlayer(html []byte, playerID string) (*dto.PlayerDTO, error) {
@@ -21,40 +18,47 @@ func ParsePlayer(html []byte, playerID string) (*dto.PlayerDTO, error) {
 
 	player := &dto.PlayerDTO{ExternalID: playerID}
 
-	// ФИО из заголовка
-	doc.Find("h3 a, h2 a").Each(func(_ int, s *goquery.Selection) {
-		if player.FullName == "" {
-			name := strings.TrimSpace(s.Text())
-			if name != "" && len(name) > 5 {
-				player.FullName = name
+	// ФИО из заголовка h3 > a
+	doc.Find("h3 a[href*='PlayerID']").First().Each(func(_ int, s *goquery.Selection) {
+		player.FullName = strings.TrimSpace(s.Text())
+	})
+
+	// Позиция из h5.subheader (Вратарь/Защитник/Нападающий)
+	doc.Find("h5.subheader").Each(func(_ int, s *goquery.Selection) {
+		text := strings.TrimSpace(s.Text())
+		if text == "Вратарь" || text == "Защитник" || text == "Нападающий" {
+			player.Position = text
+		}
+	})
+
+	// Номер из span.label рядом с позицией: <span class="label">№<b>31</b></span>
+	doc.Find("div.medium-8 span.label").Each(func(_ int, s *goquery.Selection) {
+		text := s.Text()
+		if strings.HasPrefix(text, "№") {
+			numStr := strings.TrimPrefix(text, "№")
+			if n, err := strconv.Atoi(numStr); err == nil && n > 0 && n < 100 {
+				player.Number = n
+				// Роль (К/А) - следующий sibling span.warning.label
+				s.NextFiltered("span.warning.label").Each(func(_ int, role *goquery.Selection) {
+					text := strings.TrimSpace(role.Text())
+					if text == "К" || text == "А" {
+						player.Role = text
+					}
+				})
 			}
 		}
 	})
 
-	if player.FullName == "" {
-		doc.Find("h3, h2").Each(func(_ int, s *goquery.Selection) {
-			text := strings.TrimSpace(s.Text())
-			if strings.Count(text, " ") >= 1 && len(text) > 5 && len(text) < 100 {
-				player.FullName = text
-			}
-		})
-	}
-
-	parsePlayerFieldsFromDoc(player, doc)
-	parsePlayerFieldsFromText(player, string(html))
-
-	return player, nil
-}
-
-// parsePlayerFieldsFromDoc парсит поля из таблицы через goquery
-func parsePlayerFieldsFromDoc(player *dto.PlayerDTO, doc *goquery.Document) {
-	doc.Find("tr").Each(func(_ int, row *goquery.Selection) {
+	// Данные из таблицы
+	doc.Find("table.panel tr").Each(func(_ int, row *goquery.Selection) {
 		cells := row.Find("td")
 		if cells.Length() < 2 {
 			return
 		}
 
-		label := strings.TrimSpace(cells.First().Text())
+		// Заменяем &nbsp; на пробел
+		label := strings.ReplaceAll(cells.First().Text(), "\u00a0", " ")
+		label = strings.TrimSpace(label)
 		value := strings.TrimSpace(cells.Last().Text())
 
 		switch label {
@@ -74,36 +78,8 @@ func parsePlayerFieldsFromDoc(player *dto.PlayerDTO, doc *goquery.Document) {
 			player.School = value
 		}
 	})
-}
 
-// parsePlayerFieldsFromText парсит позицию, номер, роль из текста
-func parsePlayerFieldsFromText(player *dto.PlayerDTO, html string) {
-	// Позиция
-	if player.Position == "" {
-		switch {
-		case strings.Contains(html, "Нападающий"):
-			player.Position = "Нападающий"
-		case strings.Contains(html, "Защитник"):
-			player.Position = "Защитник"
-		case strings.Contains(html, "Вратарь"):
-			player.Position = "Вратарь"
-		}
-	}
-
-	// Номер
-	if player.Number == 0 {
-		if m := numberRegex.FindStringSubmatch(html); len(m) >= 2 {
-			player.Number, _ = strconv.Atoi(m[1])
-		}
-	}
-
-	// Роль (К/А)
-	if player.Role == "" {
-		roleRegex := regexp.MustCompile(`№\d+\s*([КА])`)
-		if m := roleRegex.FindStringSubmatch(html); len(m) >= 2 {
-			player.Role = m[1]
-		}
-	}
+	return player, nil
 }
 
 func parseIntFromStr(s string) int {

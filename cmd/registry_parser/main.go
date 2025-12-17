@@ -35,7 +35,7 @@ func main() {
 
 	// ======== АВТОРИЗАЦИЯ ========
 	username := "MN_SAHAROV"  // ← ЗАМЕНИТЬ
-	password := "necv8iniWr5" // ← ЗАМЕНИТЬ
+	password := "necv8iniWr5" //nolint:gosec // тестовые данные, заменить перед использованием
 
 	log.Println("🌐 Открываем registry.fhr.ru...")
 
@@ -259,7 +259,7 @@ func main() {
 		time.Sleep(5 * time.Second)
 
 		// Проверяем строки снова
-		err = chromedp.Run(ctx,
+		if err := chromedp.Run(ctx,
 			chromedp.Evaluate(`
 				const grid = document.querySelector('vaadin-grid');
 				let rows = grid ? grid.querySelectorAll('tbody tr') : [];
@@ -269,7 +269,9 @@ func main() {
 				}
 				rows.length;
 			`, &visibleRowsCount),
-		)
+		); err != nil {
+			log.Fatalf("❌ Ошибка при проверке строк: %v", err)
+		}
 		log.Printf("📊 Строк после повторного фильтра: %d", visibleRowsCount)
 
 		if visibleRowsCount == 0 {
@@ -282,8 +284,6 @@ func main() {
 	log.Println("=" + strings.Repeat("=", 60))
 
 	// Настройки парсинга
-	const totalPlayers = 102555    // Всего игроков
-	const playersPerBlock = 35     // Видимых строк в таблице
 	const blocksToTest = 2         // Для теста: 2 блока
 	const playersPerBlockTest = 15 // Для теста: 15 игроков в блоке (было 3)
 

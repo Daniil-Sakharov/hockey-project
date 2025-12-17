@@ -27,7 +27,7 @@ func (p *Parser) ParseFromDomain(domain string) ([]types.TournamentDTO, error) {
 	if err != nil {
 		return nil, fmt.Errorf("ошибка HTTP запроса: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("HTTP статус: %d", resp.StatusCode)

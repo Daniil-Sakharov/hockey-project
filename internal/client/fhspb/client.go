@@ -15,8 +15,9 @@ import (
 
 const (
 	BaseURL        = "https://www.fhspb.ru"
-	DefaultTimeout = 30 * time.Second
-	DefaultDelay   = 150 * time.Millisecond
+	DefaultTimeout = 15 * time.Second
+	DefaultDelay   = 200 * time.Millisecond
+	MaxRetries     = 3
 )
 
 // Client HTTP клиент для работы с fhspb.ru
@@ -66,9 +67,8 @@ func (c *Client) rateLimit() {
 // doRequest выполняет HTTP запрос с retry логикой
 func (c *Client) doRequest(url string) ([]byte, error) {
 	ctx := context.Background()
-	maxRetries := 3
 
-	for attempt := 1; attempt <= maxRetries; attempt++ {
+	for attempt := 1; attempt <= MaxRetries; attempt++ {
 		req, err := http.NewRequest(http.MethodGet, url, nil)
 		if err != nil {
 			return nil, fmt.Errorf("create request: %w", err)
@@ -88,16 +88,19 @@ func (c *Client) doRequest(url string) ([]byte, error) {
 			logger.Warn(ctx, "fhspb request failed",
 				zap.String("url", url),
 				zap.Duration("elapsed", elapsed),
+				zap.Int("attempt", attempt),
 				zap.Error(err),
 			)
 
-			if isRetryable(err) && attempt < maxRetries {
-				time.Sleep(time.Duration(attempt) * time.Second)
+			if isRetryable(err) && attempt < MaxRetries {
+				// Экспоненциальный backoff: 4s, 8s, 16s, 32s
+				backoff := time.Duration(1<<(attempt+1)) * time.Second
+				time.Sleep(backoff)
 				continue
 			}
 			return nil, fmt.Errorf("request failed: %w", err)
 		}
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		if resp.StatusCode != http.StatusOK {
 			return nil, fmt.Errorf("unexpected status: %d", resp.StatusCode)
@@ -117,7 +120,7 @@ func (c *Client) doRequest(url string) ([]byte, error) {
 		return body, nil
 	}
 
-	return nil, fmt.Errorf("all %d attempts exhausted", maxRetries)
+	return nil, fmt.Errorf("all %d attempts exhausted", MaxRetries)
 }
 
 func isRetryable(err error) bool {

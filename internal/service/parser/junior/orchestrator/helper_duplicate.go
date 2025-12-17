@@ -54,7 +54,7 @@ func (s *orchestratorService) isDuplicateDomain(
 	var uniqueTournamentIDs []string
 
 	logger.Info(ctx, fmt.Sprintf("    🔍 Checking %d tournaments for duplicates:", len(tournaments)))
-	
+
 	for _, t := range tournaments {
 		if _, exists := globalDedup.Load(t.ID); exists {
 			duplicateCount++

@@ -12,10 +12,10 @@ import (
 
 // TeamTask задача для парсинга команды
 type TeamTask struct {
-	Team         *team.Team
-	Tournament   *tournament.Tournament
-	Index        int // Для логирования (1/27, 2/27...)
-	Total        int
+	Team       *team.Team
+	Tournament *tournament.Tournament
+	Index      int // Для логирования (1/27, 2/27...)
+	Total      int
 }
 
 // TeamResult результат парсинга команды

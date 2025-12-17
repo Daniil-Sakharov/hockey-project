@@ -44,7 +44,7 @@ func Handle(r Router, ctx context.Context, bot *tgbotapi.BotAPI, query *tgbotapi
 
 	// Создаем zap logger для обработки callback
 	logger, _ := zap.NewProduction()
-	defer logger.Sync()
+	defer func() { _ = logger.Sync() }()
 
 	switch filterType {
 	case cb.FilterBack:

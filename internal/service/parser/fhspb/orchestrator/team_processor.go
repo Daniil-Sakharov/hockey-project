@@ -4,20 +4,21 @@ import (
 	"context"
 	"fmt"
 	"sync"
-	"time"
 
 	"github.com/Daniil-Sakharov/HockeyProject/internal/client/fhspb/dto"
-	"github.com/Daniil-Sakharov/HockeyProject/internal/domain/team"
+	fhspbRepo "github.com/Daniil-Sakharov/HockeyProject/internal/repository/postgres/fhspb"
 	"github.com/Daniil-Sakharov/HockeyProject/pkg/logger"
 	"go.uber.org/zap"
 )
 
-func (o *Orchestrator) processTeamSafe(ctx context.Context, tournamentID int, t dto.TeamDTO) int {
-	if err := o.saveTeam(ctx, t); err != nil {
+func (o *Orchestrator) processTeamSafe(ctx context.Context, tournamentID string, t dto.TeamDTO) int {
+	teamID, err := o.saveTeam(ctx, tournamentID, t)
+	if err != nil {
 		logger.Debug(ctx, "⚠️ Save team failed", zap.Error(err))
+		return 0
 	}
 
-	players, err := o.processTeam(ctx, tournamentID, t)
+	players, err := o.processTeam(ctx, t.TournamentID, teamID, tournamentID, t)
 	if err != nil {
 		logger.Error(ctx, "❌ Team failed", zap.String("name", t.Name), zap.Error(err))
 		return 0
@@ -27,17 +28,16 @@ func (o *Orchestrator) processTeamSafe(ctx context.Context, tournamentID int, t 
 	return players
 }
 
-func (o *Orchestrator) saveTeam(ctx context.Context, t dto.TeamDTO) error {
-	return o.teamRepo.Upsert(ctx, &team.Team{
-		ID:        t.ID,
-		URL:       fmt.Sprintf("fhspb://team/%s", t.ID),
-		Name:      t.Name,
-		CreatedAt: time.Now(),
+func (o *Orchestrator) saveTeam(ctx context.Context, tournamentID string, t dto.TeamDTO) (string, error) {
+	return o.teamRepo.Upsert(ctx, &fhspbRepo.Team{
+		ExternalID:   t.ID,
+		TournamentID: tournamentID,
+		Name:         t.Name,
 	})
 }
 
-func (o *Orchestrator) processTeam(ctx context.Context, tournamentID int, t dto.TeamDTO) (int, error) {
-	playerURLs, err := o.client.GetPlayerURLsFromTeam(tournamentID, t.ID)
+func (o *Orchestrator) processTeam(ctx context.Context, extTournamentID int, teamID, tournamentID string, t dto.TeamDTO) (int, error) {
+	playerURLs, err := o.client.GetPlayerURLsFromTeam(extTournamentID, t.ID)
 	if err != nil {
 		return 0, fmt.Errorf("get player urls: %w", err)
 	}
@@ -65,7 +65,7 @@ func (o *Orchestrator) processTeam(ctx context.Context, tournamentID int, t dto.
 				default:
 				}
 
-				if o.processPlayerSafe(ctx, pURL) {
+				if o.processPlayerSafe(ctx, teamID, tournamentID, pURL) {
 					mu.Lock()
 					savedCount++
 					mu.Unlock()

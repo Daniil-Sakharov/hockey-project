@@ -55,9 +55,9 @@ func (h *Handler) HandleProfile(ctx context.Context, botAPI *tgbotapi.BotAPI, qu
 		h.logger.Error("Failed to get player profile",
 			zap.String("player_id", playerID),
 			zap.Error(err))
-		
+
 		// Отправляем сообщение об ошибке
-		errorMsg := tgbotapi.NewMessage(query.Message.Chat.ID, 
+		errorMsg := tgbotapi.NewMessage(query.Message.Chat.ID,
 			"❌ Не удалось загрузить профиль игрока. Попробуйте позже.")
 		_, _ = botAPI.Send(errorMsg)
 		return err
@@ -69,7 +69,7 @@ func (h *Handler) HandleProfile(ctx context.Context, botAPI *tgbotapi.BotAPI, qu
 		h.logger.Error("Failed to format player profile",
 			zap.String("player_id", playerID),
 			zap.Error(err))
-		
+
 		errorMsg := tgbotapi.NewMessage(query.Message.Chat.ID,
 			"❌ Ошибка форматирования профиля. Попробуйте позже.")
 		_, _ = botAPI.Send(errorMsg)

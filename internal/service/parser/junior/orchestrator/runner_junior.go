@@ -74,7 +74,7 @@ func (s *orchestratorService) RunJuniorParsing(ctx context.Context) error {
 	logger.Info(ctx, "🚀 STARTING TOURNAMENT & PLAYER PROCESSING...")
 	logger.Info(ctx, fmt.Sprintf("  Total tournaments to process: %d", len(allTournaments)))
 	logger.Info(ctx, "================================================================================")
-	
+
 	return s.processTournaments(ctx, allTournaments)
 }
 

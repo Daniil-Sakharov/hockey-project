@@ -7,7 +7,7 @@ import (
 )
 
 // DecodeYearAndGroupID декодирует YEAR_ID и GROUP_ID из base64 params
-func DecodeYearAndGroupID(params string) (yearID string, groupID string) {
+func DecodeYearAndGroupID(params string) (yearID, groupID string) {
 	// Декодируем URL encoding
 	decoded, err := url.QueryUnescape(params)
 	if err != nil {

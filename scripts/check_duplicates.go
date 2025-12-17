@@ -42,7 +42,7 @@ func main() {
 		fmt.Printf("  ❌ ID: %s, Domain: %s, Count: %d\n", id, domain, count)
 		dupCount++
 	}
-	
+
 	if dupCount == 0 {
 		fmt.Println("  ✅ Нет дубликатов по (ID, Domain)")
 	}
@@ -69,7 +69,7 @@ func main() {
 		fmt.Printf("  ⚠️  ID: %s присутствует в %d доменах: %v\n", id, domainCount, domains)
 		crossDomainCount++
 	}
-	
+
 	if crossDomainCount == 0 {
 		fmt.Println("  ✅ Нет турниров с одинаковым ID в разных доменах")
 	}
@@ -84,7 +84,7 @@ func main() {
 	fmt.Printf("  Всего записей: %d\n", totalTournaments)
 	fmt.Printf("  Уникальных ID: %d\n", uniqueIDs)
 	fmt.Printf("  Доменов: %d\n", uniqueDomains)
-	
+
 	if totalTournaments == uniqueIDs {
 		fmt.Println("  ✅ Все ID уникальны!")
 	} else {

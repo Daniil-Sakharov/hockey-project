@@ -87,7 +87,7 @@ func main() {
 			endedStr = "✅"
 		}
 
-		fmt.Printf("  [%s] %s | %s | %s - %s | Закончен: %s\n", 
+		fmt.Printf("  [%s] %s | %s | %s - %s | Закончен: %s\n",
 			id, name, season, startStr, endStr, endedStr)
 	}
 

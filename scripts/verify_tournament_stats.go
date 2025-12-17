@@ -12,13 +12,13 @@ import (
 )
 
 type TournamentStats struct {
-	ID              string
-	Name            string
-	URL             string
-	TotalPlayers    int
+	ID               string
+	Name             string
+	URL              string
+	TotalPlayers     int
 	PlayersWithStats int
-	StatsRecords    int
-	CoveragePercent float64
+	StatsRecords     int
+	CoveragePercent  float64
 }
 
 func main() {
@@ -77,7 +77,7 @@ func analyzeTournaments(ctx context.Context, db *sql.DB) ([]TournamentStats, err
 	for rows.Next() {
 		var ts TournamentStats
 		var url sql.NullString
-		
+
 		err := rows.Scan(
 			&ts.ID,
 			&ts.Name,
@@ -111,11 +111,11 @@ func printTournamentStats(tournaments []TournamentStats) {
 	}
 
 	// Группируем турниры по покрытию
-	perfect := []TournamentStats{}      // 100%
-	good := []TournamentStats{}         // 80-99%
-	medium := []TournamentStats{}       // 50-79%
-	low := []TournamentStats{}          // 1-49%
-	empty := []TournamentStats{}        // 0%
+	perfect := []TournamentStats{} // 100%
+	good := []TournamentStats{}    // 80-99%
+	medium := []TournamentStats{}  // 50-79%
+	low := []TournamentStats{}     // 1-49%
+	empty := []TournamentStats{}   // 0%
 
 	for _, ts := range tournaments {
 		switch {

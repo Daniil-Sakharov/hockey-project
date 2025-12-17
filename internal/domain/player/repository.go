@@ -27,6 +27,7 @@ type SearchFilters struct {
 	MaxHeight *int
 	MinWeight *int
 	MaxWeight *int
+	Region    string
 	Limit     int
 	Offset    int
 }

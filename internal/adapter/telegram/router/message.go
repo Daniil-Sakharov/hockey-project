@@ -12,12 +12,10 @@ func (r *Router) handleMessage(ctx context.Context, botAPI *tgbotapi.BotAPI, msg
 	state := r.stateManager.GetState(userID)
 
 	if strings.HasPrefix(state.WaitingForInput, "fio_") {
-		if err := r.fioInputHandler.HandleFioInput(ctx, botAPI, msg); err != nil {
-			// Ошибка уже залогирована внутри
-		}
+		_ = r.fioInputHandler.HandleFioInput(ctx, botAPI, msg)
 		return
 	}
 
 	defaultMsg := tgbotapi.NewMessage(msg.Chat.ID, "Используйте /start для начала работы")
-	botAPI.Send(defaultMsg)
+	_, _ = botAPI.Send(defaultMsg)
 }

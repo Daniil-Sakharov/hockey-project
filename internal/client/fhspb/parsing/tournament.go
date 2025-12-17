@@ -7,16 +7,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/PuerkitoBio/goquery"
-
 	"github.com/Daniil-Sakharov/HockeyProject/internal/client/fhspb/dto"
+	"github.com/PuerkitoBio/goquery"
 )
 
 var (
 	tournamentIDRegex = regexp.MustCompile(`TournamentID=(\d+)`)
 	birthYearRegex    = regexp.MustCompile(`(\d{4})\s*г\.?\s*р\.?`)
-	seasonRegex       = regexp.MustCompile(`Сезон\s+(\d{4}-\d{4})`)
 	dateRangeRegex    = regexp.MustCompile(`(\d{2}\.\d{2}\.\d{4})\s*-\s*(\d{2}\.\d{2}\.\d{4})`)
+	groupNameRegex    = regexp.MustCompile(`\s*(Группа\s+[А-Яа-яA-Za-z0-9]+)\s*$`)
 )
 
 // ParseTournaments парсит список турниров из HTML
@@ -28,78 +27,78 @@ func ParseTournaments(html []byte) ([]dto.TournamentDTO, error) {
 
 	tournaments := make(map[int]*dto.TournamentDTO)
 
-	// Парсим турниры из ссылок с TournamentID
-	doc.Find("a[href*='TournamentID=']").Each(func(_ int, s *goquery.Selection) {
-		href, exists := s.Attr("href")
-		if !exists {
+	// Парсим каждый div.clearfix как карточку турнира
+	doc.Find("div.clearfix").Each(func(_ int, container *goquery.Selection) {
+		// Ищем ссылку на турнир внутри h4
+		link := container.Find("h4 a[href*='TournamentID=']").First()
+		if link.Length() == 0 {
 			return
 		}
 
+		href, _ := link.Attr("href")
 		matches := tournamentIDRegex.FindStringSubmatch(href)
 		if len(matches) < 2 {
 			return
 		}
 
 		id, err := strconv.Atoi(matches[1])
-		if err != nil {
+		if err != nil || id == 0 {
 			return
 		}
 
-		// Пропускаем если уже обработали этот турнир
 		if _, exists := tournaments[id]; exists {
 			return
 		}
 
-		name := strings.TrimSpace(s.Text())
+		name := strings.TrimSpace(link.Text())
 		if name == "" {
 			return
 		}
 
-		// Извлекаем даты из title атрибута
-		title, _ := s.Attr("title")
-		startDate, endDate := extractDates(title)
+		// Birth year из родительского h5.subheader (div.clearfix находится внутри незакрытого h5)
+		birthYear := 0
+		parent := container.Parent()
+		if parent.Is("h5.subheader") {
+			// Берём только первую строку текста (до вложенных элементов)
+			text := parent.Contents().First().Text()
+			birthYear = extractBirthYear(text)
+		}
 
-		// Если в title нет дат, ищем в родительском контейнере
-		if startDate == nil {
-			parent := s.Parent()
-			for i := 0; i < 5 && parent.Length() > 0; i++ {
-				parentText := parent.Text()
-				startDate, endDate = extractDates(parentText)
-				if startDate != nil {
-					break
-				}
-				parent = parent.Parent()
+		// Даты из span.warning.label внутри контейнера
+		var startDate, endDate *time.Time
+		container.Find("span.warning.label").Each(func(_ int, span *goquery.Selection) {
+			if startDate == nil {
+				startDate, endDate = extractDates(span.Text())
 			}
-		}
+		})
 
-		// Определяем isEnded - ищем в ближайшем контейнере .clearfix
+		// IsEnded - span.success.label с "Завершен" внутри этого контейнера
 		isEnded := false
-		// Поднимаемся до div.clearfix
-		container := s.Closest("div.clearfix")
-		if container.Length() > 0 {
-			// Ищем span.success.label с текстом "Завершен"
-			container.Find("span.success.label").Each(func(_ int, span *goquery.Selection) {
-				if strings.Contains(span.Text(), "Завершен") {
-					isEnded = true
-				}
-			})
-		}
+		container.Find("span.success.label").Each(func(_ int, span *goquery.Selection) {
+			if strings.Contains(span.Text(), "Завершен") {
+				isEnded = true
+			}
+		})
 
-		// Определяем сезон по датам турнира
-		season := determineSeason(startDate)
+		// Извлекаем группу из имени (например "Группа А", "Группа Б")
+		groupName := ""
+		if m := groupNameRegex.FindStringSubmatch(name); len(m) >= 2 {
+			groupName = strings.TrimSpace(m[1])
+			name = strings.TrimSpace(groupNameRegex.ReplaceAllString(name, ""))
+		}
 
 		tournaments[id] = &dto.TournamentDTO{
 			ID:        id,
 			Name:      name,
-			BirthYear: extractBirthYear(name),
-			Season:    season,
+			GroupName: groupName,
+			BirthYear: birthYear,
+			Season:    determineSeason(startDate),
 			StartDate: startDate,
 			EndDate:   endDate,
 			IsEnded:   isEnded,
 		}
 	})
 
-	// Конвертируем map в slice
 	result := make([]dto.TournamentDTO, 0, len(tournaments))
 	for _, t := range tournaments {
 		result = append(result, *t)
@@ -143,7 +142,7 @@ func determineSeason(startDate *time.Time) string {
 	}
 	year := startDate.Year()
 	month := startDate.Month()
-	
+
 	// Если турнир начинается в сентябре-декабре, это сезон year-year+1
 	// Если в январе-августе, это сезон year-1-year
 	if month >= 9 {
@@ -154,10 +153,11 @@ func determineSeason(startDate *time.Time) string {
 
 // FilterByBirthYear фильтрует турниры по минимальному году рождения
 // minYear = 2008 означает: брать турниры для 2008, 2009, 2010... (молодые игроки)
+// Турниры без birth_year (Мужские команды, ЮХЛ и т.д.) пропускаются
 func FilterByBirthYear(tournaments []dto.TournamentDTO, minYear int) []dto.TournamentDTO {
 	var result []dto.TournamentDTO
 	for _, t := range tournaments {
-		if t.BirthYear == 0 || t.BirthYear >= minYear {
+		if t.BirthYear >= minYear {
 			result = append(result, t)
 		}
 	}

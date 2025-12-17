@@ -6,6 +6,7 @@ import "time"
 type TournamentDTO struct {
 	ID        int
 	Name      string
+	GroupName string
 	BirthYear int
 	Season    string
 	StartDate *time.Time

@@ -37,7 +37,7 @@ func (p *Parser) ParseFromTournament(ctx context.Context, domain, tournamentURL 
 	if err != nil {
 		return nil, fmt.Errorf("ошибка загрузки страницы команд: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("HTTP статус %d", resp.StatusCode)
@@ -103,13 +103,13 @@ func (p *Parser) parseWithFilters(ctx context.Context, domain string, doc *goque
 			}
 
 			if yearResp.StatusCode != 200 {
-				yearResp.Body.Close()
+				_ = yearResp.Body.Close()
 				logger.Warn(ctx, fmt.Sprintf("        ⚠️  HTTP %d для года", yearResp.StatusCode))
 				continue
 			}
 
 			yearDoc, err := goquery.NewDocumentFromReader(yearResp.Body)
-			yearResp.Body.Close()
+			_ = yearResp.Body.Close()
 			if err != nil {
 				logger.Warn(ctx, fmt.Sprintf("        ⚠️  Ошибка парсинга года: %v", err))
 				continue
@@ -150,13 +150,13 @@ func (p *Parser) parseTeamsFromAjax(ctx context.Context, domain, ajaxURL string,
 	}
 
 	if ajaxResp.StatusCode != 200 {
-		ajaxResp.Body.Close()
+		_ = ajaxResp.Body.Close()
 		logger.Warn(ctx, fmt.Sprintf("              ⚠️  HTTP %d", ajaxResp.StatusCode))
 		return
 	}
 
 	ajaxDoc, err := goquery.NewDocumentFromReader(ajaxResp.Body)
-	ajaxResp.Body.Close()
+	_ = ajaxResp.Body.Close()
 	if err != nil {
 		logger.Warn(ctx, fmt.Sprintf("              ⚠️  Ошибка парсинга: %v", err))
 		return

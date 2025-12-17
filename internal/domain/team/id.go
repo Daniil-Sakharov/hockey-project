@@ -1,7 +1,7 @@
 package team
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"fmt"
 	"regexp"
 )
@@ -40,6 +40,6 @@ func ExtractFromURL(url string) ID {
 }
 
 func generateHashID(url string) string {
-	hash := md5.Sum([]byte(url))
+	hash := sha256.Sum256([]byte(url))
 	return fmt.Sprintf("%x", hash)[:8]
 }

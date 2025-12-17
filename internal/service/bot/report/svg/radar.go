@@ -7,10 +7,10 @@ import (
 
 // RadarChartOptions настройки radar диаграммы
 type RadarChartOptions struct {
-	Size      Size
-	Color     string
-	FillColor string
-	ShowGrid  bool
+	Size       Size
+	Color      string
+	FillColor  string
+	ShowGrid   bool
 	GridLevels int
 }
 
@@ -75,7 +75,7 @@ func GenerateRadarChart(labels []string, values []float64, opts *RadarChartOptio
 	for i, label := range labels {
 		angle := float64(i)*angleStep - 90
 		endPoint := polarToCartesian(cx, cy, radius, angle+90)
-		
+
 		// Ось
 		sb.WriteString(fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#d1d5db" stroke-width="1"/>`,
 			cx, cy, endPoint.X, endPoint.Y))
@@ -88,7 +88,7 @@ func GenerateRadarChart(labels []string, values []float64, opts *RadarChartOptio
 		} else if labelPoint.X > cx+10 {
 			anchor = "start"
 		}
-		
+
 		sb.WriteString(fmt.Sprintf(`<text x="%.1f" y="%.1f" text-anchor="%s" font-size="10" fill="%s">%s</text>`,
 			labelPoint.X, labelPoint.Y+3, anchor, Colors.Gray, escapeText(label)))
 	}
@@ -127,7 +127,7 @@ func generateRadarGrid(cx, cy, radius float64, numPoints, levels int) string {
 	for level := 1; level <= levels; level++ {
 		r := radius * float64(level) / float64(levels)
 		points := make([]Point, numPoints)
-		
+
 		for i := 0; i < numPoints; i++ {
 			angle := float64(i)*angleStep - 90
 			points[i] = polarToCartesian(cx, cy, r, angle+90)

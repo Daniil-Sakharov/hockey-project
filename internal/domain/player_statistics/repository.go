@@ -14,7 +14,7 @@ type Repository interface {
 	GetByTournament(ctx context.Context, tournamentID string) ([]*PlayerStatistic, error)
 	CountAll(ctx context.Context) (int, error)
 	GetAllTimeStats(ctx context.Context, playerID string) (*AggregatedStats, error)
-	GetSeasonStats(ctx context.Context, playerID string, season string) (*AggregatedStats, error)
+	GetSeasonStats(ctx context.Context, playerID, season string) (*AggregatedStats, error)
 	GetRecentTournaments(ctx context.Context, playerID string, limit int) ([]*TournamentStat, error)
 }
 
@@ -35,10 +35,10 @@ type AggregatedStats struct {
 
 // TournamentStat статистика по одному турниру
 type TournamentStat struct {
-	TournamentID     string  `db:"tournament_id"`
-	TournamentName   string  `db:"tournament_name"`
-	GroupName        string  `db:"group_name"`
-	Season           string  `db:"season"`
+	TournamentID     string `db:"tournament_id"`
+	TournamentName   string `db:"tournament_name"`
+	GroupName        string `db:"group_name"`
+	Season           string `db:"season"`
 	IsChampionship   bool
 	StartDate        *string `db:"start_date"`
 	Games            int     `db:"games"`

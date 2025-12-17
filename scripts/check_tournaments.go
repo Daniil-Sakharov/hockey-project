@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joho/godotenv"
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	godotenv.Load()
-	
+
 	db, err := sql.Open("pgx", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		panic(err)
@@ -24,10 +24,10 @@ func main() {
 		"16724630", "16724632", "16724635", // szfo 2025/2026
 		"18626069", "22840769", "16735091", "16735092", "16735093", // pfo 2025/2026
 	}
-	
+
 	fmt.Println("\n📊 ПРОВЕРКА ТУРНИРОВ ИЗ CHECK_ALL.MD (сезон 2025/2026):")
 	fmt.Println("================================================================================")
-	
+
 	for _, id := range ids {
 		var name, domain, season sql.NullString
 		err := db.QueryRow("SELECT name, domain, season FROM tournaments WHERE id = $1", id).Scan(&name, &domain, &season)
@@ -109,27 +109,27 @@ func main() {
 	// Проверка конкретного турнира 5153197
 	fmt.Println("\n📊 ТУРНИР 5153197 (Первенство ППФО 2021/2022):")
 	fmt.Println("================================================================================")
-	
+
 	// Общее количество команд
 	var totalTeams int
 	db.QueryRow("SELECT COUNT(*) FROM teams").Scan(&totalTeams)
 	fmt.Printf("  Всего команд в БД: %d\n", totalTeams)
-	
+
 	// Связи player_teams для турнира 5153197
 	var playerTeamsCount int
 	db.QueryRow("SELECT COUNT(*) FROM player_teams WHERE tournament_id = '5153197'").Scan(&playerTeamsCount)
 	fmt.Printf("  Связей player_teams для турнира: %d\n", playerTeamsCount)
-	
+
 	// Уникальные команды через player_teams
 	var uniqueTeamsInTournament int
 	db.QueryRow("SELECT COUNT(DISTINCT team_id) FROM player_teams WHERE tournament_id = '5153197'").Scan(&uniqueTeamsInTournament)
 	fmt.Printf("  Уникальных команд в турнире (через player_teams): %d\n", uniqueTeamsInTournament)
-	
+
 	// Связи игрок-турнир
 	var playerTournamentCount int
 	db.QueryRow("SELECT COUNT(*) FROM player_tournaments WHERE tournament_id = '5153197'").Scan(&playerTournamentCount)
 	fmt.Printf("  Связей player_tournaments: %d\n", playerTournamentCount)
-	
+
 	// Уникальные игроки в турнире
 	var uniquePlayers int
 	db.QueryRow("SELECT COUNT(DISTINCT player_id) FROM player_tournaments WHERE tournament_id = '5153197'").Scan(&uniquePlayers)

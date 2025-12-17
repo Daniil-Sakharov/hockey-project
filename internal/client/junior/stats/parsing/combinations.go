@@ -20,9 +20,9 @@ type StatsCombination struct {
 
 // YearInfo информация о годе из dropdown
 type YearInfo struct {
-	ID       string // ID года (value из option)
-	Label    string // Текст года (2009, 2010...)
-	AjaxURL  string // URL для AJAX запроса
+	ID      string // ID года (value из option)
+	Label   string // Текст года (2009, 2010...)
+	AjaxURL string // URL для AJAX запроса
 }
 
 // ParseCombinationsWithAjax парсит комбинации год+группа с двухуровневой логикой
@@ -39,7 +39,7 @@ func ParseCombinationsWithAjax(
 
 	// Шаг 1: Извлекаем все ГОДЫ из dropdown
 	years := extractYearsFromDoc(doc)
-	
+
 	if len(years) == 0 {
 		// Нет dropdown годов - парсим группы с текущей страницы (старая логика)
 		return parseGroupsFromDoc(doc, "")
@@ -208,7 +208,7 @@ func fetchYearPage(ctx context.Context, httpClient *http.Client, domain, ajaxURL
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch year page: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)

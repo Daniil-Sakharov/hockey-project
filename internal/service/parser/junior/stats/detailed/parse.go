@@ -59,11 +59,11 @@ func (p *Parser) ParseTournamentStats(
 	p.statsLogger.LogTournamentStart(tournamentID, "Tournament", statsURL)
 
 	// 1. Загружаем HTML страницу
-	resp, err := http.Get(statsURL)
+	resp, err := http.Get(statsURL) //nolint:gosec // URL формируется из доверенных данных
 	if err != nil {
 		return 0, fmt.Errorf("failed to fetch stats page: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return 0, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
@@ -201,7 +201,6 @@ func (p *Parser) saveStats(
 	entities []*player_statistics.PlayerStatistic,
 ) (int, []MissingPlayerInfo) {
 	savedCount, err := p.repo.CreateBatch(ctx, entities)
-
 	if err != nil {
 		// Если ошибка FK - пробуем сохранить по одной
 		p.zapLogger.Warn("Ошибка батча, сохраняем по одной")

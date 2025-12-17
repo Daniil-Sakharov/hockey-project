@@ -96,9 +96,9 @@ func (wp *DomainWorkerPool) processDomain(workerID int, task DomainTask) DomainR
 	if err != nil {
 		// Проверяем HTTP 500 и делаем retry
 		if strings.Contains(err.Error(), "500") || strings.Contains(err.Error(), "HTTP статус: 500") {
-			logger.Warn(ctx, fmt.Sprintf("  ⚠️  HTTP 500 detected, retry after 10 seconds..."))
+			logger.Warn(ctx, "  ⚠️  HTTP 500 detected, retry after 10 seconds...")
 			time.Sleep(10 * time.Second)
-			
+
 			// Повторная попытка
 			isDuplicate, err = wp.orchestrator.isDuplicateDomain(ctx, domain, wp.globalDedup)
 			if err != nil {
@@ -119,7 +119,7 @@ func (wp *DomainWorkerPool) processDomain(workerID int, task DomainTask) DomainR
 
 	if isDuplicate {
 		// Домен - полная копия, пропускаем
-		logger.Info(ctx, fmt.Sprintf("  🔁 DUPLICATE domain detected - SKIPPING"))
+		logger.Info(ctx, "  🔁 DUPLICATE domain detected - SKIPPING")
 		return DomainResult{
 			Domain:      domain,
 			IsDuplicate: true,
@@ -133,9 +133,9 @@ func (wp *DomainWorkerPool) processDomain(workerID int, task DomainTask) DomainR
 	if err != nil {
 		// Проверяем HTTP 500 и делаем retry
 		if strings.Contains(err.Error(), "500") || strings.Contains(err.Error(), "HTTP статус: 500") {
-			logger.Warn(ctx, fmt.Sprintf("  ⚠️  HTTP 500 detected, retry after 10 seconds..."))
+			logger.Warn(ctx, "  ⚠️  HTTP 500 detected, retry after 10 seconds...")
 			time.Sleep(10 * time.Second)
-			
+
 			// Повторная попытка
 			tournamentsDTO, err = wp.orchestrator.juniorService.ParseAllSeasonsTournaments(ctx, domain)
 			if err != nil {
@@ -187,7 +187,7 @@ func (wp *DomainWorkerPool) processDomain(workerID int, task DomainTask) DomainR
 
 	logger.Info(ctx, fmt.Sprintf("  ✅ Saved %d tournaments to database", len(saved)))
 	logger.Info(ctx, "")
-	logger.Info(ctx, fmt.Sprintf("🎉 Domain %s COMPLETED SUCCESSFULLY! (%d tournaments ready for processing)", 
+	logger.Info(ctx, fmt.Sprintf("🎉 Domain %s COMPLETED SUCCESSFULLY! (%d tournaments ready for processing)",
 		domain, len(saved)))
 	logger.Info(ctx, "================================================================================")
 

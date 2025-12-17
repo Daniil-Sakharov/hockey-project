@@ -45,6 +45,7 @@ type FHSPBConfig interface {
 	TournamentWorkers() int
 	TeamWorkers() int
 	PlayerWorkers() int
+	StatisticsWorkers() int
 	RequestDelay() time.Duration
 }
 

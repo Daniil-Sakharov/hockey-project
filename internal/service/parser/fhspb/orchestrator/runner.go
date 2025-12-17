@@ -55,9 +55,11 @@ func (o *Orchestrator) processAllTournaments(ctx context.Context, tournaments []
 
 	var wg sync.WaitGroup
 	for i := 0; i < o.config.TournamentWorkers; i++ {
+		workerID := i + 1
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
+			logger.Info(ctx, "🔧 Tournament worker started", zap.Int("worker_id", workerID))
 			for tournament := range tournamentCh {
 				select {
 				case <-ctx.Done():
@@ -71,6 +73,7 @@ func (o *Orchestrator) processAllTournaments(ctx context.Context, tournaments []
 				totalPlayers += players
 				mu.Unlock()
 			}
+			logger.Info(ctx, "🔧 Tournament worker finished", zap.Int("worker_id", workerID))
 		}()
 	}
 

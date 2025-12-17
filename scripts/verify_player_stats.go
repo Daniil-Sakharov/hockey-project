@@ -13,10 +13,10 @@ import (
 )
 
 type PlayerInfo struct {
-	ID         string
-	Name       string
-	BirthYear  int
-	HasStats   bool
+	ID          string
+	Name        string
+	BirthYear   int
+	HasStats    bool
 	Tournaments []TournamentInfo
 }
 
@@ -103,15 +103,15 @@ func getAllPlayers(ctx context.Context, db *sql.DB) ([]PlayerInfo, error) {
 	for rows.Next() {
 		var p PlayerInfo
 		var birthYear sql.NullInt64
-		
+
 		if err := rows.Scan(&p.ID, &p.Name, &birthYear); err != nil {
 			return nil, err
 		}
-		
+
 		if birthYear.Valid {
 			p.BirthYear = int(birthYear.Int64)
 		}
-		
+
 		players = append(players, p)
 	}
 
@@ -172,16 +172,16 @@ func loadPlayerTournaments(ctx context.Context, db *sql.DB, players []PlayerInfo
 		for rows.Next() {
 			var t TournamentInfo
 			var url sql.NullString
-			
+
 			if err := rows.Scan(&t.ID, &t.Name, &url); err != nil {
 				rows.Close()
 				return err
 			}
-			
+
 			if url.Valid {
 				t.URL = url.String
 			}
-			
+
 			tournaments = append(tournaments, t)
 		}
 		rows.Close()
@@ -220,7 +220,7 @@ func generateReport(players []PlayerInfo) StatsReport {
 
 		ys := report.PlayersByYear[year]
 		ys.Total++
-		
+
 		if p.HasStats {
 			ys.WithStats++
 		} else {
@@ -259,7 +259,7 @@ func printReport(report StatsReport) {
 	hasProblems := false
 	for _, year := range years {
 		ys := report.PlayersByYear[year]
-		
+
 		if ys.WithoutStats == 0 {
 			continue // Пропускаем года где все ОК
 		}
@@ -291,7 +291,7 @@ func printReport(report StatsReport) {
 			for i := 0; i < limit; i++ {
 				p := ys.WithoutStatsPlayers[i]
 				fmt.Printf("  [%d] %s (ID: %s)\n", i+1, p.Name, p.ID)
-				
+
 				if len(p.Tournaments) > 0 {
 					fmt.Printf("      Турниры: %d\n", len(p.Tournaments))
 					for j, t := range p.Tournaments {
@@ -326,7 +326,7 @@ func printReport(report StatsReport) {
 	fmt.Println(strings.Repeat("=", 80))
 	fmt.Println("💡 РЕКОМЕНДАЦИИ:")
 	fmt.Println(strings.Repeat("-", 80))
-	
+
 	if report.CoveragePercent >= 90.0 {
 		fmt.Println("  ✅ Отличное покрытие! Более 90% игроков имеют статистику.")
 	} else if report.CoveragePercent >= 50.0 {
@@ -334,7 +334,7 @@ func printReport(report StatsReport) {
 	} else {
 		fmt.Println("  🔴 Низкое покрытие! Необходимо срочно запустить парсер статистики.")
 	}
-	
+
 	fmt.Println()
 	fmt.Println("  Для парсинга статистики запустите:")
 	fmt.Println("    task stats:parse")

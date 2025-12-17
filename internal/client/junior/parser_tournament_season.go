@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/PuerkitoBio/goquery"
-
 	"github.com/Daniil-Sakharov/HockeyProject/internal/client/junior/parsing"
+	"github.com/PuerkitoBio/goquery"
 )
 
 // ExtractAllSeasons извлекает все сезоны из дропдауна на странице /tournaments/
@@ -17,7 +16,7 @@ func (c *Client) ExtractAllSeasons(domain string) ([]SeasonInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("ошибка HTTP запроса: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("HTTP статус: %d", resp.StatusCode)
@@ -54,7 +53,7 @@ func (c *Client) ParseSeasonTournaments(domain, season, ajaxURL string) ([]Tourn
 	if err != nil {
 		return nil, fmt.Errorf("ошибка HTTP запроса: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("HTTP статус: %d", resp.StatusCode)

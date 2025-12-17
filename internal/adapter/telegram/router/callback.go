@@ -29,8 +29,8 @@ func (r *Router) handleCallback(ctx context.Context, bot *tgbotapi.BotAPI, query
 
 	// Создаем logger для callback handlers
 	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-	
+	defer func() { _ = logger.Sync() }()
+
 	// Маршрутизация по типу действия
 	switch action {
 	case cb.ActionMenu:

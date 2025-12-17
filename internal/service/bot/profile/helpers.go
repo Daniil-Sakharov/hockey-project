@@ -22,7 +22,7 @@ func getCurrentSeason() string {
 func getPreviousSeason(currentSeason string) string {
 	// Парсим текущий сезон "2024-2025" -> 2024
 	var startYear int
-	fmt.Sscanf(currentSeason, "%d-", &startYear)
+	_, _ = fmt.Sscanf(currentSeason, "%d-", &startYear)
 	return fmt.Sprintf("%d-%d", startYear-1, startYear)
 }
 

@@ -1,0 +1,51 @@
+package fhspb
+
+import (
+	"context"
+	"time"
+
+	"github.com/jmoiron/sqlx"
+)
+
+type PlayerTeam struct {
+	PlayerID     string    `db:"player_id"`
+	TeamID       string    `db:"team_id"`
+	TournamentID string    `db:"tournament_id"`
+	Number       *int      `db:"jersey_number"`
+	Role         *string   `db:"role"`
+	Position     *string   `db:"position"`
+	Source       string    `db:"source"`
+	CreatedAt    time.Time `db:"created_at"`
+	UpdatedAt    time.Time `db:"updated_at"`
+}
+
+type PlayerTeamRepository struct {
+	db *sqlx.DB
+}
+
+func NewPlayerTeamRepository(db *sqlx.DB) *PlayerTeamRepository {
+	return &PlayerTeamRepository{db: db}
+}
+
+func (r *PlayerTeamRepository) Upsert(ctx context.Context, pt *PlayerTeam) error {
+	query := `
+		INSERT INTO player_teams (player_id, team_id, tournament_id, jersey_number, role, position, source, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+		ON CONFLICT (player_id, team_id, tournament_id) DO UPDATE SET
+			jersey_number = EXCLUDED.jersey_number,
+			role = EXCLUDED.role,
+			position = EXCLUDED.position,
+			updated_at = NOW()`
+
+	_, err := r.db.ExecContext(ctx, query, pt.PlayerID, pt.TeamID, pt.TournamentID, pt.Number, pt.Role, pt.Position, SourceFHSPB)
+	return err
+}
+
+func (r *PlayerTeamRepository) GetByPlayerAndTeam(ctx context.Context, playerID, teamID string) (*PlayerTeam, error) {
+	var pt PlayerTeam
+	err := r.db.GetContext(ctx, &pt, `SELECT player_id, team_id, tournament_id, jersey_number, role, position, source, created_at, updated_at FROM player_teams WHERE player_id = $1 AND team_id = $2`, playerID, teamID)
+	if err != nil {
+		return nil, err
+	}
+	return &pt, nil
+}

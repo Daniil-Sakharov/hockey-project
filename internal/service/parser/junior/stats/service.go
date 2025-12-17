@@ -29,7 +29,7 @@ func NewStatsParserService(
 	zapLogger *zap.Logger,
 ) *service {
 	statsLogger := logger.New(zapLogger)
-	
+
 	// Создаём детальный парсер
 	detailedParser := detailed.NewParser(
 		repo,

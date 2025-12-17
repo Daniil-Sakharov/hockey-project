@@ -1,15 +1,11 @@
 package parsing
 
 import (
-	"regexp"
 	"strings"
 
-	"github.com/PuerkitoBio/goquery"
-
 	"github.com/Daniil-Sakharov/HockeyProject/internal/client/fhspb/dto"
+	"github.com/PuerkitoBio/goquery"
 )
-
-var playerIDRegex = regexp.MustCompile(`PlayerID=([a-f0-9-]{36})`)
 
 // ParsePlayerURLs извлекает URL игроков из страницы команды
 func ParsePlayerURLs(html []byte, tournamentID int, teamID string) ([]dto.PlayerURLDTO, error) {
@@ -27,7 +23,7 @@ func ParsePlayerURLs(html []byte, tournamentID int, teamID string) ([]dto.Player
 			return
 		}
 
-		matches := playerIDRegex.FindStringSubmatch(href)
+		matches := PlayerIDRegex.FindStringSubmatch(href)
 		if len(matches) < 2 {
 			return
 		}

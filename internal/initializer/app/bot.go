@@ -51,14 +51,14 @@ func (a *BotApp) Run(ctx context.Context) error {
 	case <-sigChan:
 		logger.Info(ctx, "📛 Получен сигнал завершения")
 		cancel()
-		closer.CloseAll(ctx)
+		_ = closer.CloseAll(ctx)
 		logger.Info(ctx, "✅ Bot stopped gracefully")
 		return nil
 
 	case err := <-errChan:
 		logger.Error(ctx, "❌ Бот остановлен с ошибкой", zap.Error(err))
 		cancel()
-		closer.CloseAll(ctx)
+		_ = closer.CloseAll(ctx)
 		return err
 	}
 }

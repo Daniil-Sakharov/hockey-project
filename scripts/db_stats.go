@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/lib/pq"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -50,7 +50,7 @@ func main() {
 	fmt.Printf("  ❌ Игроков БЕЗ статистики:     %d (%.2f%%)\n", players-playersWithStats, 100.0-coveragePercent)
 	fmt.Println("================================================================================")
 	fmt.Println()
-	
+
 	if coveragePercent < 50.0 {
 		fmt.Println("⚠️  Низкое покрытие статистики! Рекомендуется запустить: task stats:parse")
 		fmt.Println()

@@ -23,6 +23,7 @@ vendor/
 # IDE
 .idea/
 .factory/
+.kiro/
 .vscode/
 *.swp
 *.swo
@@ -36,8 +37,12 @@ Thumbs.db
 .env
 .env.local
 
+# Docs
+/docs
+
 # Logs
 *.log
+logs/
 
 # Temporary files
 tmp/

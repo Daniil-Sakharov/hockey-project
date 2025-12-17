@@ -18,7 +18,7 @@ func ParseCombinations(doc *goquery.Document) ([]StatsCombination, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Конвертируем parsing.StatsCombination в stats.StatsCombination
 	combinations := make([]StatsCombination, len(result))
 	for i, r := range result {
@@ -29,7 +29,7 @@ func ParseCombinations(doc *goquery.Document) ([]StatsCombination, error) {
 			GroupName: r.GroupName,
 		}
 	}
-	
+
 	return combinations, nil
 }
 
@@ -47,7 +47,7 @@ func ParseCombinationsWithAjax(
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Конвертируем parsing.StatsCombination в stats.StatsCombination
 	combinations := make([]StatsCombination, len(result))
 	for i, r := range result {
@@ -58,6 +58,6 @@ func ParseCombinationsWithAjax(
 			GroupName: r.GroupName,
 		}
 	}
-	
+
 	return combinations, nil
 }

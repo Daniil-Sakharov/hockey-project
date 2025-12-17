@@ -34,9 +34,10 @@ func (a *FHSPBParserApp) Run(ctx context.Context) error {
 
 	deps := svc.Dependencies{
 		Client:         client,
-		PlayerRepo:     a.DiContainer.PlayerRepository(ctx),
-		TeamRepo:       a.DiContainer.TeamRepository(ctx),
-		TournamentRepo: a.DiContainer.TournamentRepository(ctx),
+		TournamentRepo: a.DiContainer.FHSPBTournament(ctx),
+		TeamRepo:       a.DiContainer.FHSPBTeam(ctx),
+		PlayerRepo:     a.DiContainer.FHSPBPlayer(ctx),
+		PlayerTeamRepo: a.DiContainer.FHSPBPlayerTeam(ctx),
 	}
 
 	parserCfg := svc.Config{

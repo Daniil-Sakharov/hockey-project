@@ -27,7 +27,7 @@ func (p *Parser) ParseFromTeam(teamURL string) ([]types.PlayerDTO, error) {
 	if err != nil {
 		return nil, fmt.Errorf("ошибка загрузки страницы команды: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("HTTP статус %d", resp.StatusCode)

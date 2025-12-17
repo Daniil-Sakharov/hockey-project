@@ -102,8 +102,5 @@ func IsYearLink(ajaxURL string) bool {
 		return true
 	}
 	paramsEncoded := strings.ReplaceAll(matches[1], "%3D", "=")
-	if strings.Contains(paramsEncoded, "R1JPVVBfSUQiO3") {
-		return false
-	}
-	return true
+	return !strings.Contains(paramsEncoded, "R1JPVVBfSUQiO3")
 }

@@ -25,7 +25,7 @@ func (p *Parser) DiscoverAll(mainURL string) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("ошибка HTTP запроса к %s: %w", mainURL, err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("HTTP статус %d для %s", resp.StatusCode, mainURL)
