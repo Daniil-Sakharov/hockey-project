@@ -5,40 +5,45 @@ import (
 	"log"
 
 	"github.com/Daniil-Sakharov/HockeyProject/internal/config"
+	"github.com/Daniil-Sakharov/HockeyProject/internal/initializer/di"
+	"github.com/Daniil-Sakharov/HockeyProject/pkg/logger"
 	"github.com/Daniil-Sakharov/HockeyProject/pkg/migrator/pg"
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/jmoiron/sqlx"
+	"go.uber.org/zap"
 )
 
 func main() {
 	ctx := context.Background()
 
-	// Загружаем конфигурацию
-	if err := config.Load(); err != nil {
-		log.Fatalf("Failed to load config: %v", err)
+	// Инициализация логгера
+	if err := logger.Init("info", false, nil); err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
 	}
+	defer func() {
+		_ = logger.Sync()
+	}()
 
+	// Загрузка конфигурации
+	if err := config.Load(); err != nil {
+		logger.Fatal(ctx, "Failed to load config", zap.Error(err))
+	}
 	cfg := config.AppConfig()
 
-	log.Println("🔄 Connecting to database...")
+	// Создание DI контейнера для миграций
+	factory := di.NewContainerFactory(cfg)
+	container := factory.CreateMigrateContainer()
 
-	// Подключаемся к БД
-	db, err := sqlx.Connect("pgx", cfg.Postgres.URI())
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
-	}
-	defer func() { _ = db.Close() }()
+	logger.Info(ctx, "🔄 Connecting to database...")
 
-	log.Println("✅ Connected to database")
-	log.Println("🔄 Running migrations...")
+	db := container.Infrastructure().PostgresDB(ctx)
 
-	// Создаем migrator
+	logger.Info(ctx, "✅ Connected to database")
+	logger.Info(ctx, "🔄 Running migrations...")
+
 	migrator := pg.NewMigrator(db.DB, cfg.Postgres.MigrationsDir())
-
-	// Запускаем миграции
 	if err := migrator.Up(ctx); err != nil {
-		log.Fatalf("Failed to run migrations: %v", err)
+		logger.Fatal(ctx, "Migration failed", zap.Error(err))
 	}
 
-	log.Println("✅ Migrations applied successfully")
+	logger.Info(ctx, "✅ Migrations applied successfully")
 }
