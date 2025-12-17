@@ -1,0 +1,53 @@
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://sug6r:Daniil200474@localhost:5432/hockey_stats"
+      ],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "fetch": {
+      "command": "/Users/sug6r/.local/bin/mcp-server-fetch",
+      "args": [],
+      "disabled": false,
+      "autoApprove": [
+        "fetch",
+        "fetch"
+      ]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

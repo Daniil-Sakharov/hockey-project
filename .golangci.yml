@@ -1,0 +1,59 @@
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+  modules-download-mode: readonly
+
+formatters:
+  enable:
+    - gofumpt
+    - gci
+  settings:
+    gofumpt:
+      extra-rules: true
+    gci:
+      sections:
+        - standard
+        - default
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gosec
+    - misspell
+    - unconvert
+
+linters-settings:
+  govet:
+    enable-all: true
+    disable:
+      - shadow
+  errcheck:
+    check-type-assertions: false
+    check-blank: false
+  gosec:
+    excludes:
+      - G101
+      - G203
+      - G401
+      - G404
+      - G501
+      - G304
+      - G107
+      - G204
+
+issues:
+  exclude-use-default: true
+  max-issues-per-linter: 100
+  max-same-issues: 10
+  exclude-dirs:
+    - scripts
+  exclude-rules:
+    - linters:
+        - errcheck
+      source: "defer .*(Close|Rollback|Sync)\\("
