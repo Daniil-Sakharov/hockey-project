@@ -83,8 +83,9 @@ jobs:
             # Запускаем миграции
             docker compose -f deploy/compose/production/docker-compose.yml --profile migrate run --rm migrate || true
             
-            # Перезапускаем бота
-            docker compose -f deploy/compose/production/docker-compose.yml up -d postgres bot
+            # Останавливаем старые контейнеры и запускаем новые с принудительным пересозданием
+            docker compose -f deploy/compose/production/docker-compose.yml down || true
+            docker compose -f deploy/compose/production/docker-compose.yml up -d postgres bot --force-recreate
             
             # Чистим старые образы
             docker image prune -f
