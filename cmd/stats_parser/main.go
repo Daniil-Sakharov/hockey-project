@@ -21,8 +21,8 @@ func main() {
 		_ = logger.Sync()
 	}()
 
-	// Загрузка конфигурации
-	if err := config.Load(); err != nil {
+	// Загрузка конфигурации для парсера (без Telegram)
+	if err := config.LoadForParser(); err != nil {
 		logger.Fatal(ctx, "Failed to load config", zap.Error(err))
 	}
 	cfg := config.AppConfig()
