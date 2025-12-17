@@ -16,30 +16,31 @@ help: ## Показать все доступные команды
 	@echo ""
 	@echo "📖 Примеры использования:"
 	@echo "  make status          # Проверить статус контейнеров"
-	@echo "  make run-parser-bg   # Запустить парсер в фоне"
-	@echo "  make logs-parser     # Посмотреть логи парсера"
+	@echo "  make run-junior-parser-bg   # Запустить Junior парсер в фоне"
+	@echo "  make logs-junior-parser     # Посмотреть логи парсера"
 
 # === ЛОКАЛЬНАЯ РАЗРАБОТКА ===
 
 local-up: ## Запустить локальное окружение (PostgreSQL)
-	docker compose -f deploy/compose/local/docker-compose.yml up -d postgres
+	docker compose -f deploy/compose/local/docker-compose.yml up -d
 
 local-migrate: ## Запустить миграции локально
-	docker compose -f deploy/compose/local/docker-compose.yml --profile migrate run --rm migrate
+	@echo "🔄 Запуск миграций локально..."
+	go run cmd/migrate/main.go
 
 local-bot: ## Запустить бота локально
-	docker compose -f deploy/compose/local/docker-compose.yml --profile bot up -d bot
+	@echo "🤖 Запуск бота локально..."
+	go run cmd/bot/main.go
 
 local-parser: ## Запустить парсер локально
-	docker compose -f deploy/compose/local/docker-compose.yml --profile parser run --rm parser
+	@echo "🏒 Запуск парсера локально..."
+	go run cmd/parser/main.go
 
 local-down: ## Остановить локальное окружение
 	docker compose -f deploy/compose/local/docker-compose.yml down
 
 local-logs: ## Показать логи локального окружения
 	docker compose -f deploy/compose/local/docker-compose.yml logs -f
-
-# === ПРОДАКШН (УДАЛЕННЫЙ СЕРВЕР) ===
 
 # === ПРОДАКШН (УДАЛЕННЫЙ СЕРВЕР) ===
 
@@ -50,24 +51,28 @@ logs-tail: ## Показать последние 100 строк логов бо
 	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) logs --tail=100 bot"
 
 status: ## Показать статус всех контейнеров
-	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) ps -a"
+	@echo "📊 Статус контейнеров на сервере:"
+	ssh $(SERVER) "docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'"
 
 stats: ## Показать использование ресурсов Docker
 	ssh $(SERVER) "docker stats --no-stream"
 
 restart: ## Перезапустить бота
+	@echo "🔄 Перезапуск бота..."
 	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) restart bot"
 
 stop: ## Остановить все сервисы
+	@echo "🛑 Остановка всех сервисов..."
 	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) down"
 
 start: ## Запустить бота и базу данных
+	@echo "🚀 Запуск бота и базы данных..."
 	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) up -d postgres bot"
 
-# === ПАРСЕРЫ ===
+# === ПАРСЕРЫ (ПРОДАКШН) ===
 
 run-junior-parser: ## Запустить Junior парсер (игроки/команды)
-	@echo "🚀 Запуск Junior парсера..."
+	@echo "🏒 Запуск Junior парсера..."
 	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) --profile parser run --rm junior-parser"
 
 run-junior-stats: ## Запустить Junior Stats парсер (статистика)
@@ -87,10 +92,10 @@ run-parser: run-junior-parser ## Алиас для run-junior-parser
 run-stats: run-junior-stats ## Алиас для run-junior-stats
 run-fhspb: run-fhspb-parser ## Алиас для run-fhspb-parser
 
-# === ФОНОВЫЙ ЗАПУСК ===
+# === ФОНОВЫЕ ПАРСЕРЫ (ПРОДАКШН) ===
 
 run-junior-parser-bg: ## Запустить Junior парсер в фоне
-	@echo "🚀 Запуск Junior парсера в фоне..."
+	@echo "🏒 Запуск Junior парсера в фоне..."
 	nohup make run-junior-parser > junior-parser.log 2>&1 &
 	@echo "✅ Junior парсер запущен в фоне. Логи: tail -f junior-parser.log"
 
@@ -139,6 +144,7 @@ stop-parsers: ## Остановить все запущенные парсеры
 	ssh $(SERVER) "docker ps | grep parser | awk '{print \$$1}' | xargs -r docker stop"
 
 # === ЛОГИ ЛОКАЛЬНЫХ ФАЙЛОВ ===
+
 logs-junior-parser-file: ## Показать логи Junior парсера из локального файла
 	tail -f junior-parser.log
 
@@ -152,6 +158,7 @@ logs-fhspb-stats-file: ## Показать логи FHSPB Stats парсера �
 	tail -f fhspb-stats.log
 
 # === ЛОГИ DOCKER КОНТЕЙНЕРОВ ===
+
 logs-junior-parser: ## Показать логи Junior парсера из Docker
 	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) logs -f junior-parser"
 
@@ -174,49 +181,38 @@ logs-fhspb: logs-fhspb-parser ## Алиас для logs-fhspb-parser
 
 # === БАЗА ДАННЫХ ===
 
-db-tunnel:
+db-tunnel: ## Создать SSH туннель к базе данных
 	@echo "🔗 Подключение к БД: localhost:5432"
 	@echo "   User: hockey, DB: hockey_stats"
 	@echo "   Ctrl+C для отключения"
 	ssh -N -L 5432:localhost:5432 $(SERVER)
 
-db-shell:
-	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f $(COMPOSE_FILE) exec postgres psql -U hockey -d hockey_stats"
+db-shell: ## Подключиться к PostgreSQL через psql
+	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) exec postgres psql -U hockey -d hockey_stats"
 
 # === ДЕПЛОЙ ===
 
-deploy:
-	scp deploy/compose/$(COMPOSE_FILE) $(SERVER):$(REMOTE_DIR)/
-	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f $(COMPOSE_FILE) pull && docker compose -f $(COMPOSE_FILE) up -d postgres bot"
+deploy: ## Деплой через GitHub Actions (автоматически)
+	@echo "🚀 Деплой запускается автоматически через GitHub Actions при push в main"
+	@echo "   Проверить статус: https://github.com/Daniil-Sakharov/hockey-project/actions"
 
-migrate:
-	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f $(COMPOSE_FILE) run --rm migrate"
+deploy-manual: ## Ручной деплой (копирование файлов и перезапуск)
+	@echo "📦 Копирование docker-compose на сервер..."
+	scp deploy/compose/production/$(COMPOSE_FILE) $(SERVER):$(REMOTE_DIR)/deploy/compose/production/
+	@echo "🔄 Перезапуск сервисов..."
+	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f deploy/compose/production/$(COMPOSE_FILE) pull && docker compose -f deploy/compose/production/$(COMPOSE_FILE) up -d postgres bot"
+	@echo "✅ Деплой завершен"
 
-show-env:
-	ssh $(SERVER) "cat $(REMOTE_DIR)/.env"
+# === МОНИТОРИНГ ===
 
-edit-env:
-	ssh $(SERVER) "nano $(REMOTE_DIR)/.env"
-
-.PHONY: logs logs-tail status stats restart stop start \
-        run-parser run-stats run-fhspb run-fhspb-stats \
-        logs-parser logs-stats logs-fhspb \
-        db-tunnel db-shell deploy migrate show-env edit-env
-# === МОНИТОРИНГ И УПРАВЛЕНИЕ ===
-
-deploy-monitoring: ## Установить Portainer для веб-управления
-	@echo "🚀 Установка Portainer..."
-	scp deploy/compose/monitoring/docker-compose.yml $(SERVER):/opt/hockey-bot/monitoring-compose.yml
-	scp deploy/compose/monitoring/.env.example $(SERVER):/opt/hockey-bot/monitoring.env
-	ssh $(SERVER) "cd /opt/hockey-bot && echo 'HockeyAdmin2024!' | docker run --rm -i portainer/portainer-ce --hash-password | head -1 > /tmp/portainer_password"
-	ssh $(SERVER) "cd /opt/hockey-bot && docker compose -f monitoring-compose.yml up -d portainer"
-	@echo "✅ Portainer установлен!"
-	@echo "🌐 Доступ: http://158.160.211.62:9000"
-	@echo "👤 Логин: admin"
-	@echo "🔑 Пароль: HockeyAdmin2024!"
-
-stop-monitoring: ## Остановить мониторинг
-	ssh $(SERVER) "cd /opt/hockey-bot && docker compose -f monitoring-compose.yml down"
+deploy-monitoring: ## Установить Portainer для мониторинга
+	@echo "📊 Установка Portainer..."
+	scp deploy/compose/monitoring/docker-compose.yml $(SERVER):$(REMOTE_DIR)/monitoring-compose.yml
+	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f monitoring-compose.yml up -d"
+	@echo "✅ Portainer установлен: http://your-server:9000"
 
 logs-monitoring: ## Показать логи мониторинга
-	ssh $(SERVER) "cd /opt/hockey-bot && docker compose -f monitoring-compose.yml logs -f"
+	ssh $(SERVER) "docker logs hockey-portainer -f"
+
+stop-monitoring: ## Остановить мониторинг
+	ssh $(SERVER) "cd $(REMOTE_DIR) && docker compose -f monitoring-compose.yml down"

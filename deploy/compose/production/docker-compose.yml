@@ -1,4 +1,5 @@
 services:
+  # === БАЗА ДАННЫХ ===
   postgres:
     image: postgres:16-alpine
     container_name: hockey-postgres
@@ -17,6 +18,7 @@ services:
       timeout: 5s
       retries: 5
 
+  # === TELEGRAM БОТ ===
   bot:
     image: ghcr.io/${GITHUB_REPOSITORY}:latest
     container_name: hockey-bot
@@ -36,6 +38,7 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-info}
     command: ["/app/bot"]
 
+  # === МИГРАЦИИ ===
   migrate:
     image: ghcr.io/${GITHUB_REPOSITORY}:latest
     container_name: hockey-migrate
@@ -43,7 +46,6 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_USER: ${POSTGRES_USER}
@@ -53,10 +55,12 @@ services:
       MIGRATIONS_DIR: /app/migrations
     command: ["/app/migrate"]
     restart: "no"
+    profiles: ["migrate"]
 
-  parser:
+  # === JUNIOR ПАРСЕРЫ ===
+  junior-parser:
     image: ghcr.io/${GITHUB_REPOSITORY}:latest
-    container_name: hockey-parser
+    container_name: hockey-junior-parser
     depends_on:
       postgres:
         condition: service_healthy
@@ -73,9 +77,9 @@ services:
     restart: "no"
     profiles: ["parser"]
 
-  stats-parser:
+  junior-stats-parser:
     image: ghcr.io/${GITHUB_REPOSITORY}:latest
-    container_name: hockey-stats-parser
+    container_name: hockey-junior-stats-parser
     depends_on:
       postgres:
         condition: service_healthy
@@ -92,6 +96,7 @@ services:
     restart: "no"
     profiles: ["parser"]
 
+  # === FHSPB ПАРСЕРЫ ===
   fhspb-parser:
     image: ghcr.io/${GITHUB_REPOSITORY}:latest
     container_name: hockey-fhspb-parser
@@ -117,7 +122,7 @@ services:
 
   fhspb-stats-parser:
     image: ghcr.io/${GITHUB_REPOSITORY}:latest
-    container_name: hockey-fhspb-stats
+    container_name: hockey-fhspb-stats-parser
     depends_on:
       postgres:
         condition: service_healthy

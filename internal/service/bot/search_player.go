@@ -6,6 +6,8 @@ import (
 
 	"github.com/Daniil-Sakharov/HockeyProject/internal/domain/bot"
 	"github.com/Daniil-Sakharov/HockeyProject/internal/domain/player"
+	"github.com/Daniil-Sakharov/HockeyProject/pkg/logger"
+	"go.uber.org/zap"
 )
 
 // SearchPlayerService сервис поиска игроков для бота
@@ -31,6 +33,11 @@ func NewSearchPlayerService(playerRepo player.Repository) SearchPlayerService {
 }
 
 func (s *searchPlayerService) Search(ctx context.Context, filters bot.SearchFilters, page, pageSize int) (*SearchResult, error) {
+	logger.Info(ctx, "🔍 Searching players",
+		zap.Int("page", page),
+		zap.Int("page_size", pageSize),
+		zap.Any("filters", filters))
+
 	repoFilters := player.SearchFilters{
 		Limit:  pageSize,
 		Offset: (page - 1) * pageSize,
@@ -62,6 +69,7 @@ func (s *searchPlayerService) Search(ctx context.Context, filters bot.SearchFilt
 
 	players, totalCount, err := s.playerRepo.SearchWithTeam(ctx, repoFilters)
 	if err != nil {
+		logger.Error(ctx, "❌ Failed to search players", zap.Error(err))
 		return nil, err
 	}
 
@@ -69,6 +77,11 @@ func (s *searchPlayerService) Search(ctx context.Context, filters bot.SearchFilt
 	if totalPages == 0 {
 		totalPages = 1
 	}
+
+	logger.Info(ctx, "✅ Players search completed",
+		zap.Int("found", len(players)),
+		zap.Int("total_count", totalCount),
+		zap.Int("total_pages", totalPages))
 
 	return &SearchResult{
 		Players:     players,

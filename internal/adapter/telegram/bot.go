@@ -3,11 +3,12 @@ package telegram
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/Daniil-Sakharov/HockeyProject/internal/adapter/telegram/router"
 	"github.com/Daniil-Sakharov/HockeyProject/internal/config"
+	"github.com/Daniil-Sakharov/HockeyProject/pkg/logger"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"go.uber.org/zap"
 )
 
 // Bot представляет Telegram бота
@@ -29,7 +30,10 @@ func NewBot(
 
 	api.Debug = cfg.Debug()
 
-	log.Printf("Authorized on account %s", api.Self.UserName)
+	ctx := context.Background()
+	logger.Info(ctx, "✅ Authorized on Telegram account",
+		zap.String("username", api.Self.UserName),
+		zap.Int64("bot_id", api.Self.ID))
 
 	return &Bot{
 		api:    api,
@@ -45,18 +49,29 @@ func (b *Bot) Start(ctx context.Context) error {
 
 	updates := b.api.GetUpdatesChan(u)
 
-	log.Println("Bot started. Waiting for updates...")
+	logger.Info(ctx, "🚀 Bot started. Waiting for updates...")
 
 	for {
 		select {
 		case <-ctx.Done():
-			log.Println("Bot stopped")
+			logger.Info(ctx, "🛑 Bot stopped by context")
 			b.api.StopReceivingUpdates()
 			return ctx.Err()
 
 		case update := <-updates:
-			// Обрабатываем обновление в отдельной горутине
-			go b.router.Route(ctx, b.api, update)
+			b.logUpdate(ctx, update)
+
+			// Обрабатываем обновление в отдельной горутине с восстановлением от паники
+			go func() {
+				defer func() {
+					if r := recover(); r != nil {
+						logger.Error(ctx, "💥 Panic in update handler",
+							zap.Any("panic", r),
+							zap.Int("update_id", update.UpdateID))
+					}
+				}()
+				b.router.Route(ctx, b.api, update)
+			}()
 		}
 	}
 }
@@ -64,5 +79,23 @@ func (b *Bot) Start(ctx context.Context) error {
 // Stop останавливает бота
 func (b *Bot) Stop() {
 	b.api.StopReceivingUpdates()
-	log.Println("Bot stopped")
+	ctx := context.Background()
+	logger.Info(ctx, "🛑 Bot stopped")
+}
+
+// logUpdate логирует информацию о полученном обновлении
+func (b *Bot) logUpdate(ctx context.Context, update tgbotapi.Update) {
+	if update.Message != nil {
+		logger.Info(ctx, "📨 Received message",
+			zap.Int("update_id", update.UpdateID),
+			zap.Int64("user_id", update.Message.From.ID),
+			zap.String("username", update.Message.From.UserName),
+			zap.String("text", update.Message.Text))
+	} else if update.CallbackQuery != nil {
+		logger.Info(ctx, "🔘 Received callback",
+			zap.Int("update_id", update.UpdateID),
+			zap.Int64("user_id", update.CallbackQuery.From.ID),
+			zap.String("username", update.CallbackQuery.From.UserName),
+			zap.String("data", update.CallbackQuery.Data))
+	}
 }
