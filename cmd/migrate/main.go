@@ -19,7 +19,9 @@ func main() {
 	if err := logger.Init("info", false, nil); err != nil {
 		log.Fatalf("Failed to initialize logger: %v", err)
 	}
-	defer logger.Sync()
+	defer func() {
+		_ = logger.Sync()
+	}()
 
 	// Загрузка конфигурации
 	if err := config.Load(); err != nil {
