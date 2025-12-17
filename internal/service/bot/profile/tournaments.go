@@ -87,7 +87,21 @@ func hasNonGeneralGroups(groups []string) bool {
 	return false
 }
 
-// isGeneralGroup проверяет является ли группа "Общей"
+// isGeneralGroup проверяет является ли группа "Общей" или годом рождения
 func isGeneralGroup(groupName string) bool {
-	return strings.Contains(strings.ToLower(groupName), "общ")
+	// "Общая статистика"
+	if strings.Contains(strings.ToLower(groupName), "общ") {
+		return true
+	}
+	// Год рождения (4 цифры) - тоже считается "общей" для данного года
+	groupName = strings.TrimSpace(groupName)
+	if len(groupName) == 4 {
+		for _, c := range groupName {
+			if c < '0' || c > '9' {
+				return false
+			}
+		}
+		return true
+	}
+	return false
 }

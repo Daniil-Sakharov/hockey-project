@@ -44,8 +44,8 @@ func (p *Parser) ParseTournamentStats(
 		return nil, fmt.Errorf("failed to parse HTML: %w", err)
 	}
 
-	// 4. Извлекаем готовые комбинации год+группа из data-ajax атрибутов
-	combinations, err := ParseCombinations(doc)
+	// 4. Извлекаем комбинации год+группа с AJAX запросами для каждого года
+	combinations, err := ParseCombinationsWithAjax(ctx, doc, domain, p.httpClient)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse combinations: %w", err)
 	}
