@@ -61,6 +61,44 @@ func Load(path ...string) error {
 	return nil
 }
 
+// LoadForParser загружает конфигурацию для парсеров без Telegram
+func LoadForParser(path ...string) error {
+	err := godotenv.Load(path...)
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
+
+	loggerCfg, err := env.NewLoggerConfig()
+	if err != nil {
+		return err
+	}
+
+	postgresCfg, err := env.NewPostgresConfig()
+	if err != nil {
+		return err
+	}
+
+	fhspbCfg, err := env.NewFHSPBConfig()
+	if err != nil {
+		return err
+	}
+
+	juniorCfg, err := env.NewJuniorConfig()
+	if err != nil {
+		return err
+	}
+
+	appConfig = &Config{
+		Logger:   loggerCfg,
+		Postgres: postgresCfg,
+		Telegram: nil, // Не загружаем Telegram конфигурацию
+		FHSPB:    fhspbCfg,
+		Junior:   juniorCfg,
+	}
+
+	return nil
+}
+
 // AppConfig возвращает глобальную конфигурацию
 func AppConfig() *Config {
 	return appConfig
