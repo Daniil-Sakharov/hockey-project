@@ -40,6 +40,9 @@ Thumbs.db
 # Docs
 /docs
 
+# Scripts
+/scripts
+
 # Logs
 *.log
 logs/
