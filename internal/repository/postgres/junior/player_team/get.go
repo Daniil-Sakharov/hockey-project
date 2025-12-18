@@ -15,7 +15,7 @@ func (r *repository) GetByPlayer(ctx context.Context, playerID string) ([]*playe
 		       created_at, updated_at
 		FROM player_teams
 		WHERE player_id = $1
-		ORDER BY created_at DESC
+		ORDER BY started_at DESC NULLS LAST, created_at DESC
 	`
 
 	var teams []*player_team.PlayerTeam
