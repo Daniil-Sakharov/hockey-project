@@ -13,13 +13,13 @@ func (r *repository) Create(ctx context.Context, p *player.Player) error {
 		INSERT INTO players (
 			id, profile_url, name, birth_date, position, 
 			height, weight, handedness, 
-			registry_id, school, rank, data_season,
+			data_season,
 			source, created_at, updated_at
 		) VALUES (
 			$1, $2, $3, $4, $5, 
 			$6, $7, $8, 
-			$9, $10, $11, $12,
-			$13, $14, $15
+			$9,
+			$10, $11, $12
 		)
 		ON CONFLICT (profile_url) DO NOTHING
 	`
@@ -33,9 +33,6 @@ func (r *repository) Create(ctx context.Context, p *player.Player) error {
 		p.Height,
 		p.Weight,
 		p.Handedness,
-		p.RegistryID,
-		p.School,
-		p.Rank,
 		p.DataSeason,
 		p.Source,
 		p.CreatedAt,

@@ -17,14 +17,9 @@ type Player struct {
 	Weight     *int      `db:"weight"`
 	Handedness *string   `db:"handedness"`
 
-	RegistryID *string `db:"registry_id"`
-	School     *string `db:"school"`
-	Rank       *string `db:"rank"`
 	DataSeason *string `db:"data_season"`
 
 	ExternalID  *string `db:"external_id"`
-	Citizenship *string `db:"citizenship"`
-	Role        *string `db:"role"`
 	BirthPlace  *string `db:"birth_place"`
 
 	Source    string    `db:"source"`

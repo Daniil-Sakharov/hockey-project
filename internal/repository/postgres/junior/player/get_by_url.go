@@ -14,7 +14,7 @@ func (r *repository) GetByProfileURL(ctx context.Context, url string) (*player.P
 		SELECT 
 			id, profile_url, name, birth_date, position,
 			height, weight, handedness,
-			registry_id, school, rank, data_season,
+			data_season,
 			source, created_at, updated_at
 		FROM players
 		WHERE profile_url = $1
