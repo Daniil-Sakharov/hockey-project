@@ -119,7 +119,7 @@ func (r *repository) SearchWithTeam(ctx context.Context, filters player.SearchFi
 		case "ЦФО":
 			conditions = append(conditions, "(lt.tournament_domain = 'https://cfo.fhr.ru' OR lt.tournament_domain = 'https://vrn.fhr.ru')")
 		case "СЗФО":
-			conditions = append(conditions, "lt.tournament_domain = 'https://szfo.fhr.ru'")
+			conditions = append(conditions, "(lt.tournament_domain = 'https://szfo.fhr.ru' OR lt.tournament_domain = 'https://len.fhr.ru' OR lt.tournament_domain = 'https://komi.fhr.ru')")
 		case "ЮФО":
 			conditions = append(conditions, "lt.tournament_domain = 'https://yfo.fhr.ru'")
 		case "ПФО":
