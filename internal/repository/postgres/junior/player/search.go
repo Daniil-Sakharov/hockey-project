@@ -78,8 +78,20 @@ func (r *repository) SearchWithTeam(ctx context.Context, filters player.SearchFi
 
 	// Фильтр по позиции
 	if filters.Position != "" {
+		// Маппинг позиций из Telegram в БД
+		var dbPosition string
+		switch filters.Position {
+		case "forward":
+			dbPosition = "Нападающий"
+		case "defender":
+			dbPosition = "Защитник"
+		case "goalie":
+			dbPosition = "Вратарь"
+		default:
+			dbPosition = filters.Position
+		}
 		conditions = append(conditions, fmt.Sprintf("p.position = $%d", argCounter))
-		args = append(args, filters.Position)
+		args = append(args, dbPosition)
 		argCounter++
 	}
 
@@ -101,13 +113,13 @@ func (r *repository) SearchWithTeam(ctx context.Context, filters player.SearchFi
 	if filters.Region != "" {
 		switch filters.Region {
 		case "СПБ":
-			conditions = append(conditions, "p.source = 'fhspb'")
+			conditions = append(conditions, "p.source = 'fhspb.ru'")
 		case "ФХР":
 			conditions = append(conditions, "lt.tournament_domain = 'https://junior.fhr.ru'")
 		case "ЦФО":
 			conditions = append(conditions, "(lt.tournament_domain = 'https://cfo.fhr.ru' OR lt.tournament_domain = 'https://vrn.fhr.ru')")
 		case "СЗФО":
-			conditions = append(conditions, "(lt.tournament_domain = 'https://len.fhr.ru' OR lt.tournament_domain = 'https://komi.fhr.ru')")
+			conditions = append(conditions, "(lt.tournament_domain = 'https://szfo.fhr.ru' OR lt.tournament_domain = 'https://len.fhr.ru' OR lt.tournament_domain = 'https://komi.fhr.ru')")
 		case "ЮФО":
 			conditions = append(conditions, "lt.tournament_domain = 'https://yfo.fhr.ru'")
 		case "ПФО":
@@ -131,8 +143,20 @@ func (r *repository) SearchWithTeam(ctx context.Context, filters player.SearchFi
 
 	// Запрос для подсчета общего количества
 	countQuery := fmt.Sprintf(`
+		WITH latest_teams AS (
+			SELECT DISTINCT ON (pt.player_id)
+				pt.player_id,
+				t.name as team_name,
+				COALESCE(t.city, t.region, '') as team_city,
+				COALESCE(tr.domain, '') as tournament_domain
+			FROM player_teams pt
+			JOIN teams t ON pt.team_id = t.id
+			LEFT JOIN tournaments tr ON pt.tournament_id = tr.id
+			ORDER BY pt.player_id, pt.started_at DESC NULLS LAST
+		)
 		SELECT COUNT(*)
 		FROM players p
+		LEFT JOIN latest_teams lt ON p.id = lt.player_id
 		%s
 	`, whereClause)
 

@@ -31,6 +31,12 @@ func (o *Orchestrator) processPlayer(ctx context.Context, teamID, tournamentID s
 		return fmt.Errorf("get player: %w", err)
 	}
 
+	// Получаем данные турнира для заполнения started_at, season, is_active
+	tournament, err := o.tournamentRepo.GetByExternalID(ctx, fmt.Sprintf("%d", pURL.TournamentID))
+	if err != nil {
+		return fmt.Errorf("get tournament: %w", err)
+	}
+
 	// Сохраняем/обновляем профиль игрока
 	player := &fhspbRepo.Player{
 		ExternalID: pURL.PlayerID,
@@ -44,17 +50,34 @@ func (o *Orchestrator) processPlayer(ctx context.Context, teamID, tournamentID s
 	if playerDTO.BirthPlace != "" {
 		player.BirthPlace = &playerDTO.BirthPlace
 	}
+	if playerDTO.Position != "" {
+		player.Position = &playerDTO.Position
+	}
+	if playerDTO.Height > 0 {
+		player.Height = &playerDTO.Height
+	}
+	if playerDTO.Weight > 0 {
+		player.Weight = &playerDTO.Weight
+	}
+	if playerDTO.Stick != "" {
+		player.Handedness = &playerDTO.Stick
+	}
 
 	playerID, err := o.playerRepo.Upsert(ctx, player)
 	if err != nil {
 		return fmt.Errorf("upsert player: %w", err)
 	}
 
-	// Сохраняем связь игрок-команда
+	// Сохраняем связь игрок-команда с данными турнира
+	isActive := !tournament.IsEnded
 	playerTeam := &fhspbRepo.PlayerTeam{
 		PlayerID:     playerID,
 		TeamID:       teamID,
 		TournamentID: tournamentID,
+		Season:       tournament.Season,
+		StartedAt:    tournament.StartDate,
+		EndedAt:      tournament.EndDate,
+		IsActive:     &isActive,
 	}
 	if playerDTO.Number > 0 {
 		playerTeam.Number = &playerDTO.Number
