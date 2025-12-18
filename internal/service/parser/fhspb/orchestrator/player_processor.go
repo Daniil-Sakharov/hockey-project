@@ -20,7 +20,7 @@ func (o *Orchestrator) processPlayerSafe(ctx context.Context, teamID, tournament
 			zap.String("id", pURL.PlayerID),
 			zap.Error(err),
 		)
-		
+
 		// Добавляем в retry очередь если включено
 		if o.config.RetryEnabled() {
 			retryErr := o.retryManager.AddFailedJob(ctx, retry.JobTypePlayer, "fhspb", pURL.PlayerID, pURL.URL, err)
@@ -28,7 +28,7 @@ func (o *Orchestrator) processPlayerSafe(ctx context.Context, teamID, tournament
 				logger.Error(ctx, "Failed to add retry job", zap.Error(retryErr))
 			}
 		}
-		
+
 		return false
 	}
 	return true

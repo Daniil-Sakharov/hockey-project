@@ -33,6 +33,7 @@ func (a *FHSPBParserApp) Run(ctx context.Context) error {
 	client.SetDelay(cfg.RequestDelay())
 
 	deps := svc.Dependencies{
+		DB:             a.DiContainer.PostgresDB(ctx),
 		Client:         client,
 		TournamentRepo: a.DiContainer.FHSPBTournament(ctx),
 		TeamRepo:       a.DiContainer.FHSPBTeam(ctx),
@@ -40,13 +41,6 @@ func (a *FHSPBParserApp) Run(ctx context.Context) error {
 		PlayerTeamRepo: a.DiContainer.FHSPBPlayerTeam(ctx),
 	}
 
-	parserCfg := svc.Config{
-		MaxBirthYear:      cfg.MaxBirthYear(),
-		TournamentWorkers: cfg.TournamentWorkers(),
-		TeamWorkers:       cfg.TeamWorkers(),
-		PlayerWorkers:     cfg.PlayerWorkers(),
-	}
-
-	orch := orchestrator.New(deps, parserCfg)
+	orch := orchestrator.New(deps, cfg)
 	return orch.Run(ctx)
 }

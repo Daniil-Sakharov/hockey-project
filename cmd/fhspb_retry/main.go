@@ -12,7 +12,8 @@ import (
 	fhspbRepo "github.com/Daniil-Sakharov/HockeyProject/internal/repository/postgres/fhspb"
 	"github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/retry"
 	"github.com/Daniil-Sakharov/HockeyProject/pkg/logger"
-	"github.com/Daniil-Sakharov/HockeyProject/pkg/postgres"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
@@ -22,10 +23,10 @@ func main() {
 		log.Fatal("Failed to load config:", err)
 	}
 
-	cfg := config.Get()
+	cfg := config.AppConfig()
 
 	// Инициализируем логгер
-	if err := logger.Init(cfg.Logger); err != nil {
+	if err := logger.Init("info", false, nil); err != nil {
 		log.Fatal("Failed to init logger:", err)
 	}
 
@@ -35,11 +36,11 @@ func main() {
 	logger.Info(ctx, "🔄 Starting FHSPB retry processor...")
 
 	// Подключаемся к PostgreSQL
-	db, err := postgres.Connect(cfg.Postgres)
+	db, err := sqlx.Connect("postgres", cfg.Postgres.URI())
 	if err != nil {
 		logger.Fatal(ctx, "Failed to connect to PostgreSQL", zap.Error(err))
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	logger.Info(ctx, "✅ PostgreSQL connected")
 
@@ -99,13 +100,13 @@ func (p *RetryProcessor) ProcessRetryJobs(ctx context.Context) error {
 		default:
 		}
 
-		logger.Info(ctx, "🔄 Processing retry job", 
+		logger.Info(ctx, "🔄 Processing retry job",
 			zap.String("type", string(job.JobType)),
 			zap.String("external_id", job.ExternalID),
 			zap.Int("retry_count", job.RetryCount))
 
 		success := p.processJob(ctx, job)
-		
+
 		if err := p.retryManager.MarkJobRetried(ctx, job.ID, success, nil); err != nil {
 			logger.Error(ctx, "Failed to mark job as retried", zap.Error(err))
 		}

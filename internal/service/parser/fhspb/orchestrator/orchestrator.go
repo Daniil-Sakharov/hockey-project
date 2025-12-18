@@ -24,11 +24,11 @@ type Orchestrator struct {
 // New создает новый оркестратор
 func New(deps svc.Dependencies, config svc.Config) *Orchestrator {
 	retryManager := retry.NewManager(
-		deps.DB, 
-		config.RetryMaxAttempts(), 
+		deps.DB,
+		config.RetryMaxAttempts(),
 		config.RetryDelay(),
 	)
-	
+
 	return &Orchestrator{
 		client:         deps.Client,
 		tournamentRepo: deps.TournamentRepo,

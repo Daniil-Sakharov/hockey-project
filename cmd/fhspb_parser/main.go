@@ -56,7 +56,7 @@ func main() {
 	if err != nil {
 		logger.Fatal(ctx, "Failed to connect to PostgreSQL", zap.Error(err))
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	logger.Info(ctx, "✅ PostgreSQL connected")
 
