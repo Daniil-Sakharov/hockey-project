@@ -13,15 +13,15 @@ func (r *repository) Upsert(ctx context.Context, p *player.Player) error {
 		INSERT INTO players (
 			id, profile_url, name, birth_date, position,
 			height, weight, handedness,
-			registry_id, school, rank, data_season,
-			external_id, citizenship, role, birth_place,
+			data_season,
+			external_id, birth_place,
 			source, created_at, updated_at
 		) VALUES (
 			$1, $2, $3, $4, $5,
 			$6, $7, $8,
-			$9, $10, $11, $12,
-			$13, $14, $15, $16,
-			$17, $18, $19
+			$9,
+			$10, $11,
+			$12, $13, $14
 		)
 		ON CONFLICT (external_id, source) WHERE external_id IS NOT NULL
 		DO UPDATE SET
@@ -31,9 +31,6 @@ func (r *repository) Upsert(ctx context.Context, p *player.Player) error {
 			height = EXCLUDED.height,
 			weight = EXCLUDED.weight,
 			handedness = EXCLUDED.handedness,
-			school = EXCLUDED.school,
-			citizenship = EXCLUDED.citizenship,
-			role = EXCLUDED.role,
 			birth_place = EXCLUDED.birth_place,
 			updated_at = EXCLUDED.updated_at
 	`
@@ -47,13 +44,8 @@ func (r *repository) Upsert(ctx context.Context, p *player.Player) error {
 		p.Height,
 		p.Weight,
 		p.Handedness,
-		p.RegistryID,
-		p.School,
-		p.Rank,
 		p.DataSeason,
 		p.ExternalID,
-		p.Citizenship,
-		p.Role,
 		p.BirthPlace,
 		p.Source,
 		p.CreatedAt,

@@ -18,13 +18,10 @@ func (r *repository) Update(ctx context.Context, p *player.Player) error {
 			height = $4,
 			weight = $5,
 			handedness = $6,
-			registry_id = $7,
-			school = $8,
-			rank = $9,
-			data_season = $10,
-			source = $11,
-			updated_at = $12
-		WHERE id = $13
+			data_season = $7,
+			source = $8,
+			updated_at = $9
+		WHERE id = $10
 	`
 
 	p.UpdatedAt = time.Now()
@@ -36,9 +33,6 @@ func (r *repository) Update(ctx context.Context, p *player.Player) error {
 		p.Height,
 		p.Weight,
 		p.Handedness,
-		p.RegistryID,
-		p.School,
-		p.Rank,
 		p.DataSeason,
 		p.Source,
 		p.UpdatedAt,

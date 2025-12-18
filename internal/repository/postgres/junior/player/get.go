@@ -14,7 +14,7 @@ func (r *repository) GetByID(ctx context.Context, id string) (*player.Player, er
 		SELECT 
 			id, profile_url, name, birth_date, position,
 			height, weight, handedness,
-			registry_id, school, rank, data_season,
+			data_season,
 			source, created_at, updated_at
 		FROM players
 		WHERE id = $1

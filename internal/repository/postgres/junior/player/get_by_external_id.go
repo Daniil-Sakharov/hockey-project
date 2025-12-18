@@ -14,8 +14,8 @@ func (r *repository) GetByExternalID(ctx context.Context, externalID, source str
 	query := `
 		SELECT id, profile_url, name, birth_date, position,
 			   height, weight, handedness,
-			   registry_id, school, rank, data_season,
-			   external_id, citizenship, role, birth_place,
+			   data_season,
+			   external_id, birth_place,
 			   source, created_at, updated_at
 		FROM players
 		WHERE external_id = $1 AND source = $2
