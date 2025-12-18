@@ -42,6 +42,9 @@ func (o *Orchestrator) processPlayer(ctx context.Context, teamID, tournamentID s
 		ExternalID: pURL.PlayerID,
 		FullName:   playerDTO.FullName,
 	}
+	if pURL.ProfileURL != "" {
+		player.ProfileURL = &pURL.ProfileURL
+	}
 	if playerDTO.BirthDate != "" {
 		if t, err := time.Parse("02.01.2006", playerDTO.BirthDate); err == nil {
 			player.BirthDate = &t

@@ -6,6 +6,7 @@ type PlayerURLDTO struct {
 	PlayerID     string
 	TeamID       string
 	TournamentID int
+	ProfileURL   string // URL профиля игрока
 }
 
 // PlayerDTO полные данные игрока
