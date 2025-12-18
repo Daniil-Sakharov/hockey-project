@@ -13,6 +13,10 @@ type fhspbEnvConfig struct {
 	PlayerWorkers     int           `env:"FHSPB_PLAYER_WORKERS" envDefault:"10"`
 	StatisticsWorkers int           `env:"FHSPB_STATISTICS_WORKERS" envDefault:"3"`
 	RequestDelay      time.Duration `env:"FHSPB_REQUEST_DELAY" envDefault:"150ms"`
+	Mode              string        `env:"FHSPB_MODE" envDefault:"INCREMENTAL"`
+	RetryEnabled      bool          `env:"FHSPB_RETRY_ENABLED" envDefault:"true"`
+	RetryMaxAttempts  int           `env:"FHSPB_RETRY_MAX_ATTEMPTS" envDefault:"3"`
+	RetryDelay        time.Duration `env:"FHSPB_RETRY_DELAY" envDefault:"5m"`
 }
 
 type fhspbConfig struct {
@@ -33,3 +37,7 @@ func (c *fhspbConfig) TeamWorkers() int            { return c.raw.TeamWorkers }
 func (c *fhspbConfig) PlayerWorkers() int          { return c.raw.PlayerWorkers }
 func (c *fhspbConfig) StatisticsWorkers() int      { return c.raw.StatisticsWorkers }
 func (c *fhspbConfig) RequestDelay() time.Duration { return c.raw.RequestDelay }
+func (c *fhspbConfig) Mode() string                { return c.raw.Mode }
+func (c *fhspbConfig) RetryEnabled() bool          { return c.raw.RetryEnabled }
+func (c *fhspbConfig) RetryMaxAttempts() int       { return c.raw.RetryMaxAttempts }
+func (c *fhspbConfig) RetryDelay() time.Duration   { return c.raw.RetryDelay }

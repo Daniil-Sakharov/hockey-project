@@ -7,11 +7,12 @@ import (
 
 	"github.com/Daniil-Sakharov/HockeyProject/internal/client/fhspb/dto"
 	fhspbRepo "github.com/Daniil-Sakharov/HockeyProject/internal/repository/postgres/fhspb"
+	"github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/retry"
 	"github.com/Daniil-Sakharov/HockeyProject/pkg/logger"
 	"go.uber.org/zap"
 )
 
-// processPlayerSafe обрабатывает игрока с логированием ошибок
+// processPlayerSafe обрабатывает игрока с логированием ошибок и retry
 func (o *Orchestrator) processPlayerSafe(ctx context.Context, teamID, tournamentID string, pURL dto.PlayerURLDTO) bool {
 	err := o.processPlayer(ctx, teamID, tournamentID, pURL)
 	if err != nil {
@@ -19,6 +20,15 @@ func (o *Orchestrator) processPlayerSafe(ctx context.Context, teamID, tournament
 			zap.String("id", pURL.PlayerID),
 			zap.Error(err),
 		)
+
+		// Добавляем в retry очередь если включено
+		if o.config.RetryEnabled() {
+			retryErr := o.retryManager.AddFailedJob(ctx, retry.JobTypePlayer, "fhspb", pURL.PlayerID, pURL.URL, err)
+			if retryErr != nil {
+				logger.Error(ctx, "Failed to add retry job", zap.Error(retryErr))
+			}
+		}
+
 		return false
 	}
 	return true

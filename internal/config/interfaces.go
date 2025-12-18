@@ -47,6 +47,10 @@ type FHSPBConfig interface {
 	PlayerWorkers() int
 	StatisticsWorkers() int
 	RequestDelay() time.Duration
+	Mode() string
+	RetryEnabled() bool
+	RetryMaxAttempts() int
+	RetryDelay() time.Duration
 }
 
 // JuniorConfig конфигурация парсера junior.fhr.ru
