@@ -19,8 +19,8 @@ type Player struct {
 
 	DataSeason *string `db:"data_season"`
 
-	ExternalID  *string `db:"external_id"`
-	BirthPlace  *string `db:"birth_place"`
+	ExternalID *string `db:"external_id"`
+	BirthPlace *string `db:"birth_place"`
 
 	Source    string    `db:"source"`
 	CreatedAt time.Time `db:"created_at"`
