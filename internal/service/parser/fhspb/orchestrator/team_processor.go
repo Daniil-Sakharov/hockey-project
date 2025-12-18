@@ -29,11 +29,21 @@ func (o *Orchestrator) processTeamSafe(ctx context.Context, tournamentID string,
 }
 
 func (o *Orchestrator) saveTeam(ctx context.Context, tournamentID string, t dto.TeamDTO) (string, error) {
-	return o.teamRepo.Upsert(ctx, &fhspbRepo.Team{
+	// Генерируем URL команды
+	url := fmt.Sprintf("https://www.fhspb.ru/Team?TournamentID=%d&TeamID=%s", t.TournamentID, t.ID)
+
+	team := &fhspbRepo.Team{
 		ExternalID:   t.ID,
 		TournamentID: tournamentID,
 		Name:         t.Name,
-	})
+		URL:          &url,
+	}
+
+	if t.City != "" {
+		team.City = &t.City
+	}
+
+	return o.teamRepo.Upsert(ctx, team)
 }
 
 func (o *Orchestrator) processTeam(ctx context.Context, extTournamentID int, teamID, tournamentID string, t dto.TeamDTO) (int, error) {

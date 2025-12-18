@@ -32,10 +32,14 @@ func ParseTeams(html []byte, tournamentID int) ([]dto.TeamDTO, error) {
 			return
 		}
 
+		// Для FHSPB все команды из Санкт-Петербурга
+		city := "Санкт-Петербург"
+
 		teams = append(teams, dto.TeamDTO{
 			ID:           matches[1],
 			TournamentID: tournamentID,
 			Name:         name,
+			City:         city,
 		})
 	})
 

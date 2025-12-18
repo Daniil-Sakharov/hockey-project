@@ -16,7 +16,9 @@ const (
 type Tournament struct {
 	ID         string     `db:"id"`
 	ExternalID string     `db:"external_id"`
+	URL        *string    `db:"url"`
 	Name       string     `db:"name"`
+	Domain     *string    `db:"domain"`
 	BirthYear  *int       `db:"birth_year"`
 	GroupName  *string    `db:"group_name"`
 	Season     *string    `db:"season"`
@@ -40,10 +42,12 @@ func (r *TournamentRepository) Upsert(ctx context.Context, t *Tournament) (strin
 	id := fmt.Sprintf("spb:%s", t.ExternalID)
 
 	query := `
-		INSERT INTO tournaments (id, external_id, name, birth_year, group_name, season, start_date, end_date, is_ended, region, created_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+		INSERT INTO tournaments (id, external_id, url, name, domain, birth_year, group_name, season, start_date, end_date, is_ended, region, created_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
 		ON CONFLICT (id) DO UPDATE SET
+			url = COALESCE(EXCLUDED.url, tournaments.url),
 			name = EXCLUDED.name,
+			domain = COALESCE(EXCLUDED.domain, tournaments.domain),
 			birth_year = COALESCE(EXCLUDED.birth_year, tournaments.birth_year),
 			group_name = COALESCE(EXCLUDED.group_name, tournaments.group_name),
 			season = COALESCE(EXCLUDED.season, tournaments.season),
@@ -53,13 +57,13 @@ func (r *TournamentRepository) Upsert(ctx context.Context, t *Tournament) (strin
 		RETURNING id`
 
 	var returnedID string
-	err := r.db.QueryRowContext(ctx, query, id, t.ExternalID, t.Name, t.BirthYear, t.GroupName, t.Season, t.StartDate, t.EndDate, t.IsEnded, RegionSPB).Scan(&returnedID)
+	err := r.db.QueryRowContext(ctx, query, id, t.ExternalID, t.URL, t.Name, t.Domain, t.BirthYear, t.GroupName, t.Season, t.StartDate, t.EndDate, t.IsEnded, RegionSPB).Scan(&returnedID)
 	return returnedID, err
 }
 
 func (r *TournamentRepository) GetByExternalID(ctx context.Context, externalID string) (*Tournament, error) {
 	var t Tournament
-	err := r.db.GetContext(ctx, &t, `SELECT id, external_id, name, birth_year, group_name, season, start_date, end_date, is_ended, region, created_at FROM tournaments WHERE external_id = $1 AND region = $2`, externalID, RegionSPB)
+	err := r.db.GetContext(ctx, &t, `SELECT id, external_id, url, name, domain, birth_year, group_name, season, start_date, end_date, is_ended, region, created_at FROM tournaments WHERE external_id = $1 AND region = $2`, externalID, RegionSPB)
 	if err != nil {
 		return nil, err
 	}
@@ -68,6 +72,6 @@ func (r *TournamentRepository) GetByExternalID(ctx context.Context, externalID s
 
 func (r *TournamentRepository) GetAll(ctx context.Context) ([]Tournament, error) {
 	var tournaments []Tournament
-	err := r.db.SelectContext(ctx, &tournaments, `SELECT id, external_id, name, birth_year, group_name, season, start_date, end_date, is_ended, region, created_at FROM tournaments WHERE region = $1 ORDER BY id`, RegionSPB)
+	err := r.db.SelectContext(ctx, &tournaments, `SELECT id, external_id, url, name, domain, birth_year, group_name, season, start_date, end_date, is_ended, region, created_at FROM tournaments WHERE region = $1 ORDER BY id`, RegionSPB)
 	return tournaments, err
 }

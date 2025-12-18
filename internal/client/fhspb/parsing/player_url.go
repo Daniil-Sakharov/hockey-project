@@ -39,6 +39,7 @@ func ParsePlayerURLs(html []byte, tournamentID int, teamID string) ([]dto.Player
 			PlayerID:     playerID,
 			TeamID:       teamID,
 			TournamentID: tournamentID,
+			ProfileURL:   "https://www.fhspb.ru/" + strings.TrimPrefix(href, "/"),
 		})
 	})
 

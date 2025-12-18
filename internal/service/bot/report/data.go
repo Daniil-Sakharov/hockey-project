@@ -104,27 +104,14 @@ func (dc *DataCollector) getPlayerTeamAndRegion(ctx context.Context, playerID st
 	team = "Неизвестно"
 	region = "Неизвестно"
 
-	// Получаем связи игрок-команда
+	// Получаем связи игрок-команда (уже отсортированы по started_at DESC)
 	links, err := dc.playerTeamRepo.GetByPlayer(ctx, playerID)
 	if err != nil || len(links) == 0 {
 		return
 	}
 
-	// Ищем активную команду или последнюю
-	var activeLink *domainPlayerTeam.PlayerTeam
-	for _, link := range links {
-		if link.IsActive {
-			activeLink = link
-			break
-		}
-	}
-	if activeLink == nil && len(links) > 0 {
-		activeLink = links[0]
-	}
-
-	if activeLink == nil {
-		return
-	}
+	// Берем первую команду (самую актуальную после исправленной сортировки)
+	activeLink := links[0]
 
 	// Получаем информацию о команде
 	teamInfo, err := dc.teamRepo.GetByID(ctx, activeLink.TeamID)

@@ -47,9 +47,15 @@ func (o *Orchestrator) processTournamentSafe(ctx context.Context, t dto.Tourname
 }
 
 func (o *Orchestrator) saveTournament(ctx context.Context, t dto.TournamentDTO) (string, error) {
+	// Формируем URL турнира
+	tournamentURL := fmt.Sprintf("https://www.fhspb.ru/Tournament?TournamentID=%d", t.ID)
+	domain := "https://www.fhspb.ru"
+
 	tournament := &fhspbRepo.Tournament{
 		ExternalID: strconv.Itoa(t.ID),
+		URL:        &tournamentURL,
 		Name:       t.Name,
+		Domain:     &domain,
 		Season:     &t.Season,
 		StartDate:  t.StartDate,
 		EndDate:    t.EndDate,

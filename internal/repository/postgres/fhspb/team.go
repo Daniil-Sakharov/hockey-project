@@ -13,6 +13,8 @@ type Team struct {
 	ExternalID   string    `db:"external_id"`
 	TournamentID string    `db:"tournament_id"`
 	Name         string    `db:"name"`
+	URL          *string   `db:"url"`
+	City         *string   `db:"city"`
 	Region       string    `db:"region"`
 	CreatedAt    time.Time `db:"created_at"`
 }
@@ -35,20 +37,22 @@ func (r *TeamRepository) Upsert(ctx context.Context, t *Team) (string, error) {
 	id := fmt.Sprintf("spb:%s:%s", tournamentExtID, t.ExternalID)
 
 	query := `
-		INSERT INTO teams (id, external_id, tournament_id, name, region, created_at)
-		VALUES ($1, $2, $3, $4, $5, NOW())
+		INSERT INTO teams (id, external_id, tournament_id, name, url, city, region, created_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
 		ON CONFLICT (id) DO UPDATE SET
-			name = EXCLUDED.name
+			name = EXCLUDED.name,
+			url = COALESCE(EXCLUDED.url, teams.url),
+			city = COALESCE(EXCLUDED.city, teams.city)
 		RETURNING id`
 
 	var returnedID string
-	err := r.db.QueryRowContext(ctx, query, id, t.ExternalID, t.TournamentID, t.Name, RegionSPB).Scan(&returnedID)
+	err := r.db.QueryRowContext(ctx, query, id, t.ExternalID, t.TournamentID, t.Name, t.URL, t.City, RegionSPB).Scan(&returnedID)
 	return returnedID, err
 }
 
 func (r *TeamRepository) GetByExternalID(ctx context.Context, externalID, tournamentID string) (*Team, error) {
 	var t Team
-	err := r.db.GetContext(ctx, &t, `SELECT id, external_id, tournament_id, name, region, created_at FROM teams WHERE external_id = $1 AND tournament_id = $2`, externalID, tournamentID)
+	err := r.db.GetContext(ctx, &t, `SELECT id, external_id, tournament_id, name, url, city, region, created_at FROM teams WHERE external_id = $1 AND tournament_id = $2`, externalID, tournamentID)
 	if err != nil {
 		return nil, err
 	}

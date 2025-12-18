@@ -40,8 +40,9 @@ func (r *repository) SearchWithTeam(ctx context.Context, filters player.SearchFi
 			ORDER BY pt.player_id, pt.started_at DESC NULLS LAST
 		)
 		SELECT 
-			p.id, COALESCE(p.profile_url, '') as profile_url, p.name, p.birth_date, p.position,
-			p.height, p.weight, p.handedness,
+			p.id, COALESCE(p.profile_url, '') as profile_url, p.name, p.birth_date, 
+			COALESCE(p.position, '') as position,
+			p.height, p.weight, COALESCE(p.handedness, '') as handedness,
 			p.registry_id, p.school, p.rank, p.data_season,
 			p.source, p.created_at, p.updated_at,
 			COALESCE(lt.team_name, '') as team_name,
