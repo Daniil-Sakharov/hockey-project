@@ -45,6 +45,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+        env:
+          BUILDX_NO_DEFAULT_ATTESTATIONS: 1
+        timeout-minutes: 30
 
   deploy:
     name: Deploy to Server
