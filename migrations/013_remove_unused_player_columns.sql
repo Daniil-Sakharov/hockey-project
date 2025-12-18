@@ -1,3 +1,4 @@
+-- +goose Up
 -- Migration: Remove unused columns from players table
 -- These columns are not used by any parser: registry_id, school, rank, citizenship, role
 
@@ -7,3 +8,6 @@ ALTER TABLE players DROP COLUMN IF EXISTS school;
 ALTER TABLE players DROP COLUMN IF EXISTS rank;
 ALTER TABLE players DROP COLUMN IF EXISTS citizenship;
 ALTER TABLE players DROP COLUMN IF EXISTS role;
+
+-- +goose Down
+-- Note: Cannot restore dropped columns without data loss

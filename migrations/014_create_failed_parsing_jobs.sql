@@ -1,3 +1,4 @@
+-- +goose Up
 -- Migration: Create failed_parsing_jobs table for retry system
 -- This table stores failed parsing tasks that need to be retried
 
@@ -20,3 +21,6 @@ CREATE INDEX IF NOT EXISTS idx_failed_jobs_retry ON failed_parsing_jobs(source, 
 
 -- Index for cleanup
 CREATE INDEX IF NOT EXISTS idx_failed_jobs_created ON failed_parsing_jobs(created_at);
+
+-- +goose Down
+DROP TABLE IF EXISTS failed_parsing_jobs;
