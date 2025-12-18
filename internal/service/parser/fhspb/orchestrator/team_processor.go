@@ -64,7 +64,7 @@ func (o *Orchestrator) processTeam(ctx context.Context, extTournamentID int, tea
 	close(playerCh)
 
 	var wg sync.WaitGroup
-	for i := 0; i < o.config.PlayerWorkers; i++ {
+	for i := 0; i < o.config.PlayerWorkers(); i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()

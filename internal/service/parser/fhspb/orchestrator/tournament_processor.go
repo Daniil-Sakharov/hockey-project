@@ -90,7 +90,7 @@ func (o *Orchestrator) processTournament(ctx context.Context, t dto.TournamentDT
 	close(teamCh)
 
 	var wg sync.WaitGroup
-	for i := 0; i < o.config.TeamWorkers; i++ {
+	for i := 0; i < o.config.TeamWorkers(); i++ {
 		workerID := i + 1
 		wg.Add(1)
 		go func() {

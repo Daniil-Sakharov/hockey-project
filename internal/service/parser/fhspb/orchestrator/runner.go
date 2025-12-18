@@ -14,9 +14,9 @@ import (
 // Run запускает полный процесс парсинга
 func (o *Orchestrator) Run(ctx context.Context) error {
 	start := time.Now()
-	logger.Info(ctx, "🚀 Starting FHSPB parser", zap.Int("max_birth_year", o.config.MaxBirthYear))
+	logger.Info(ctx, "🚀 Starting FHSPB parser", zap.Int("max_birth_year", o.config.MaxBirthYear()))
 
-	tournaments, err := o.client.GetTournamentsByBirthYear(o.config.MaxBirthYear)
+	tournaments, err := o.client.GetTournamentsByBirthYear(o.config.MaxBirthYear())
 	if err != nil {
 		return fmt.Errorf("get tournaments: %w", err)
 	}
@@ -54,7 +54,7 @@ func (o *Orchestrator) processAllTournaments(ctx context.Context, tournaments []
 	close(tournamentCh)
 
 	var wg sync.WaitGroup
-	for i := 0; i < o.config.TournamentWorkers; i++ {
+	for i := 0; i < o.config.TournamentWorkers(); i++ {
 		workerID := i + 1
 		wg.Add(1)
 		go func() {

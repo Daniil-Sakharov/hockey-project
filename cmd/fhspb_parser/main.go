@@ -13,6 +13,8 @@ import (
 	svc "github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/fhspb"
 	"github.com/Daniil-Sakharov/HockeyProject/internal/service/parser/fhspb/orchestrator"
 	"github.com/Daniil-Sakharov/HockeyProject/pkg/logger"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
@@ -49,6 +51,15 @@ func main() {
 
 	logger.Info(ctx, "🏒 Starting FHSPB parser...")
 
+	// Подключение к базе данных
+	db, err := sqlx.Connect("postgres", cfg.Postgres.URI())
+	if err != nil {
+		logger.Fatal(ctx, "Failed to connect to PostgreSQL", zap.Error(err))
+	}
+	defer db.Close()
+
+	logger.Info(ctx, "✅ PostgreSQL connected")
+
 	// Настройка клиента
 	client := fhspb.NewClient()
 	fhspbCfg := cfg.FHSPB
@@ -56,6 +67,7 @@ func main() {
 
 	// Создание зависимостей
 	deps := svc.Dependencies{
+		DB:             db,
 		Client:         client,
 		TournamentRepo: container.Repository().FHSPBTournament(ctx),
 		TeamRepo:       container.Repository().FHSPBTeam(ctx),
@@ -63,16 +75,8 @@ func main() {
 		PlayerTeamRepo: container.Repository().FHSPBPlayerTeam(ctx),
 	}
 
-	// Создание конфигурации
-	parserCfg := svc.Config{
-		MaxBirthYear:      fhspbCfg.MaxBirthYear(),
-		TournamentWorkers: fhspbCfg.TournamentWorkers(),
-		TeamWorkers:       fhspbCfg.TeamWorkers(),
-		PlayerWorkers:     fhspbCfg.PlayerWorkers(),
-	}
-
 	// Запуск оркестратора
-	orch := orchestrator.New(deps, parserCfg)
+	orch := orchestrator.New(deps, fhspbCfg)
 	if err := orch.Run(ctx); err != nil {
 		logger.Fatal(ctx, "FHSPB parser failed", zap.Error(err))
 	}
