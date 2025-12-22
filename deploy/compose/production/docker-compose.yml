@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - /opt/hockey-bot/data/postgres:/var/lib/postgresql/data
     ports:
       - "127.0.0.1:5432:5432"
     healthcheck:
@@ -181,7 +181,6 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres_data:
   prometheus_data:
   loki_data:
   tempo_data:
