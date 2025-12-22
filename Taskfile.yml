@@ -2,7 +2,7 @@ version: '3'
 
 vars:
   GO_VERSION: '1.24'
-  GOLANGCI_LINT_VERSION: 'v2.1.5'
+  GOLANGCI_LINT_VERSION: 'latest'
   GCI_VERSION: 'v0.13.6'
   GOFUMPT_VERSION: 'v0.8.0'
   
@@ -49,17 +49,12 @@ tasks:
 
   install-golangci-lint:
     desc: "Устанавливает golangci-lint в каталог bin"
-    summary: |
-      Проверяет наличие golangci-lint в директории bin.
-      Если инструмент не найден, автоматически устанавливает его через go install.
-      
-      Устанавливаемая версия: {{.GOLANGCI_LINT_VERSION}}
     cmds:
       - |
         [ -f {{.GOLANGCI_LINT}} ] || {
           mkdir -p {{.BIN_DIR}}
           echo "📦 Устанавливаем golangci-lint {{.GOLANGCI_LINT_VERSION}}..."
-          GOBIN={{.BIN_DIR}} go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@{{.GOLANGCI_LINT_VERSION}}
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b {{.BIN_DIR}} {{.GOLANGCI_LINT_VERSION}}
         }
     status:
       - test -x {{.GOLANGCI_LINT}}
