@@ -31,10 +31,6 @@ exporters:
   # Логи в Loki
   loki:
     endpoint: http://loki:3100/loki/api/v1/push
-    labels:
-      attributes:
-        service.name: "service"
-        level: "level"
 
   # Debug логирование
   logging:

@@ -64,7 +64,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "deploy/compose/production/docker-compose.yml,deploy/config,config/scheduler.yaml"
+          source: "deploy/compose/production/docker-compose.yml,deploy/config,config"
           target: "/opt/hockey-bot/"
           strip_components: 0
 
@@ -76,6 +76,9 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /opt/hockey-bot
+            
+            # Создаём директории для данных
+            mkdir -p /opt/hockey-bot/data/{postgres,prometheus,loki,tempo,grafana}
             
             # Логин в GitHub Container Registry
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
