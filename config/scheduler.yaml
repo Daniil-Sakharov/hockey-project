@@ -1,6 +1,6 @@
 scheduler:
   bootstrap_mode: false
-  run_immediately: false  # При старте сразу запустить все задачи
+  run_immediately: true  # При старте сразу запустить все задачи
   
   jobs:
     junior_parser:
