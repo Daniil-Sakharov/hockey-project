@@ -115,12 +115,10 @@ services:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
     volumes:
       - ../../config/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
-    environment:
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_ALERT_BOT_TOKEN}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_ALERT_CHAT_ID}
     ports:
       - "127.0.0.1:9093:9093"
     restart: unless-stopped
+    profiles: ["alerting"]
 
   loki:
     image: grafana/loki:2.9.0
