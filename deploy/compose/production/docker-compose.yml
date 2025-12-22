@@ -36,7 +36,7 @@ services:
       POSTGRES_SSL_MODE: disable
       APP_ENV: ${APP_ENV:-production}
       LOG_LEVEL: ${LOG_LEVEL:-info}
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_EXPORTER_OTLP_ENDPOINT: otel-collector:4317
       OTEL_SERVICE_NAME: hockey-bot
     command: ["/app/bot"]
 
@@ -59,7 +59,7 @@ services:
       POSTGRES_SSL_MODE: disable
       APP_ENV: ${APP_ENV:-production}
       LOG_LEVEL: ${LOG_LEVEL:-info}
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_EXPORTER_OTLP_ENDPOINT: otel-collector:4317
       OTEL_SERVICE_NAME: hockey-scheduler
     command: ["/app/scheduler"]
 
