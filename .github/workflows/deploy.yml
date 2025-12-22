@@ -77,6 +77,9 @@ jobs:
           script: |
             cd /opt/hockey-bot
             
+            # Создаём директории для данных
+            mkdir -p /opt/hockey-bot/data/{postgres,prometheus,loki,tempo,grafana}
+            
             # Логин в GitHub Container Registry
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             

@@ -103,7 +103,7 @@ services:
     volumes:
       - ../../config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ../../config/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
-      - prometheus_data:/prometheus
+      - /opt/hockey-bot/data/prometheus:/prometheus
     ports:
       - "127.0.0.1:9090:9090"
     restart: unless-stopped
@@ -118,15 +118,15 @@ services:
     ports:
       - "127.0.0.1:9093:9093"
     restart: unless-stopped
-    profiles: ["alerting"]
 
   loki:
     image: grafana/loki:2.9.0
     container_name: hockey-loki
+    user: "0"
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - ../../config/loki/loki.yml:/etc/loki/local-config.yaml:ro
-      - loki_data:/loki
+      - /opt/hockey-bot/data/loki:/loki
     ports:
       - "127.0.0.1:3100:3100"
     restart: unless-stopped
@@ -137,7 +137,7 @@ services:
     command: ["-config.file=/etc/tempo.yaml"]
     volumes:
       - ../../config/tempo/tempo.yml:/etc/tempo.yaml:ro
-      - tempo_data:/tmp/tempo
+      - /opt/hockey-bot/data/tempo:/tmp/tempo
     ports:
       - "127.0.0.1:3200:3200"
     restart: unless-stopped
@@ -151,7 +151,7 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - ../../config/grafana/provisioning:/etc/grafana/provisioning:ro
-      - grafana_data:/var/lib/grafana
+      - /opt/hockey-bot/data/grafana:/var/lib/grafana
     ports:
       - "127.0.0.1:3000:3000"
     restart: unless-stopped
@@ -180,8 +180,4 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-volumes:
-  prometheus_data:
-  loki_data:
-  tempo_data:
-  grafana_data:
+volumes: {}
