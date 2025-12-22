@@ -9,15 +9,10 @@ import (
 func (p *KeyboardPresenter) MainMenu() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("🔍 Поиск игрока", cb.Menu(cb.MenuSearch)),
+			tgbotapi.NewInlineKeyboardButtonData("🔍 Начать поиск", cb.Menu(cb.MenuSearch)),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("📊 Поиск по статистике 🚧", cb.Menu(cb.MenuStats)),
-		),
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("🏒 Поиск команды 🚧", cb.Menu(cb.MenuTeam)),
-		),
-		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("📋 Фильтры", cb.Menu(cb.MenuStats)),
 			tgbotapi.NewInlineKeyboardButtonData("❓ Помощь", cb.Menu(cb.MenuHelp)),
 		),
 	)
