@@ -1,0 +1,47 @@
+{
+  "dashboard": {
+    "title": "Hockey Project Overview",
+    "uid": "hockey-overview",
+    "timezone": "browser",
+    "refresh": "30s",
+    "panels": [
+      {
+        "title": "Request Rate",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+        "targets": [{"expr": "sum(rate(hockey_requests_total[5m]))", "refId": "A"}]
+      },
+      {
+        "title": "Error Rate",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+        "targets": [{"expr": "sum(rate(hockey_errors_total[5m]))", "refId": "A"}]
+      },
+      {
+        "title": "Avg Response Time",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+        "targets": [{"expr": "avg(hockey_request_duration_seconds)", "refId": "A"}]
+      },
+      {
+        "title": "Active Traces",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+        "targets": [{"expr": "sum(hockey_active_spans)", "refId": "A"}]
+      },
+      {
+        "title": "Requests Over Time",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+        "targets": [{"expr": "sum(rate(hockey_requests_total[1m])) by (operation)", "refId": "A", "legendFormat": "{{operation}}"}]
+      },
+      {
+        "title": "Errors Over Time",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+        "targets": [{"expr": "sum(rate(hockey_errors_total[1m])) by (error_type)", "refId": "A", "legendFormat": "{{error_type}}"}]
+      }
+    ],
+    "schemaVersion": 38
+  }
+}

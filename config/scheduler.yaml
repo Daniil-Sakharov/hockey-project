@@ -1,0 +1,34 @@
+scheduler:
+  bootstrap_mode: false
+  run_immediately: false  # При старте сразу запустить все задачи
+  
+  jobs:
+    junior_parser:
+      cron: "0 2 * * *"
+      enabled: true
+      timeout: 1h
+      max_tournaments: 0  # 0 = без лимита
+      
+    fhspb_parser:
+      cron: "0 3 * * *"
+      enabled: true
+      timeout: 1h
+      max_tournaments: 0
+      
+    junior_stats:
+      cron: "0 */4 * * *"
+      enabled: true
+      timeout: 30m
+      max_tournaments: 3  # Для теста - только 3 турнира
+      
+    fhspb_stats:
+      cron: "0 */4 * * *"
+      enabled: true
+      timeout: 30m
+      max_tournaments: 3  # Для теста - только 3 турнира
+      
+    retry_worker:
+      cron: "0 * * * *"
+      enabled: true
+      timeout: 15m
+      max_tournaments: 0

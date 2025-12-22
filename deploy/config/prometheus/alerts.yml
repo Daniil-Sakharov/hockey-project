@@ -1,0 +1,44 @@
+groups:
+  - name: scheduler
+    rules:
+      - alert: SchedulerJobFailed
+        expr: increase(scheduler_errors_total[1h]) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: "Scheduler job failed: {{ $labels.job_name }}"
+
+      - alert: SchedulerJobSlow
+        expr: histogram_quantile(0.95, rate(scheduler_job_duration_seconds_bucket[5m])) > 1800
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          description: "Job {{ $labels.job_name }} taking >30min"
+
+  - name: system
+    rules:
+      - alert: HighMemoryUsage
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 0.85
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          description: "Memory usage >85%"
+
+      - alert: HighDiskUsage
+        expr: (1 - node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) > 0.85
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          description: "Disk usage >85%"
+
+      - alert: PostgresDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          description: "PostgreSQL is down"

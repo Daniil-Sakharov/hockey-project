@@ -160,9 +160,17 @@ tasks:
         mkdir -p {{.BIN_DIR}}
         go build -o {{.BIN_DIR}}/fhspb_parser ./cmd/fhspb_parser
 
+  build:scheduler:
+    desc: "Собирает бинарник scheduler"
+    cmds:
+      - |
+        echo "🔨 Собираем scheduler..."
+        mkdir -p {{.BIN_DIR}}
+        go build -o {{.BIN_DIR}}/scheduler ./cmd/scheduler
+
   build:all:
     desc: "Собирает все бинарники"
-    deps: [build:parser, build:bot, build:stats, build:fhspb]
+    deps: [build:parser, build:bot, build:stats, build:fhspb, build:scheduler]
     cmds:
       - echo "✅ Все бинарники собраны"
 
