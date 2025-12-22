@@ -129,12 +129,12 @@ tasks:
         go run ./cmd/fhspb_parser
 
   build:parser:
-    desc: "Собирает бинарник parser"
+    desc: "Собирает бинарник junior_parser"
     cmds:
       - |
-        echo "🔨 Собираем parser..."
+        echo "🔨 Собираем junior_parser..."
         mkdir -p {{.BIN_DIR}}
-        go build -o {{.BIN_DIR}}/parser ./cmd/parser
+        go build -o {{.BIN_DIR}}/junior_parser ./cmd/junior_parser
 
   build:bot:
     desc: "Собирает бинарник bot"
@@ -145,12 +145,12 @@ tasks:
         go build -o {{.BIN_DIR}}/bot ./cmd/bot
 
   build:stats:
-    desc: "Собирает бинарник stats_parser"
+    desc: "Собирает бинарник junior_stats"
     cmds:
       - |
-        echo "🔨 Собираем stats_parser..."
+        echo "🔨 Собираем junior_stats..."
         mkdir -p {{.BIN_DIR}}
-        go build -o {{.BIN_DIR}}/stats_parser ./cmd/stats_parser
+        go build -o {{.BIN_DIR}}/junior_stats ./cmd/junior_stats
 
   build:fhspb:
     desc: "Собирает бинарник fhspb_parser"
