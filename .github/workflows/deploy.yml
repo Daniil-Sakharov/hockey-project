@@ -80,6 +80,11 @@ jobs:
             # Создаём директории для данных
             mkdir -p /opt/hockey-bot/data/{postgres,prometheus,loki,tempo,grafana}
             
+            # Права для prometheus (nobody:nobody = 65534:65534)
+            sudo chown -R 65534:65534 /opt/hockey-bot/data/prometheus
+            # Права для grafana (grafana user = 472)
+            sudo chown -R 472:472 /opt/hockey-bot/data/grafana
+            
             # Логин в GitHub Container Registry
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             
