@@ -1,0 +1,77 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Job Executions",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [{
+        "expr": "sum(rate(scheduler_job_total[5m])) by (job_name, status)",
+        "legendFormat": "{{job_name}} - {{status}}",
+        "datasource": { "type": "prometheus", "uid": "prometheus" }
+      }],
+      "fieldConfig": {
+        "defaults": { "unit": "ops" }
+      }
+    },
+    {
+      "title": "Job Duration (p95)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [{
+        "expr": "histogram_quantile(0.95, sum(rate(scheduler_job_duration_seconds_bucket[5m])) by (job_name, le))",
+        "legendFormat": "{{job_name}}",
+        "datasource": { "type": "prometheus", "uid": "prometheus" }
+      }],
+      "fieldConfig": {
+        "defaults": { "unit": "s" }
+      }
+    },
+    {
+      "title": "Tournaments Parsed",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 8 },
+      "targets": [{
+        "expr": "sum(scheduler_tournaments_parsed_total) by (source)",
+        "legendFormat": "{{source}}",
+        "datasource": { "type": "prometheus", "uid": "prometheus" }
+      }],
+      "fieldConfig": {
+        "defaults": { "unit": "short" }
+      }
+    },
+    {
+      "title": "Errors Total",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 8 },
+      "targets": [{
+        "expr": "sum(scheduler_errors_total)",
+        "datasource": { "type": "prometheus", "uid": "prometheus" }
+      }],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}] } }
+      }
+    },
+    {
+      "title": "Recent Logs",
+      "type": "logs",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 12 },
+      "targets": [{
+        "expr": "{service_name=\"hockey-scheduler\"}",
+        "datasource": { "type": "loki", "uid": "loki" }
+      }]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["scheduler", "hockey"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "Hockey Scheduler",
+  "uid": "hockey-scheduler"
+}

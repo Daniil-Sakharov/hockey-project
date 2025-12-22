@@ -1,0 +1,41 @@
+{
+  "dashboard": {
+    "title": "Parsers Monitoring",
+    "uid": "hockey-parsers",
+    "timezone": "browser",
+    "refresh": "30s",
+    "panels": [
+      {
+        "title": "Players Parsed",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+        "targets": [{"expr": "sum(hockey_players_parsed_total)", "refId": "A"}]
+      },
+      {
+        "title": "Teams Parsed",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+        "targets": [{"expr": "sum(hockey_teams_parsed_total)", "refId": "A"}]
+      },
+      {
+        "title": "Parse Errors",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+        "targets": [{"expr": "sum(hockey_parse_errors_total)", "refId": "A"}]
+      },
+      {
+        "title": "Avg Parse Duration",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+        "targets": [{"expr": "avg(hockey_parse_duration_seconds)", "refId": "A"}]
+      },
+      {
+        "title": "Parsing Rate by Source",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 4},
+        "targets": [{"expr": "sum(rate(hockey_players_parsed_total[5m])) by (source)", "refId": "A", "legendFormat": "{{source}}"}]
+      }
+    ],
+    "schemaVersion": 38
+  }
+}

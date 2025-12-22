@@ -102,6 +102,9 @@ jobs:
       - name: Build bot
         run: task build:bot
 
+      - name: Build scheduler
+        run: task build:scheduler
+
   coverage:
     name: Coverage
     runs-on: ubuntu-latest

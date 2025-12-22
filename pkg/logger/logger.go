@@ -3,6 +3,7 @@ package logger
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"sync"
@@ -43,6 +44,7 @@ type LoggerConfig struct {
 	ServiceName  string // Имя сервиса (например, "order-service")
 	Environment  string // Окружение (dev, staging, production)
 	OTLPEndpoint string // Endpoint OpenTelemetry Collector (например, "localhost:4317")
+	LogFile      string // Путь к файлу логов (опционально)
 }
 
 type logger struct {
@@ -89,7 +91,7 @@ func Init(levelStr string, asJSON bool, config *LoggerConfig) error {
 
 func buildCores(asJSON bool, config *LoggerConfig) []zapcore.Core {
 	cores := []zapcore.Core{
-		createStdoutCore(asJSON),
+		createStdoutCore(asJSON, config),
 	}
 
 	if config != nil && config.OTLPEndpoint != "" {
@@ -155,16 +157,31 @@ func createOTLPExporter(ctx context.Context, endpoint string) (*otlploggrpc.Expo
 	)
 }
 
-func createStdoutCore(asJSON bool) zapcore.Core {
-	config := buildProductionEncoderConfig()
-	var encoder zapcore.Encoder
-	if asJSON {
-		encoder = zapcore.NewJSONEncoder(config)
-	} else {
-		encoder = zapcore.NewConsoleEncoder(config)
+func createStdoutCore(asJSON bool, config *LoggerConfig) zapcore.Core {
+	// Определяем окружение
+	environment := os.Getenv("APP_ENV")
+	if config != nil && config.Environment != "" {
+		environment = config.Environment
+	}
+	if environment == "" {
+		environment = "production" // По умолчанию production
 	}
 
-	return zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), dynamicLevel)
+	// Создаем encoder
+	encoder := EnvironmentFormatter(environment, asJSON)
+
+	// Создаем outputs
+	outputs := []io.Writer{os.Stdout}
+
+	// Добавляем файловый вывод если указан
+	if config != nil && config.LogFile != "" {
+		if fileWriter, err := CreateFileOutput(config.LogFile); err == nil && fileWriter != nil {
+			outputs = append(outputs, fileWriter)
+		}
+	}
+
+	writeSyncer := MultiOutput(outputs...)
+	return zapcore.NewCore(encoder, writeSyncer, dynamicLevel)
 }
 
 func parseLevel(levelStr string) zapcore.Level {

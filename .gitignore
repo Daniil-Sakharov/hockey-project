@@ -39,6 +39,8 @@ Thumbs.db
 
 # Docs
 /docs
+CODE_ANALYSIS.md
+PRODUCTION_DATA.md
 
 # Scripts
 /scripts

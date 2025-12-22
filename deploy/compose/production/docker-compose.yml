@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - /opt/hockey-bot/data/postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "127.0.0.1:5432:5432"
     healthcheck:
@@ -36,7 +36,32 @@ services:
       POSTGRES_SSL_MODE: disable
       APP_ENV: ${APP_ENV:-production}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_SERVICE_NAME: hockey-bot
     command: ["/app/bot"]
+
+  # === ПЛАНИРОВЩИК ===
+  scheduler:
+    image: ghcr.io/${GITHUB_REPOSITORY}:latest
+    container_name: hockey-scheduler
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../../config/scheduler.yaml:/app/config/scheduler.yaml:ro
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_SSL_MODE: disable
+      APP_ENV: ${APP_ENV:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_SERVICE_NAME: hockey-scheduler
+    command: ["/app/scheduler"]
 
   # === МИГРАЦИИ ===
   migrate:
@@ -52,99 +77,115 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_SSL_MODE: disable
-      MIGRATIONS_DIR: /app/migrations
     command: ["/app/migrate"]
     restart: "no"
     profiles: ["migrate"]
 
-  # === JUNIOR ПАРСЕРЫ ===
-  junior-parser:
-    image: ghcr.io/${GITHUB_REPOSITORY}:latest
-    container_name: hockey-junior-parser
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_SSL_MODE: disable
-      FHR_URL: ${FHR_URL:-https://junior.fhr.ru}
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-    command: ["/app/parser"]
-    restart: "no"
-    profiles: ["parser"]
+  # === OBSERVABILITY ===
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.91.0
+    container_name: hockey-otel-collector
+    command: ["--config=/etc/otel-collector.yml"]
+    volumes:
+      - ../../config/otel/otel-collector.yml:/etc/otel-collector.yml:ro
+    ports:
+      - "127.0.0.1:4317:4317"
+      - "127.0.0.1:4318:4318"
+    restart: unless-stopped
 
-  junior-stats-parser:
-    image: ghcr.io/${GITHUB_REPOSITORY}:latest
-    container_name: hockey-junior-stats-parser
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_SSL_MODE: disable
-      FHR_URL: ${FHR_URL:-https://junior.fhr.ru}
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-    command: ["/app/stats_parser"]
-    restart: "no"
-    profiles: ["parser"]
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: hockey-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+    volumes:
+      - ../../config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../../config/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    restart: unless-stopped
 
-  # === FHSPB ПАРСЕРЫ ===
-  fhspb-parser:
-    image: ghcr.io/${GITHUB_REPOSITORY}:latest
-    container_name: hockey-fhspb-parser
-    depends_on:
-      postgres:
-        condition: service_healthy
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    container_name: hockey-alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+    volumes:
+      - ../../config/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_SSL_MODE: disable
-      FHSPB_MAX_BIRTH_YEAR: ${FHSPB_MAX_BIRTH_YEAR:-2008}
-      FHSPB_TOURNAMENT_WORKERS: ${FHSPB_TOURNAMENT_WORKERS:-3}
-      FHSPB_TEAM_WORKERS: ${FHSPB_TEAM_WORKERS:-5}
-      FHSPB_PLAYER_WORKERS: ${FHSPB_PLAYER_WORKERS:-10}
-      FHSPB_REQUEST_DELAY: ${FHSPB_REQUEST_DELAY:-150ms}
-      FHSPB_MODE: ${FHSPB_MODE:-INCREMENTAL}
-      FHSPB_RETRY_ENABLED: ${FHSPB_RETRY_ENABLED:-true}
-      FHSPB_RETRY_MAX_ATTEMPTS: ${FHSPB_RETRY_MAX_ATTEMPTS:-3}
-      FHSPB_RETRY_DELAY: ${FHSPB_RETRY_DELAY:-5m}
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-    command: ["/app/fhspb_parser"]
-    restart: "no"
-    profiles: ["parser"]
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_ALERT_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_ALERT_CHAT_ID}
+    ports:
+      - "127.0.0.1:9093:9093"
+    restart: unless-stopped
 
-  fhspb-stats-parser:
-    image: ghcr.io/${GITHUB_REPOSITORY}:latest
-    container_name: hockey-fhspb-stats-parser
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: hockey-loki
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ../../config/loki/loki.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    ports:
+      - "127.0.0.1:3100:3100"
+    restart: unless-stopped
+
+  tempo:
+    image: grafana/tempo:2.3.0
+    container_name: hockey-tempo
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ../../config/tempo/tempo.yml:/etc/tempo.yaml:ro
+      - tempo_data:/tmp/tempo
+    ports:
+      - "127.0.0.1:3200:3200"
+      - "127.0.0.1:4317"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.2.2
+    container_name: hockey-grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ../../config/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+
+  # === EXPORTERS ===
+  node-exporter:
+    image: prom/node-exporter:v1.7.0
+    container_name: hockey-node-exporter
+    command:
+      - '--path.rootfs=/host'
+    volumes:
+      - '/:/host:ro,rslave'
+    ports:
+      - "127.0.0.1:9100:9100"
+    restart: unless-stopped
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: hockey-postgres-exporter
+    environment:
+      - DATA_SOURCE_NAME=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+    ports:
+      - "127.0.0.1:9187:9187"
     depends_on:
       postgres:
         condition: service_healthy
-    environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_SSL_MODE: disable
-      FHSPB_MAX_BIRTH_YEAR: ${FHSPB_MAX_BIRTH_YEAR:-2008}
-      FHSPB_STATISTICS_WORKERS: ${FHSPB_STATISTICS_WORKERS:-3}
-      FHSPB_REQUEST_DELAY: ${FHSPB_REQUEST_DELAY:-150ms}
-      FHSPB_MODE: ${FHSPB_MODE:-INCREMENTAL}
-      FHSPB_RETRY_ENABLED: ${FHSPB_RETRY_ENABLED:-true}
-      FHSPB_RETRY_MAX_ATTEMPTS: ${FHSPB_RETRY_MAX_ATTEMPTS:-3}
-      FHSPB_RETRY_DELAY: ${FHSPB_RETRY_DELAY:-5m}
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-    command: ["/app/fhspb_stats_parser"]
-    restart: "no"
-    profiles: ["parser"]
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  prometheus_data:
+  loki_data:
+  tempo_data:
+  grafana_data:
