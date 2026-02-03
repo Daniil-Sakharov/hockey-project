@@ -1,0 +1,16 @@
+{
+  "source": "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Fan/Views/Tournaments/TournamentComponents.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "%lld команд · %lld матчей",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 114
+        }
+      }
+    ]
+  },
+  "version": 1
+}

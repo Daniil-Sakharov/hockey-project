@@ -20,12 +20,12 @@ func NewPlayerPostgres(db *sqlx.DB) *PlayerPostgres {
 func (r *PlayerPostgres) Create(ctx context.Context, p *entities.Player) error {
 	query := `
 		INSERT INTO players (
-			id, profile_url, name, birth_date, position, 
-			height, weight, handedness, 
-			data_season, external_id, birth_place, citizenship, role, region,
+			id, profile_url, name, birth_date, position,
+			height, weight, handedness,
+			data_season, external_id, birth_place, citizenship, region, photo_url, domain,
 			source, created_at, updated_at
 		) VALUES (
-			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
+			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18
 		)
 		ON CONFLICT (id) DO NOTHING
 	`
@@ -33,7 +33,7 @@ func (r *PlayerPostgres) Create(ctx context.Context, p *entities.Player) error {
 	_, err := r.db.ExecContext(ctx, query,
 		p.ID, p.ProfileURL, p.Name, p.BirthDate, p.Position,
 		p.Height, p.Weight, p.Handedness,
-		p.DataSeason, p.ExternalID, p.BirthPlace, p.Citizenship, p.Role, p.Region,
+		p.DataSeason, p.ExternalID, p.BirthPlace, p.Citizenship, p.Region, p.PhotoURL, p.Domain,
 		p.Source, p.CreatedAt, p.UpdatedAt,
 	)
 	if err != nil {
@@ -51,14 +51,14 @@ func (r *PlayerPostgres) CreateBatch(ctx context.Context, players []*entities.Pl
 
 	query := `
 		INSERT INTO players (
-			id, profile_url, name, birth_date, position, 
-			height, weight, handedness, 
-			data_season, external_id, birth_place, citizenship, role, region,
+			id, profile_url, name, birth_date, position,
+			height, weight, handedness,
+			data_season, external_id, birth_place, citizenship, region, photo_url,
 			source, created_at, updated_at
 		) VALUES (
-			:id, :profile_url, :name, :birth_date, :position, 
-			:height, :weight, :handedness, 
-			:data_season, :external_id, :birth_place, :citizenship, :role, :region,
+			:id, :profile_url, :name, :birth_date, :position,
+			:height, :weight, :handedness,
+			:data_season, :external_id, :birth_place, :citizenship, :region, :photo_url,
 			:source, :created_at, :updated_at
 		)
 		ON CONFLICT (id) DO NOTHING
@@ -76,8 +76,8 @@ func (r *PlayerPostgres) CreateBatch(ctx context.Context, players []*entities.Pl
 func (r *PlayerPostgres) Upsert(ctx context.Context, p *entities.Player) error {
 	query := `
 		INSERT INTO players (
-			id, external_id, name, profile_url, birth_date, birth_place, 
-			position, height, weight, handedness, citizenship, role, region,
+			id, external_id, name, profile_url, birth_date, birth_place,
+			position, height, weight, handedness, citizenship, region, photo_url,
 			source, created_at, updated_at
 		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW(), NOW())
 		ON CONFLICT (id) DO UPDATE SET
@@ -90,14 +90,14 @@ func (r *PlayerPostgres) Upsert(ctx context.Context, p *entities.Player) error {
 			weight = COALESCE(EXCLUDED.weight, players.weight),
 			handedness = COALESCE(EXCLUDED.handedness, players.handedness),
 			citizenship = COALESCE(EXCLUDED.citizenship, players.citizenship),
-			role = COALESCE(EXCLUDED.role, players.role),
 			region = COALESCE(EXCLUDED.region, players.region),
+			photo_url = COALESCE(EXCLUDED.photo_url, players.photo_url),
 			updated_at = NOW()
 	`
 
 	_, err := r.db.ExecContext(ctx, query,
 		p.ID, p.ExternalID, p.Name, p.ProfileURL, p.BirthDate, p.BirthPlace,
-		p.Position, p.Height, p.Weight, p.Handedness, p.Citizenship, p.Role, p.Region, p.Source,
+		p.Position, p.Height, p.Weight, p.Handedness, p.Citizenship, p.Region, p.PhotoURL, p.Source,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to upsert player: %w", err)

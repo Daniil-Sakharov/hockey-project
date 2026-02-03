@@ -20,8 +20,8 @@ func NewParser(http types.HTTPRequester, baseURL string) *Parser {
 }
 
 // ParseFromTeam парсит игроков из команды
-func (p *Parser) ParseFromTeam(teamURL string) ([]types.PlayerDTO, error) {
-	fullURL := p.baseURL + teamURL
+func (p *Parser) ParseFromTeam(domain, teamURL string) ([]types.PlayerDTO, error) {
+	fullURL := domain + teamURL
 
 	resp, err := p.http.MakeRequest(fullURL)
 	if err != nil {
@@ -66,6 +66,13 @@ func (p *Parser) ParseFromTeam(teamURL string) ([]types.PlayerDTO, error) {
 			if profileLink.Length() > 0 {
 				player.ProfileURL, _ = profileLink.Attr("href")
 				player.Name = strings.TrimSpace(profileLink.Text())
+			}
+
+			// Фото игрока из строки таблицы
+			if img := firstCol.Find("img"); img.Length() > 0 {
+				if src, exists := img.Attr("src"); exists && src != "" {
+					player.PhotoURL = buildFullPhotoURL(domain, src)
+				}
 			}
 
 			player.BirthDate = strings.TrimSpace(columns.Eq(1).Find("span.year").Text())

@@ -11,6 +11,7 @@ type Team struct {
 	ExternalID   *string   `db:"external_id"`
 	TournamentID *string   `db:"tournament_id"`
 	Region       *string   `db:"region"`
+	LogoURL      *string   `db:"logo_url"`
 	Source       string    `db:"source"`
 	CreatedAt    time.Time `db:"created_at"`
 }

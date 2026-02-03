@@ -32,22 +32,40 @@ func parseTournamentCard(container *goquery.Selection) *dto.TournamentDTO {
 		return nil
 	}
 
-	birthYear := 0
-	parent := container.Parent()
-	if parent.Is("h5.subheader") {
-		text := parent.Contents().First().Text()
-		birthYear = extractBirthYear(text)
+	// Извлекаем год рождения:
+	// 1. Сначала пробуем из названия турнира (например "... 2008 г.р.")
+	// 2. Если не нашли - ищем в родительском h5.subheader
+	birthYear := extractBirthYear(name)
+	if birthYear == 0 {
+		// Ищем ближайший h5.subheader с годом рождения
+		parent := container.Parent()
+		if parent.Is("h5.subheader") {
+			text := parent.Contents().First().Text()
+			birthYear = extractBirthYear(text)
+		}
+		// Также проверяем предыдущие sibling элементы
+		if birthYear == 0 {
+			container.PrevAll().FilterFunction(func(_ int, s *goquery.Selection) bool {
+				return s.Is("h5.subheader")
+			}).First().Each(func(_ int, h5 *goquery.Selection) {
+				if birthYear == 0 {
+					birthYear = extractBirthYear(h5.Text())
+				}
+			})
+		}
 	}
 
 	var startDate, endDate *time.Time
-	container.Find("span.warning.label").Each(func(_ int, span *goquery.Selection) {
+	// Bootstrap использует классы .label.label-warning, ищем по label-warning
+	container.Find("span.label-warning, span[class*='warning']").Each(func(_ int, span *goquery.Selection) {
 		if startDate == nil {
 			startDate, endDate = extractDates(span.Text())
 		}
 	})
 
 	isEnded := false
-	container.Find("span.success.label").Each(func(_ int, span *goquery.Selection) {
+	// Bootstrap использует классы .label.label-success
+	container.Find("span.label-success, span[class*='success']").Each(func(_ int, span *goquery.Selection) {
 		if strings.Contains(span.Text(), "Завершен") {
 			isEnded = true
 		}

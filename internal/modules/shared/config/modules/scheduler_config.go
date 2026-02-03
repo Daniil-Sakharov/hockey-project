@@ -3,10 +3,17 @@ package modules
 import (
 	"fmt"
 	"os"
+	"sort"
 	"time"
 
 	"gopkg.in/yaml.v3"
 )
+
+// JobWithName структура для хранения job с именем (для сортировки)
+type JobWithName struct {
+	Name string
+	Job  JobConfig
+}
 
 // SchedulerConfig конфигурация планировщика
 type SchedulerConfig struct {
@@ -21,6 +28,7 @@ type JobConfig struct {
 	Enabled        bool          `yaml:"enabled"`
 	Timeout        time.Duration `yaml:"timeout"`
 	MaxTournaments int           `yaml:"max_tournaments"`
+	Order          int           `yaml:"order"` // Порядок выполнения (меньше = раньше)
 }
 
 // LoadSchedulerConfig загружает конфигурацию из YAML файла
@@ -69,7 +77,7 @@ func (c *SchedulerConfig) GetJob(name string) (JobConfig, bool) {
 	return job, ok
 }
 
-// EnabledJobs возвращает список включённых задач
+// EnabledJobs возвращает список включённых задач (deprecated: используй EnabledJobsOrdered)
 func (c *SchedulerConfig) EnabledJobs() map[string]JobConfig {
 	result := make(map[string]JobConfig)
 	for name, job := range c.Jobs {
@@ -78,4 +86,21 @@ func (c *SchedulerConfig) EnabledJobs() map[string]JobConfig {
 		}
 	}
 	return result
+}
+
+// EnabledJobsOrdered возвращает список включённых задач, отсортированный по полю Order
+func (c *SchedulerConfig) EnabledJobsOrdered() []JobWithName {
+	var jobs []JobWithName
+	for name, job := range c.Jobs {
+		if job.Enabled {
+			jobs = append(jobs, JobWithName{Name: name, Job: job})
+		}
+	}
+
+	// Сортируем по Order (меньше = раньше)
+	sort.Slice(jobs, func(i, j int) bool {
+		return jobs[i].Job.Order < jobs[j].Job.Order
+	})
+
+	return jobs
 }

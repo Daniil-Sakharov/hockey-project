@@ -1,0 +1,64 @@
+{
+  "source": "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Fan/Views/Tournaments/ScorersTabView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "#",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 30
+        }
+      },
+      {
+        "comment": "",
+        "key": "Игрок",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 31
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 64
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 102
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 77
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 81
+        }
+      },
+      {
+        "comment": "",
+        "key": "Нет данных по бомбардирам",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 113
+        }
+      }
+    ]
+  },
+  "version": 1
+}

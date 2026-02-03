@@ -14,8 +14,9 @@ type JuniorParserService interface {
 	ParseAllSeasonsTournaments(ctx context.Context, domain string) ([]types.TournamentDTO, error)
 	ExtractAllSeasons(ctx context.Context, domain string) ([]junior.SeasonInfo, error)
 	ParseSeasonTournaments(ctx context.Context, domain, season, ajaxURL string) ([]types.TournamentDTO, error)
-	ParseTeams(ctx context.Context, domain, tournamentURL string) ([]types.TeamDTO, error)
-	ParsePlayers(ctx context.Context, teamURL string) ([]types.PlayerDTO, error)
+	ParseTeams(ctx context.Context, domain, tournamentURL string, fallbackBirthYears ...int) ([]types.TeamWithContext, error)
+	ParsePlayers(ctx context.Context, domain, teamURL string) ([]types.PlayerDTO, error)
+	ParsePlayerProfile(ctx context.Context, domain, profileURL string) (*types.PlayerProfileDTO, error)
 }
 
 // JuniorConfig интерфейс конфигурации Junior парсера
@@ -23,4 +24,5 @@ type JuniorConfig interface {
 	BaseURL() string
 	DomainWorkers() int
 	MinBirthYear() int
+	MaxTournaments() int
 }

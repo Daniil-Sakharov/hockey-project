@@ -1,0 +1,16 @@
+{
+  "source": "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Profile/Views/ProfileView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Статистика сезона",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 38
+        }
+      }
+    ]
+  },
+  "version": 1
+}

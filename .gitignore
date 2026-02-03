@@ -16,6 +16,9 @@ coverage.out
 
 # Go workspace file
 go.work
+/ml
+.claude
+/runs
 
 # Dependencies
 vendor/

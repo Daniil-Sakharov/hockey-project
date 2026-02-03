@@ -72,6 +72,12 @@ func (o *Orchestrator) processPlayer(ctx context.Context, teamID, tournamentID s
 	if playerDTO.Stick != "" {
 		player.Handedness = &playerDTO.Stick
 	}
+	if playerDTO.Citizenship != "" {
+		player.Citizenship = &playerDTO.Citizenship
+	}
+	if playerDTO.School != "" {
+		player.School = &playerDTO.School
+	}
 
 	playerID, err := o.playerRepo.Upsert(ctx, player)
 	if err != nil {

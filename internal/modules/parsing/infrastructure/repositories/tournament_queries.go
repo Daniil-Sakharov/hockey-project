@@ -39,6 +39,36 @@ func (r *TournamentPostgres) GetByURL(ctx context.Context, url string) (*entitie
 	return &t, nil
 }
 
+// GetBySource получает турниры по источнику
+func (r *TournamentPostgres) GetBySource(ctx context.Context, source string) ([]*entities.Tournament, error) {
+	query := `SELECT * FROM tournaments WHERE source = $1 ORDER BY name`
+
+	var tournaments []*entities.Tournament
+	err := r.db.SelectContext(ctx, &tournaments, query, source)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tournaments by source: %w", err)
+	}
+	return tournaments, nil
+}
+
+// GetWithTeams получает турниры где уже есть команды (через player_teams)
+func (r *TournamentPostgres) GetWithTeams(ctx context.Context, source string) ([]*entities.Tournament, error) {
+	query := `
+		SELECT DISTINCT t.*
+		FROM tournaments t
+		INNER JOIN player_teams pt ON pt.tournament_id = t.id AND pt.source = t.source
+		WHERE t.source = $1
+		ORDER BY t.name
+	`
+
+	var tournaments []*entities.Tournament
+	err := r.db.SelectContext(ctx, &tournaments, query, source)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tournaments with teams: %w", err)
+	}
+	return tournaments, nil
+}
+
 // List получает список junior турниров (исключая FHSPB)
 func (r *TournamentPostgres) List(ctx context.Context) ([]*entities.Tournament, error) {
 	query := `SELECT * FROM tournaments WHERE id NOT LIKE 'spb:%' AND url IS NOT NULL AND domain IS NOT NULL ORDER BY name`
@@ -50,3 +80,4 @@ func (r *TournamentPostgres) List(ctx context.Context) ([]*entities.Tournament, 
 	}
 	return tournaments, nil
 }
+

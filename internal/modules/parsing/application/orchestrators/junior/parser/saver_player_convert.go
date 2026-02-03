@@ -16,7 +16,7 @@ func (s *orchestratorService) MinBirthYear() int {
 }
 
 // convertPlayerDTO конвертирует DTO в domain entity
-func (s *orchestratorService) convertPlayerDTO(dto junior.PlayerDTO, season string) (*entities.Player, error) {
+func (s *orchestratorService) convertPlayerDTO(dto junior.PlayerDTO, season, domain string) (*entities.Player, error) {
 	id := entities.ExtractIDFromURL(dto.ProfileURL)
 	if id == "" {
 		return nil, fmt.Errorf("failed to extract ID from URL: %s", dto.ProfileURL)
@@ -52,23 +52,43 @@ func (s *orchestratorService) convertPlayerDTO(dto junior.PlayerDTO, season stri
 		handedness = &h
 	}
 
+	var citizenship *string
+	if dto.Citizenship != "" {
+		c := strings.TrimSpace(dto.Citizenship)
+		citizenship = &c
+	}
+
+	var photoURL *string
+	if dto.PhotoURL != "" {
+		p := strings.TrimSpace(dto.PhotoURL)
+		photoURL = &p
+	}
+
 	var dataSeason *string
 	if season != "" {
 		dataSeason = &season
 	}
 
+	var domainPtr *string
+	if domain != "" {
+		domainPtr = &domain
+	}
+
 	return &entities.Player{
-		ID:         id,
-		ProfileURL: dto.ProfileURL,
-		Name:       strings.TrimSpace(dto.Name),
-		BirthDate:  birthDate,
-		Position:   strings.TrimSpace(dto.Position),
-		Height:     height,
-		Weight:     weight,
-		Handedness: handedness,
-		DataSeason: dataSeason,
-		Source:     entities.SourceJunior,
-		CreatedAt:  time.Now(),
-		UpdatedAt:  time.Now(),
+		ID:          id,
+		ProfileURL:  dto.ProfileURL,
+		Name:        strings.TrimSpace(dto.Name),
+		BirthDate:   birthDate,
+		Position:    strings.TrimSpace(dto.Position),
+		Height:      height,
+		Weight:      weight,
+		Handedness:  handedness,
+		Citizenship: citizenship,
+		PhotoURL:    photoURL,
+		Domain:      domainPtr,
+		DataSeason:  dataSeason,
+		Source:      entities.SourceJunior,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}, nil
 }

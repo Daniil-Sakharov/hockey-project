@@ -1,0 +1,23 @@
+{
+  "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Core/Network/APIClient.swift" : {
+    "const-values" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/APIClient.swiftconstvalues",
+    "dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/APIClient.d",
+    "diagnostics" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/APIClient.dia",
+    "object" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/APIClient.o",
+    "swift-dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/APIClient.swiftdeps"
+  },
+  "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Data/Repositories/AuthRepository.swift" : {
+    "const-values" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/AuthRepository.swiftconstvalues",
+    "dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/AuthRepository.d",
+    "diagnostics" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/AuthRepository.dia",
+    "object" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/AuthRepository.o",
+    "swift-dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/AuthRepository.swiftdeps"
+  },
+  "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Fan/Views/FanSearchView.swift" : {
+    "const-values" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/FanSearchView.swiftconstvalues",
+    "dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/FanSearchView.d",
+    "diagnostics" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/FanSearchView.dia",
+    "object" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/FanSearchView.o",
+    "swift-dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/FanSearchView.swiftdeps"
+  }
+}

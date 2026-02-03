@@ -1,0 +1,16 @@
+{
+  "source": "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Auth/Views/RegisterView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Создайте аккаунт StarRink",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 24
+        }
+      }
+    ]
+  },
+  "version": 1
+}

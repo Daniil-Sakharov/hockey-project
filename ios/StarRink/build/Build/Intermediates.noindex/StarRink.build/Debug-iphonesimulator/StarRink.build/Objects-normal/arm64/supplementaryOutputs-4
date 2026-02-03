@@ -1,0 +1,44 @@
+{
+  "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Home/ViewModels/HomeViewModel.swift" : {
+    "const-values" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/HomeViewModel.swiftconstvalues",
+    "dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/HomeViewModel.d",
+    "diagnostics" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/HomeViewModel.dia",
+    "object" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/HomeViewModel.o",
+    "swift-dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/HomeViewModel.swiftdeps"
+  },
+  "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Rankings/ViewModels/RankingsViewModel.swift" : {
+    "const-values" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/RankingsViewModel.swiftconstvalues",
+    "dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/RankingsViewModel.d",
+    "diagnostics" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/RankingsViewModel.dia",
+    "object" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/RankingsViewModel.o",
+    "swift-dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/RankingsViewModel.swiftdeps"
+  },
+  "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Rankings/Views/RankingsView.swift" : {
+    "const-values" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/RankingsView.swiftconstvalues",
+    "dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/RankingsView.d",
+    "diagnostics" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/RankingsView.dia",
+    "object" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/RankingsView.o",
+    "swift-dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/RankingsView.swiftdeps"
+  },
+  "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Settings/Views/SettingsView.swift" : {
+    "const-values" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/SettingsView.swiftconstvalues",
+    "dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/SettingsView.d",
+    "diagnostics" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/SettingsView.dia",
+    "object" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/SettingsView.o",
+    "swift-dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/SettingsView.swiftdeps"
+  },
+  "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Stats/ViewModels/StatsViewModel.swift" : {
+    "const-values" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/StatsViewModel.swiftconstvalues",
+    "dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/StatsViewModel.d",
+    "diagnostics" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/StatsViewModel.dia",
+    "object" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/StatsViewModel.o",
+    "swift-dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/StatsViewModel.swiftdeps"
+  },
+  "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Stats/Views/StatsView.swift" : {
+    "const-values" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/StatsView.swiftconstvalues",
+    "dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/StatsView.d",
+    "diagnostics" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/StatsView.dia",
+    "object" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/StatsView.o",
+    "swift-dependencies" : "/Users/sug6r/Desktop/hockey-project/ios/StarRink/build/Build/Intermediates.noindex/StarRink.build/Debug-iphonesimulator/StarRink.build/Objects-normal/arm64/StatsView.swiftdeps"
+  }
+}

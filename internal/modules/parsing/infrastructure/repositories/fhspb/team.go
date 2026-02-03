@@ -28,16 +28,13 @@ func NewTeamRepository(db *sqlx.DB) *TeamRepository {
 }
 
 func (r *TeamRepository) Upsert(ctx context.Context, t *Team) (string, error) {
-	tournamentExtID := t.TournamentID
-	if len(tournamentExtID) > 4 && tournamentExtID[:4] == "spb:" {
-		tournamentExtID = tournamentExtID[4:]
-	}
-	id := fmt.Sprintf("spb:%s:%s", tournamentExtID, t.ExternalID)
+	// ID формируется как spb:external_id (команда уникальна по external_id + source)
+	id := fmt.Sprintf("spb:%s", t.ExternalID)
 
 	query := `
 		INSERT INTO teams (id, external_id, tournament_id, name, url, city, region, source, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
-		ON CONFLICT (id) DO UPDATE SET
+		ON CONFLICT (external_id, source) WHERE external_id IS NOT NULL DO UPDATE SET
 			name = EXCLUDED.name,
 			url = COALESCE(EXCLUDED.url, teams.url),
 			city = COALESCE(EXCLUDED.city, teams.city)
@@ -51,6 +48,15 @@ func (r *TeamRepository) Upsert(ctx context.Context, t *Team) (string, error) {
 func (r *TeamRepository) GetByExternalID(ctx context.Context, externalID, tournamentID string) (*Team, error) {
 	var t Team
 	err := r.db.GetContext(ctx, &t, `SELECT id, external_id, tournament_id, name, url, city, region, created_at FROM teams WHERE external_id = $1 AND tournament_id = $2`, externalID, tournamentID)
+	if err != nil {
+		return nil, err
+	}
+	return &t, nil
+}
+
+func (r *TeamRepository) GetByName(ctx context.Context, name, tournamentID string) (*Team, error) {
+	var t Team
+	err := r.db.GetContext(ctx, &t, `SELECT id, external_id, tournament_id, name, url, city, region, created_at FROM teams WHERE name = $1 AND tournament_id = $2 AND source = $3`, name, tournamentID, SourceFHSPB)
 	if err != nil {
 		return nil, err
 	}

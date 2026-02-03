@@ -1,8 +1,11 @@
 name: Deploy
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
     branches: [main]
+    types:
+      - completed
   workflow_dispatch:
 
 env:
@@ -13,6 +16,8 @@ jobs:
   build-and-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
+    # Only run if CI passed (for workflow_run trigger) or manual trigger
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: read
       packages: write
@@ -80,20 +85,36 @@ jobs:
             # Создаём директории для данных
             mkdir -p /opt/hockey-bot/data/{postgres,prometheus,loki,tempo,grafana}
             
+            # Права для prometheus (nobody:nobody = 65534:65534)
+            sudo chown -R 65534:65534 /opt/hockey-bot/data/prometheus
+            # Права для grafana (grafana user = 472)
+            sudo chown -R 472:472 /opt/hockey-bot/data/grafana
+            
             # Логин в GitHub Container Registry
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             
             # Пулим новый образ
             docker compose -f deploy/compose/production/docker-compose.yml pull
-            
-            # Запускаем миграции
-            docker compose -f deploy/compose/production/docker-compose.yml --profile migrate run --rm migrate || true
-            
-            # Перезапускаем сервисы
-            docker compose -f deploy/compose/production/docker-compose.yml down || true
+
+            # Останавливаем старые сервисы и удаляем orphan контейнеры
+            docker compose -f deploy/compose/production/docker-compose.yml down --remove-orphans || true
+
+            # Запускаем только postgres для миграций
+            docker compose -f deploy/compose/production/docker-compose.yml up -d postgres
+
+            # Ждём пока postgres станет healthy
+            echo "⏳ Waiting for postgres to be healthy..."
+            timeout 60 bash -c 'until docker compose -f deploy/compose/production/docker-compose.yml ps postgres | grep -q "healthy"; do sleep 2; done'
+
+            # Запускаем миграции (без || true - деплой должен упасть при ошибке)
+            echo "🔄 Running migrations..."
+            docker compose -f deploy/compose/production/docker-compose.yml --profile migrate run --rm migrate
+
+            # Запускаем все сервисы
+            echo "🚀 Starting all services..."
             docker compose -f deploy/compose/production/docker-compose.yml up -d --force-recreate
-            
+
             # Чистим старые образы
             docker image prune -f
-            
+
             echo "✅ Deploy completed!"

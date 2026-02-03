@@ -1,0 +1,24 @@
+{
+  "source": "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Fan/Views/Tournaments/MatchesTabView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "%lld : %lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 81
+        }
+      },
+      {
+        "comment": "",
+        "key": "Нет матчей",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 102
+        }
+      }
+    ]
+  },
+  "version": 1
+}

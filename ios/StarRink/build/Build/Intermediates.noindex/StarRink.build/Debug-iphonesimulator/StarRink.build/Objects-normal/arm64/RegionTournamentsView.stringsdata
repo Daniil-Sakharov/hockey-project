@@ -1,0 +1,40 @@
+{
+  "source": "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Fan/Views/Tournaments/RegionTournamentsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Загрузка турниров...",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 159
+        }
+      },
+      {
+        "comment": "",
+        "key": "Повторить",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 174
+        }
+      },
+      {
+        "comment": "",
+        "key": "Нет турниров",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 188
+        }
+      },
+      {
+        "comment": "",
+        "key": "Попробуйте выбрать другой сезон или год рождения",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 191
+        }
+      }
+    ]
+  },
+  "version": 1
+}

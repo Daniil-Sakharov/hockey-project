@@ -18,6 +18,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/junior_parser ./cmd/junior_parser
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/junior_stats ./cmd/junior_stats
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/fhspb_parser ./cmd/fhspb_parser
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/fhspb_stats ./cmd/fhspb_stats
+RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/api ./cmd/api
 
 # Runtime stage
 FROM alpine:3.19
@@ -31,6 +32,7 @@ COPY --from=builder /bin/junior_parser /app/junior_parser
 COPY --from=builder /bin/junior_stats /app/junior_stats
 COPY --from=builder /bin/fhspb_parser /app/fhspb_parser
 COPY --from=builder /bin/fhspb_stats /app/fhspb_stats
+COPY --from=builder /bin/api /app/api
 COPY --from=builder /app/migrations /app/migrations
 COPY --from=builder /app/config /app/config
 

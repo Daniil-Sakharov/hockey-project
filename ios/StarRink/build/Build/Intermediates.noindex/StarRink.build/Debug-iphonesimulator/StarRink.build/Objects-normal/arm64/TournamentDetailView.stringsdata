@@ -1,0 +1,32 @@
+{
+  "source": "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Fan/Views/Tournaments/TournamentDetailView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 45
+        }
+      },
+      {
+        "comment": "",
+        "key": "Загрузка...",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 70
+        }
+      },
+      {
+        "comment": "",
+        "key": "Повторить",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 84
+        }
+      }
+    ]
+  },
+  "version": 1
+}

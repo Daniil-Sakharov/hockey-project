@@ -1,0 +1,16 @@
+{
+  "source": "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/UI/Animations/GoalAnimation.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "GOAL!",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 13
+        }
+      }
+    ]
+  },
+  "version": 1
+}

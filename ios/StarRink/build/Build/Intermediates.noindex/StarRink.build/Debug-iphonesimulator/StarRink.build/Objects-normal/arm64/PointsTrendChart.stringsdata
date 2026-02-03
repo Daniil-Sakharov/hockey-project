@@ -1,0 +1,80 @@
+{
+  "source": "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/UI/Components/Charts/PointsTrendChart.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Тренд очков",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 9
+        }
+      },
+      {
+        "comment": "",
+        "key": "Месяц",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 17
+        }
+      },
+      {
+        "comment": "",
+        "key": "Голы",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 18
+        }
+      },
+      {
+        "comment": "",
+        "key": "Месяц",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 26
+        }
+      },
+      {
+        "comment": "",
+        "key": "Голы",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 27
+        }
+      },
+      {
+        "comment": "",
+        "key": "Месяц",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 40
+        }
+      },
+      {
+        "comment": "",
+        "key": "Передачи",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 41
+        }
+      },
+      {
+        "comment": "",
+        "key": "Голы",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 66
+        }
+      },
+      {
+        "comment": "",
+        "key": "Передачи",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 69
+        }
+      }
+    ]
+  },
+  "version": 1
+}

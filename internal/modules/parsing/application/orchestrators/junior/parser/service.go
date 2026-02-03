@@ -18,10 +18,26 @@ func NewJuniorService(client *junior.Client) *juniorService {
 	}
 }
 
-// ParseDomains находит все домены *.fhr.ru
+// ParseDomains возвращает все домены *.fhr.ru для парсинга
+// TODO: вернуть полный список после тестирования
 func (s *juniorService) ParseDomains(ctx context.Context) ([]string, error) {
-	mainURL := "https://junior.fhr.ru"
-	return s.client.DiscoverAllDomains(mainURL)
+	return []string{
+		"https://ufo.fhr.ru",
+		// "https://junior.fhr.ru",
+		// "https://cfo.fhr.ru",
+		// "https://dfo.fhr.ru",
+		// "https://komi.fhr.ru",
+		// "https://kuzbass.fhr.ru",
+		// "https://len.fhr.ru",
+		// "https://nsk.fhr.ru",
+		// "https://pfo.fhr.ru",
+		// "https://sam.fhr.ru",
+		// "https://sfo.fhr.ru",
+		// "https://spb.fhr.ru",
+		// "https://szfo.fhr.ru",
+		// "https://vrn.fhr.ru",
+		// "https://yfo.fhr.ru",
+	}, nil
 }
 
 // ParseTournaments парсит турниры с домена (текущий сезон)
@@ -47,12 +63,17 @@ func (s *juniorService) ParseSeasonTournaments(
 	return s.client.ParseSeasonTournaments(domain, season, ajaxURL)
 }
 
-// ParseTeams парсит команды из турнира
-func (s *juniorService) ParseTeams(ctx context.Context, domain, tournamentURL string) ([]types.TeamDTO, error) {
-	return s.client.ParseTeamsFromTournament(ctx, domain, tournamentURL)
+// ParseTeams парсит команды из турнира с контекстом года/группы
+func (s *juniorService) ParseTeams(ctx context.Context, domain, tournamentURL string, fallbackBirthYears ...int) ([]types.TeamWithContext, error) {
+	return s.client.ParseTeamsFromTournament(ctx, domain, tournamentURL, fallbackBirthYears...)
 }
 
 // ParsePlayers парсит игроков из команды
-func (s *juniorService) ParsePlayers(ctx context.Context, teamURL string) ([]types.PlayerDTO, error) {
-	return s.client.ParsePlayersFromTeam(teamURL)
+func (s *juniorService) ParsePlayers(ctx context.Context, domain, teamURL string) ([]types.PlayerDTO, error) {
+	return s.client.ParsePlayersFromTeam(domain, teamURL)
+}
+
+// ParsePlayerProfile парсит профиль игрока для получения дополнительных данных
+func (s *juniorService) ParsePlayerProfile(ctx context.Context, domain, profileURL string) (*types.PlayerProfileDTO, error) {
+	return s.client.ParsePlayerProfile(domain, profileURL)
 }

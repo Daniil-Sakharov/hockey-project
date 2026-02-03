@@ -76,13 +76,14 @@ func (r *PlayerPostgres) Update(ctx context.Context, p *entities.Player) error {
 		UPDATE players SET
 			name = $2, profile_url = $3, birth_date = $4, position = $5,
 			height = $6, weight = $7, handedness = $8, birth_place = $9,
-			citizenship = $10, role = $11, region = $12, updated_at = NOW()
+			citizenship = $10, region = $11, photo_url = $12, domain = $13,
+			updated_at = NOW()
 		WHERE id = $1`
 
 	_, err := r.db.ExecContext(ctx, query,
 		p.ID, p.Name, p.ProfileURL, p.BirthDate, p.Position,
 		p.Height, p.Weight, p.Handedness, p.BirthPlace,
-		p.Citizenship, p.Role, p.Region,
+		p.Citizenship, p.Region, p.PhotoURL, p.Domain,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to update player: %w", err)

@@ -1,0 +1,88 @@
+{
+  "source": "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/UI/Components/Charts/MiniSparkline.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "%lld%%",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 22
+        }
+      },
+      {
+        "comment": "",
+        "key": "Index",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 32
+        }
+      },
+      {
+        "comment": "",
+        "key": "Value",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 33
+        }
+      },
+      {
+        "comment": "",
+        "key": "Index",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 39
+        }
+      },
+      {
+        "comment": "",
+        "key": "Value",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 40
+        }
+      },
+      {
+        "comment": "",
+        "key": "Последние %lld игр",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 99
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 105
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ср: %@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 114
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 125
+        }
+      },
+      {
+        "comment": "",
+        "key": "И%lld",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 148
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -2,11 +2,16 @@ package junior
 
 import (
 	"fmt"
+	"regexp"
+	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/junior/parsing"
 	"github.com/PuerkitoBio/goquery"
 )
+
+var yearFromTextRe = regexp.MustCompile(`\b(20\d{2})\b`)
 
 // ExtractAllSeasons извлекает все сезоны из дропдауна на странице /tournaments/
 func (c *Client) ExtractAllSeasons(domain string) ([]SeasonInfo, error) {
@@ -64,75 +69,96 @@ func (c *Client) ParseSeasonTournaments(domain, season, ajaxURL string) ([]Tourn
 		return nil, fmt.Errorf("ошибка парсинга HTML: %w", err)
 	}
 
-	var tournaments []TournamentDTO
-	parsedURLs := make(map[string]bool) // Дедупликация
+	// Первый проход: собираем данные и birth years по parentURL
+	type tournamentData struct {
+		parentURL  string
+		name       string
+		startDate  string
+		endDate    string
+		isEnded    bool
+		birthYears map[int]bool
+	}
 
-	// Парсим турниры (comp-card блоки) - аналогично ParseTournamentsFromDomain
+	tournamentsMap := make(map[string]*tournamentData) // parentURL → data
+	var order []string                                 // порядок обнаружения
+
 	doc.Find(`a.comp-age[href^="/tournaments/"]`).Each(func(i int, s *goquery.Selection) {
 		href, exists := s.Attr("href")
-		if !exists || href == "" {
+		if !exists || href == "" || href == "/tournaments/" || href == "/tournaments" {
 			return
 		}
 
-		// Пропускаем саму страницу /tournaments/
-		if href == "/tournaments/" || href == "/tournaments" {
-			return
-		}
-
-		// Убираем часть -year-XXXXX чтобы получить родительский URL
 		parentURL := href
-		if strings.Contains(href, "-year-") {
-			yearIndex := strings.Index(href, "-year-")
-			if yearIndex != -1 {
-				parentURL = href[:yearIndex] + "/"
-			}
+		if idx := strings.Index(href, "-year-"); idx != -1 {
+			parentURL = href[:idx] + "/"
 		}
 
-		// Дедупликация
-		if parsedURLs[parentURL] {
-			return
+		// Извлекаем год из текста ссылки ("2015 г.р." → 2015)
+		var birthYear int
+		if matches := yearFromTextRe.FindStringSubmatch(strings.TrimSpace(s.Text())); len(matches) > 1 {
+			birthYear, _ = strconv.Atoi(matches[1])
 		}
-		parsedURLs[parentURL] = true
 
-		// Извлекаем название из родительского блока comp-card
-		name := ""
-		s.Parents().EachWithBreak(func(j int, parent *goquery.Selection) bool {
-			if parent.HasClass("comp-card") {
-				name = strings.TrimSpace(parent.Find(".comp-link").First().Text())
-				if name != "" {
-					return false
+		td, exists := tournamentsMap[parentURL]
+		if !exists {
+			name := ""
+			s.Parents().EachWithBreak(func(j int, parent *goquery.Selection) bool {
+				if parent.HasClass("comp-card") {
+					name = strings.TrimSpace(parent.Find(".comp-link").First().Text())
+					return name == ""
 				}
+				return true
+			})
+			if name == "" {
+				name = strings.TrimSpace(s.Text())
 			}
-			return true
-		})
 
-		// Fallback: текст ссылки
-		if name == "" {
-			name = strings.TrimSpace(s.Text())
+			startDate, endDate, isEnded := parsing.ParseTournamentMetadata(s)
+			td = &tournamentData{
+				parentURL:  parentURL,
+				name:       name,
+				startDate:  startDate,
+				endDate:    endDate,
+				isEnded:    isEnded,
+				birthYears: make(map[int]bool),
+			}
+			tournamentsMap[parentURL] = td
+			order = append(order, parentURL)
 		}
 
-		// Извлекаем ID турнира
+		if birthYear > 0 {
+			td.birthYears[birthYear] = true
+		}
+	})
+
+	// Второй проход: создаём TournamentDTO с заполненными BirthYears
+	tournaments := make([]TournamentDTO, 0, len(order))
+	for _, parentURL := range order {
+		td := tournamentsMap[parentURL]
+
 		tournamentID := parsing.ExtractTournamentID(parentURL)
 		if tournamentID == "" {
 			tournamentID = parentURL
 		}
 
-		// Парсим даты из comp-period
-		startDate, endDate, isEnded := parsing.ParseTournamentMetadata(s)
-
-		tournament := TournamentDTO{
-			ID:        tournamentID,
-			Name:      name,
-			URL:       parentURL,
-			Domain:    domain,
-			Season:    season, // ← Сезон уже известен из параметра
-			StartDate: startDate,
-			EndDate:   endDate,
-			IsEnded:   isEnded,
+		var birthYears []int
+		for y := range td.birthYears {
+			birthYears = append(birthYears, y)
 		}
+		sort.Ints(birthYears)
 
-		tournaments = append(tournaments, tournament)
-	})
+		tournaments = append(tournaments, TournamentDTO{
+			ID:         tournamentID,
+			Name:       td.name,
+			URL:        parentURL,
+			Domain:     domain,
+			Season:     season,
+			StartDate:  td.startDate,
+			EndDate:    td.endDate,
+			IsEnded:    td.isEnded,
+			BirthYears: birthYears,
+		})
+	}
 
 	return tournaments, nil
 }
