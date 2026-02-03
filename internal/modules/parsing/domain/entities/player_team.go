@@ -15,6 +15,11 @@ type PlayerTeam struct {
 	JerseyNumber *int       `db:"jersey_number"`
 	Role         *string    `db:"role"`
 	Position     *string    `db:"position"`
+	Height       *int       `db:"height"`
+	Weight       *int       `db:"weight"`
+	PhotoURL     *string    `db:"photo_url"`
+	BirthYear    *int       `db:"birth_year"`
+	GroupName    *string    `db:"group_name"`
 	Source       string     `db:"source"`
 	CreatedAt    time.Time  `db:"created_at"`
 	UpdatedAt    time.Time  `db:"updated_at"`

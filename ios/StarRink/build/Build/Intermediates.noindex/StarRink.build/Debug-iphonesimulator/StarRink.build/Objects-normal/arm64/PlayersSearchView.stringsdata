@@ -1,0 +1,32 @@
+{
+  "source": "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Fan/Views/Players/PlayersSearchView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Поиск игроков...",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 31
+        }
+      },
+      {
+        "comment": "",
+        "key": "Игроки не найдены",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 153
+        }
+      },
+      {
+        "comment": "",
+        "key": "Найдено: %lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 160
+        }
+      }
+    ]
+  },
+  "version": 1
+}

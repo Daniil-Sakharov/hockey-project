@@ -1,34 +1,82 @@
 scheduler:
   bootstrap_mode: false
-  run_immediately: true  # При старте сразу запустить все задачи
-  
+  run_immediately: true
+
   jobs:
+    # Парсеры (order 1-10) - запускаются первыми
     junior_parser:
       cron: "0 2 * * *"
       enabled: true
       timeout: 1h
-      max_tournaments: 0  # 0 = без лимита
-      
+      max_tournaments: 0
+      order: 1
+
     fhspb_parser:
       cron: "0 3 * * *"
-      enabled: true
+      enabled: false
       timeout: 1h
       max_tournaments: 0
-      
+      order: 2
+
+    mihf_parser:
+      cron: "0 4 * * *"
+      enabled: false
+      timeout: 3h
+      max_tournaments: 0
+      order: 3
+
+    fhmoscow_parser:
+      cron: "0 5 * * *"
+      enabled: false
+      timeout: 2h
+      max_tournaments: 0
+      order: 4
+
+    # Статистика (order 11-20) - после парсеров
     junior_stats:
       cron: "0 */4 * * *"
-      enabled: true
+      enabled: false
       timeout: 30m
-      max_tournaments: 3  # Для теста - только 3 турнира
-      
+      max_tournaments: 0
+      order: 11
+
     fhspb_stats:
       cron: "0 */4 * * *"
-      enabled: true
+      enabled: false
       timeout: 30m
-      max_tournaments: 3  # Для теста - только 3 турнира
-      
+      max_tournaments: 3
+      order: 12
+
+    # Календари (order 21-30) - после парсеров и статистики
+    junior_calendar:
+      cron: "0 6 * * *"
+      enabled: false
+      timeout: 2h
+      max_tournaments: 0
+      order: 21
+
+    fhspb_calendar:
+      cron: "30 6 * * *"
+      enabled: false
+      timeout: 1h
+      order: 22
+
+    mihf_calendar:
+      cron: "0 7 * * *"
+      enabled: false
+      timeout: 1h
+      order: 23
+
+    fhmoscow_calendar:
+      cron: "30 7 * * *"
+      enabled: false
+      timeout: 1h
+      order: 24
+
+    # Служебные (order 90+)
     retry_worker:
       cron: "0 * * * *"
-      enabled: true
+      enabled: false
       timeout: 15m
       max_tournaments: 0
+      order: 90

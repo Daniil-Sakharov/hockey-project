@@ -26,10 +26,10 @@ type Player struct {
 	BirthPlace *string `db:"birth_place"`
 	Domain     *string `db:"domain"`
 
-	// FHSPB specific fields
+	// Additional fields
 	Citizenship *string `db:"citizenship"`
-	Role        *string `db:"role"`
 	Region      *string `db:"region"`
+	PhotoURL    *string `db:"photo_url"`
 
 	Source    string    `db:"source"`
 	CreatedAt time.Time `db:"created_at"`
@@ -51,8 +51,8 @@ const (
 
 // Source constants
 const (
-	SourceJunior = "junior.fhr.ru"
-	SourceFHSPB  = "fhspb.ru"
+	SourceJunior = "junior"
+	SourceFHSPB  = "fhspb"
 	SourceBoth   = "both"
 )
 

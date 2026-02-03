@@ -6,9 +6,10 @@ import (
 
 // Алиасы на типы из types/ для обратной совместимости
 type (
-	PlayerDTO     = jrtypes.PlayerDTO
-	TeamDTO       = jrtypes.TeamDTO
-	TournamentDTO = jrtypes.TournamentDTO
-	SeasonInfo    = jrtypes.SeasonInfo
-	YearLink      = jrtypes.YearLink
+	PlayerDTO        = jrtypes.PlayerDTO
+	PlayerProfileDTO = jrtypes.PlayerProfileDTO
+	TeamDTO          = jrtypes.TeamDTO
+	TournamentDTO    = jrtypes.TournamentDTO
+	SeasonInfo       = jrtypes.SeasonInfo
+	YearLink         = jrtypes.YearLink
 )

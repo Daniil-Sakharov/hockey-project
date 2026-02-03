@@ -13,8 +13,15 @@ import (
 // SaveTournaments сохраняет турниры в БД
 func (s *orchestratorService) SaveTournaments(ctx context.Context, tournamentsDTO []junior.TournamentDTO) ([]*entities.Tournament, error) {
 	var saved []*entities.Tournament
+	minYear := s.config.MinBirthYear()
 
 	for _, dto := range tournamentsDTO {
+		// Проверяем есть ли хотя бы один валидный год рождения >= MinBirthYear
+		if !hasValidBirthYear(dto.BirthYears, minYear) {
+			logger.Info(ctx, fmt.Sprintf("    ⏭️  Skipping tournament %s (no birth years >= %d)", dto.Name, minYear))
+			continue
+		}
+
 		t := convertTournamentDTO(dto)
 
 		existing, err := s.tournamentRepo.GetByURL(ctx, dto.URL)
@@ -43,6 +50,20 @@ func (s *orchestratorService) SaveTournaments(ctx context.Context, tournamentsDT
 	return saved, nil
 }
 
+// hasValidBirthYear проверяет есть ли хотя бы один год >= minYear
+func hasValidBirthYear(birthYears []int, minYear int) bool {
+	// Если годов нет — пропускаем (турнир без информации о годах)
+	if len(birthYears) == 0 {
+		return true // Разрешаем турниры без указанных годов (они проверятся позже)
+	}
+	for _, year := range birthYears {
+		if year >= minYear {
+			return true
+		}
+	}
+	return false
+}
+
 func convertTournamentDTO(dto junior.TournamentDTO) *entities.Tournament {
 	var startDate *time.Time
 	if dto.StartDate != "" {
@@ -67,6 +88,7 @@ func convertTournamentDTO(dto junior.TournamentDTO) *entities.Tournament {
 		StartDate: startDate,
 		EndDate:   endDate,
 		IsEnded:   dto.IsEnded,
+		Source:    entities.SourceJunior,
 		CreatedAt: time.Now(),
 	}
 }
@@ -100,4 +122,34 @@ func (s *orchestratorService) SaveTournamentsBatch(
 	}
 
 	return allSaved, nil
+}
+
+// saveTournamentsToDatabase сохраняет уже сконвертированные турниры в БД
+func (s *orchestratorService) saveTournamentsToDatabase(ctx context.Context, tournaments []*entities.Tournament) error {
+	for _, t := range tournaments {
+		existing, err := s.tournamentRepo.GetByURL(ctx, t.URL)
+		if err != nil {
+			return fmt.Errorf("failed to check existing tournament: %w", err)
+		}
+
+		if existing != nil {
+			// Обновляем существующий турнир
+			existing.Season = t.Season
+			existing.StartDate = t.StartDate
+			existing.EndDate = t.EndDate
+			existing.IsEnded = t.IsEnded
+			existing.BirthYear = t.BirthYear
+
+			if err := s.tournamentRepo.Update(ctx, existing); err != nil {
+				return fmt.Errorf("failed to update tournament: %w", err)
+			}
+		} else {
+			// Создаем новый турнир
+			if err := s.tournamentRepo.Create(ctx, t); err != nil {
+				return fmt.Errorf("failed to create tournament: %w", err)
+			}
+		}
+	}
+
+	return nil
 }

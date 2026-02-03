@@ -11,13 +11,13 @@ import (
 
 // RunJuniorParsing парсит junior.fhr.ru (ВСЕ домены → турниры → команды → игроки)
 func (s *orchestratorService) RunJuniorParsing(ctx context.Context) error {
-	// ЭТАП 1: Находим ВСЕ домены *.fhr.ru
-	logger.Info(ctx, "📊 STAGE 1: Discovering all domains...")
+	// ЭТАП 1: Получаем список доменов для парсинга
+	logger.Info(ctx, "📊 STAGE 1: Loading domains...")
 	domains, err := s.juniorService.ParseDomains(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to discover domains: %w", err)
+		return fmt.Errorf("failed to get domains: %w", err)
 	}
-	logger.Info(ctx, fmt.Sprintf("  ✅ Found %d domains", len(domains)))
+	logger.Info(ctx, fmt.Sprintf("  ✅ Using %d domain(s): %v", len(domains), domains))
 
 	// ЭТАП 2: Глобальная дедупликация турниров по ID
 	var globalTournamentDedup sync.Map
@@ -65,10 +65,24 @@ func (s *orchestratorService) RunJuniorParsing(ctx context.Context) error {
 		allTournaments = append(allTournaments, result.Tournaments...)
 	}
 
-	// ЭТАП 7: Финальная статистика доменов
+	// ЭТАП 7: Применяем глобальный лимит турниров
+	if s.config.MaxTournaments() > 0 && len(allTournaments) > s.config.MaxTournaments() {
+		logger.Info(ctx, fmt.Sprintf("  ⚠️  Applying global limit: %d tournaments (was %d)", s.config.MaxTournaments(), len(allTournaments)))
+		allTournaments = allTournaments[:s.config.MaxTournaments()]
+	}
+
+	// ЭТАП 8: Сохраняем турниры в БД (только после применения лимита)
+	logger.Info(ctx, "")
+	logger.Info(ctx, "💾 Saving tournaments to database...")
+	if err := s.saveTournamentsToDatabase(ctx, allTournaments); err != nil {
+		return fmt.Errorf("failed to save tournaments: %w", err)
+	}
+	logger.Info(ctx, fmt.Sprintf("  ✅ Saved %d tournaments to database", len(allTournaments)))
+
+	// ЭТАП 9: Финальная статистика доменов
 	s.logDomainStats(ctx, stats, len(domains), len(allTournaments))
 
-	// ЭТАП 8: Продолжаем с турнирами (ParseTeams → ParsePlayers)
+	// ЭТАП 10: Продолжаем с турнирами (ParseTeams → ParsePlayers)
 	logger.Info(ctx, "")
 	logger.Info(ctx, "================================================================================")
 	logger.Info(ctx, "🚀 STARTING TOURNAMENT & PLAYER PROCESSING...")

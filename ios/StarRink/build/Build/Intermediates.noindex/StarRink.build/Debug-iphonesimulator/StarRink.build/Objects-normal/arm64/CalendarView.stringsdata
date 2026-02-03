@@ -1,0 +1,16 @@
+{
+  "source": "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Calendar/Views/CalendarView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Календарь",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 7
+        }
+      }
+    ]
+  },
+  "version": 1
+}

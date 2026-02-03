@@ -23,8 +23,10 @@ func NewParser(http types.HTTPRequester) *Parser {
 	return &Parser{http: http}
 }
 
-// ParseFromTournament парсит команды из турнира
-func (p *Parser) ParseFromTournament(ctx context.Context, domain, tournamentURL string) ([]types.TeamDTO, error) {
+// ParseFromTournament парсит команды из турнира с контекстом года/группы.
+// fallbackBirthYears — годы рождения со страницы списка турниров, используются
+// если на странице команд нет dropdown года.
+func (p *Parser) ParseFromTournament(ctx context.Context, domain, tournamentURL string, fallbackBirthYears ...int) ([]types.TeamWithContext, error) {
 	teamsURL := domain + tournamentURL
 	if !strings.HasSuffix(teamsURL, "/") {
 		teamsURL += "/"
@@ -48,22 +50,42 @@ func (p *Parser) ParseFromTournament(ctx context.Context, domain, tournamentURL 
 		return nil, fmt.Errorf("ошибка парсинга HTML: %w", err)
 	}
 
-	teamsMap := make(map[string]types.TeamDTO)
-
 	yearLinks := helpers.ExtractYearLinks(doc)
 	initialGroups := helpers.ExtractGroupLinks(doc)
 
+	var teamsWithContext []types.TeamWithContext
+
 	if len(yearLinks) == 0 && len(initialGroups) == 0 {
 		logger.Info(ctx, "     ℹ️  Нет переключателей года/группы, парсим основную страницу")
-		helpers.ParseTeamsFromDoc(doc, teamsMap)
-		logger.Info(ctx, fmt.Sprintf("     💾 Найдено команд: %d", len(teamsMap)))
+		teamsMap := make(map[string]types.TeamDTO)
+		helpers.ParseTeamsFromDocWithDomain(doc, teamsMap, domain)
+
+		// Если есть fallback год — назначаем его командам
+		var birthYear *int
+		if len(fallbackBirthYears) == 1 {
+			birthYear = &fallbackBirthYears[0]
+			logger.Info(ctx, fmt.Sprintf("     📅 Используем fallback год рождения: %d", *birthYear))
+		}
+
+		for _, team := range teamsMap {
+			teamsWithContext = append(teamsWithContext, types.TeamWithContext{
+				Team:      team,
+				BirthYear: birthYear,
+				GroupName: nil,
+			})
+		}
+		logger.Info(ctx, fmt.Sprintf("     💾 Найдено команд: %d", len(teamsWithContext)))
+	} else if len(yearLinks) == 0 && len(initialGroups) > 0 {
+		// Нет годов, но есть группы — используем fallback год если есть
+		var birthYear *int
+		if len(fallbackBirthYears) == 1 {
+			birthYear = &fallbackBirthYears[0]
+			logger.Info(ctx, fmt.Sprintf("     📅 Группы без годов, используем fallback год: %d", *birthYear))
+		}
+		teamsWithContext = p.parseWithFiltersAndFallbackYear(ctx, domain, doc, initialGroups, birthYear)
 	} else {
-		p.parseWithFilters(ctx, domain, doc, yearLinks, initialGroups, teamsMap)
+		teamsWithContext = p.parseWithFilters(ctx, domain, doc, yearLinks, initialGroups)
 	}
 
-	teams := make([]types.TeamDTO, 0, len(teamsMap))
-	for _, team := range teamsMap {
-		teams = append(teams, team)
-	}
-	return teams, nil
+	return teamsWithContext, nil
 }

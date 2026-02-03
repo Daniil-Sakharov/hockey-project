@@ -1,0 +1,16 @@
+{
+  "source": "/Users/sug6r/Desktop/hockey-project/ios/StarRink/StarRink/Features/Rankings/Views/RankingsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Рейтинг",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 7
+        }
+      }
+    ]
+  },
+  "version": 1
+}

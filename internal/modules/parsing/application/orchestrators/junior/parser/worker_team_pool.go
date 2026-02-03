@@ -4,15 +4,20 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/domain/entities"
 	"github.com/Daniil-Sakharov/HockeyProject/pkg/logger"
 )
 
+const taskTimeout = 1 * time.Minute // Таймаут на обработку одной команды (уменьшен для тестирования)
+
 // TeamTask задача для парсинга команды
 type TeamTask struct {
 	Team       *entities.Team
 	Tournament *entities.Tournament
+	BirthYear  *int
+	GroupName  *string
 	Index      int
 	Total      int
 }
@@ -59,7 +64,10 @@ func (wp *TeamWorkerPool) Start() {
 
 // worker функция каждого воркера
 func (wp *TeamWorkerPool) worker(workerID int) {
-	defer wp.wg.Done()
+	defer func() {
+		logger.Debug(wp.ctx, fmt.Sprintf("    👷 Worker %d: exiting", workerID))
+		wp.wg.Done()
+	}()
 
 	for task := range wp.tasks {
 		// Проверка контекста (отмена)
@@ -69,9 +77,36 @@ func (wp *TeamWorkerPool) worker(workerID int) {
 		default:
 		}
 
-		// Обрабатываем команду
-		result := wp.processTeam(workerID, task)
+		// Обрабатываем команду с таймаутом
+		result := wp.processTeamWithTimeout(workerID, task)
+		logger.Debug(wp.ctx, fmt.Sprintf("    👷 Worker %d: sending result for %s", workerID, task.Team.Name))
 		wp.results <- result
+		logger.Debug(wp.ctx, fmt.Sprintf("    👷 Worker %d: result sent for %s", workerID, task.Team.Name))
+	}
+}
+
+// processTeamWithTimeout обрабатывает команду с таймаутом
+func (wp *TeamWorkerPool) processTeamWithTimeout(workerID int, task TeamTask) TeamResult {
+	resultCh := make(chan TeamResult, 1)
+
+	go func() {
+		resultCh <- wp.processTeam(workerID, task)
+	}()
+
+	select {
+	case result := <-resultCh:
+		return result
+	case <-time.After(taskTimeout):
+		logger.Warn(wp.ctx, fmt.Sprintf("    ⏱️  Worker %d: TIMEOUT processing team %s", workerID, task.Team.Name))
+		return TeamResult{
+			TeamName: task.Team.Name,
+			Error:    fmt.Errorf("timeout after %v", taskTimeout),
+		}
+	case <-wp.ctx.Done():
+		return TeamResult{
+			TeamName: task.Team.Name,
+			Error:    wp.ctx.Err(),
+		}
 	}
 }
 
@@ -84,8 +119,8 @@ func (wp *TeamWorkerPool) processTeam(workerID int, task TeamTask) TeamResult {
 	logger.Info(ctx, fmt.Sprintf("    🏒 Worker %d: Team %d/%d: %s",
 		workerID, task.Index, task.Total, t.Name))
 
-	// Парсим игроков
-	err := wp.orchestrator.SavePlayers(ctx, t.URL, t.ID, tournament.ID, tournament)
+	// Парсим игроков (передаем домен турнира и контекст year/group)
+	err := wp.orchestrator.SavePlayers(ctx, tournament.Domain, t.URL, t.ID, tournament.ID, tournament, task.BirthYear, task.GroupName)
 	if err != nil {
 		logger.Warn(ctx, fmt.Sprintf("      ⚠️  Worker %d failed: %v", workerID, err))
 		return TeamResult{
@@ -94,6 +129,7 @@ func (wp *TeamWorkerPool) processTeam(workerID int, task TeamTask) TeamResult {
 		}
 	}
 
+	logger.Info(ctx, fmt.Sprintf("    ✅ Worker %d: Team %s DONE", workerID, t.Name))
 	return TeamResult{
 		TeamName: t.Name,
 	}

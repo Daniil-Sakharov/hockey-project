@@ -40,16 +40,13 @@ func (wp *DomainWorkerPool) processDomain(workerID int, task DomainTask) DomainR
 
 	logger.Info(ctx, fmt.Sprintf("  ✅ Found %d unique tournaments (all seasons)", len(uniqueTournaments)))
 
-	// ШАГ 4: Сохраняем турниры
-	saved, err := wp.saveTournaments(domain, uniqueTournaments)
-	if err != nil {
-		return DomainResult{Domain: domain, Error: err}
-	}
+	// ШАГ 4: Конвертируем DTO в entities (но НЕ сохраняем в БД)
+	converted := wp.convertTournaments(domain, uniqueTournaments)
 
-	logger.Info(ctx, fmt.Sprintf("🎉 Domain %s COMPLETED! (%d tournaments)", domain, len(saved)))
+	logger.Info(ctx, fmt.Sprintf("🎉 Domain %s COMPLETED! (%d tournaments)", domain, len(converted)))
 	logger.Info(ctx, "================================================================================")
 
-	return DomainResult{Domain: domain, Tournaments: saved, IsDuplicate: false}
+	return DomainResult{Domain: domain, Tournaments: converted, IsDuplicate: false}
 }
 
 // checkDuplicate проверяет домен на дубликат с retry
@@ -118,17 +115,14 @@ func (wp *DomainWorkerPool) filterDuplicates(tournaments []junior.TournamentDTO)
 	return unique
 }
 
-// saveTournaments сохраняет турниры в БД
-func (wp *DomainWorkerPool) saveTournaments(domain string, tournaments []junior.TournamentDTO) ([]*entities.Tournament, error) {
-	ctx := wp.ctx
+// convertTournaments конвертирует DTO в entities без сохранения
+func (wp *DomainWorkerPool) convertTournaments(domain string, tournaments []junior.TournamentDTO) []*entities.Tournament {
+	result := make([]*entities.Tournament, 0, len(tournaments))
 
-	logger.Info(ctx, "  💾 Saving tournaments to database...")
-	saved, err := wp.orchestrator.SaveTournamentsBatch(ctx, tournaments, 100)
-	if err != nil {
-		logger.Error(ctx, fmt.Sprintf("  ❌ Failed to save tournaments: %v", err))
-		return nil, fmt.Errorf("failed to save tournaments: %w", err)
+	for _, dto := range tournaments {
+		t := entities.ConvertJuniorTournament(dto, domain)
+		result = append(result, t)
 	}
 
-	logger.Info(ctx, fmt.Sprintf("  ✅ Saved %d tournaments", len(saved)))
-	return saved, nil
+	return result
 }

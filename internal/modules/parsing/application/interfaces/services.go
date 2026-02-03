@@ -23,4 +23,5 @@ type JuniorConfig interface {
 	BaseURL() string
 	DomainWorkers() int
 	MinBirthYear() int
+	MaxTournaments() int // Глобальный лимит турниров (0 = без лимита)
 }

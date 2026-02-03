@@ -40,6 +40,30 @@ services:
       OTEL_SERVICE_NAME: hockey-bot
     command: ["/app/bot"]
 
+  # === HTTP API ===
+  api:
+    image: ghcr.io/${GITHUB_REPOSITORY}:latest
+    container_name: hockey-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_SSL_MODE: disable
+      APP_ENV: ${APP_ENV:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      API_PORT: 8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: otel-collector:4317
+      OTEL_SERVICE_NAME: hockey-api
+    command: ["/app/api"]
+    ports:
+      - "127.0.0.1:8080:8080"
+
   # === ПЛАНИРОВЩИК ===
   scheduler:
     image: ghcr.io/${GITHUB_REPOSITORY}:latest
