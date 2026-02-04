@@ -39,11 +39,11 @@ export const ExploreDashboardPage = memo(function ExploreDashboardPage() {
     { label: 'Матчей', value: overview?.matches ?? 0, icon: <Calendar size={24} />, color: 'green' },
   ]
 
-  const colorMap: Record<string, { main: string; glow: string }> = {
-    cyan: { main: '#00d4ff', glow: 'rgba(0, 212, 255, 0.15)' },
-    purple: { main: '#8b5cf6', glow: 'rgba(139, 92, 246, 0.15)' },
-    pink: { main: '#ec4899', glow: 'rgba(236, 72, 153, 0.15)' },
-    green: { main: '#10b981', glow: 'rgba(16, 185, 129, 0.15)' },
+  const colorMap: Record<string, string> = {
+    cyan: '#00d4ff',
+    purple: '#8b5cf6',
+    pink: '#ec4899',
+    green: '#10b981',
   }
 
   return (
@@ -68,22 +68,11 @@ export const ExploreDashboardPage = memo(function ExploreDashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + i * 0.05 }}
           >
-            <GlassCard
-              className="p-4 group/kpi"
-              style={{ borderColor: `${colorMap[item.color].main}20` }}
-            >
-              <div
-                className="absolute inset-0 opacity-0 group-hover/kpi:opacity-100 transition-opacity duration-500 pointer-events-none"
-                style={{ background: `radial-gradient(circle at 50% 50%, ${colorMap[item.color].glow}, transparent 70%)` }}
-              />
-              <div className="relative flex items-center gap-3">
+            <GlassCard className="p-4">
+              <div className="flex items-center gap-3">
                 <div
-                  className="flex h-11 w-11 items-center justify-center rounded-xl"
-                  style={{
-                    background: `linear-gradient(135deg, ${colorMap[item.color].main}25, ${colorMap[item.color].main}10)`,
-                    color: colorMap[item.color].main,
-                    boxShadow: `0 0 12px ${colorMap[item.color].main}20`,
-                  }}
+                  className="flex h-10 w-10 items-center justify-center rounded-xl"
+                  style={{ backgroundColor: `${colorMap[item.color]}20`, color: colorMap[item.color] }}
                 >
                   {item.icon}
                 </div>
@@ -93,7 +82,7 @@ export const ExploreDashboardPage = memo(function ExploreDashboardPage() {
                   ) : (
                     <KpiValue value={item.value} />
                   )}
-                  <p className="text-xs text-gray-400">{item.label}</p>
+                  <p className="text-xs text-gray-500">{item.label}</p>
                 </div>
               </div>
             </GlassCard>
@@ -125,7 +114,7 @@ export const ExploreDashboardPage = memo(function ExploreDashboardPage() {
                 {(recentMatches ?? []).map((match) => (
                   <div
                     key={match.id}
-                    className="flex items-center gap-3 rounded-lg bg-white/[0.06] p-3 border border-white/[0.04] hover:bg-white/[0.09] transition-colors"
+                    className="flex items-center gap-3 rounded-lg bg-white/5 p-3"
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
@@ -189,7 +178,7 @@ export const ExploreDashboardPage = memo(function ExploreDashboardPage() {
                     <Link
                       key={tournament.id}
                       to={`/explore/tournaments/detail/${tournament.id}`}
-                      className="flex items-center gap-3 rounded-lg bg-white/[0.06] p-3 border border-white/[0.04] hover:bg-white/[0.09] transition-colors"
+                      className="flex items-center gap-3 rounded-lg bg-white/5 p-3 hover:bg-white/[0.07] transition-colors"
                     >
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#8b5cf6]/20 text-[#8b5cf6]">
                         <Trophy size={18} />

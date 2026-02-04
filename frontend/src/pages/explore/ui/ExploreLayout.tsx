@@ -16,7 +16,7 @@ function FloatingParticles() {
         size: 1 + Math.random() * 3,
         duration: 15 + Math.random() * 25,
         delay: Math.random() * 20,
-        color: ['#00d4ff', '#8b5cf6', '#ec4899', '#f59e0b'][i % 4],
+        color: i % 3 === 0 ? '#00d4ff' : i % 3 === 1 ? '#8b5cf6' : '#ec4899',
       })),
     [],
   )
@@ -71,7 +71,6 @@ export const ExploreLayout = memo(function ExploreLayout({
       <div className="bg-blob bg-blob--cyan" style={{ top: '10%', left: '15%' }} />
       <div className="bg-blob bg-blob--purple" style={{ top: '60%', right: '10%' }} />
       <div className="bg-blob bg-blob--pink" style={{ top: '30%', right: '30%' }} />
-      <div className="bg-blob bg-blob--amber" style={{ bottom: '15%', left: '40%' }} />
       <div className="bg-grid" />
       <FloatingParticles />
 

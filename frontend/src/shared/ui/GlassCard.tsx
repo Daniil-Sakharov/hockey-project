@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { cn } from '@/shared/lib/utils'
 
 type GlowColor = 'blue' | 'purple' | 'pink' | 'cyan'
@@ -7,7 +7,6 @@ type GlowColor = 'blue' | 'purple' | 'pink' | 'cyan'
 interface GlassCardProps {
   children: ReactNode
   className?: string
-  style?: CSSProperties
   title?: string
   glowColor?: GlowColor
   neonBorder?: boolean
@@ -24,7 +23,6 @@ const glowStyles: Record<GlowColor, string> = {
 export const GlassCard = memo(function GlassCard({
   children,
   className,
-  style,
   title,
   glowColor = 'blue',
   neonBorder = false,
@@ -38,7 +36,6 @@ export const GlassCard = memo(function GlassCard({
         neonBorder && 'neon-border',
         className
       )}
-      style={style}
     >
       {title && (
         <h3 className="mb-4 text-sm font-medium uppercase tracking-wider text-gray-400">
