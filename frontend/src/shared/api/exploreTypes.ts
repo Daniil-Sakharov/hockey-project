@@ -13,6 +13,16 @@ export interface GroupStats {
   matchesCount: number
 }
 
+export interface TeamItem {
+  id: string
+  name: string
+  city?: string
+  logoUrl?: string
+  playersCount: number
+  groupName?: string
+  birthYear?: number
+}
+
 export interface TournamentItem {
   id: string
   name: string

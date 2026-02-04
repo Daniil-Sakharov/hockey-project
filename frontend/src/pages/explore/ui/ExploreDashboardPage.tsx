@@ -53,7 +53,7 @@ export const ExploreDashboardPage = memo(function ExploreDashboardPage() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="text-2xl font-bold text-white">Обзор</h1>
+        <h1 className="text-2xl font-bold text-gradient-animated">Обзор</h1>
         <p className="text-gray-400">
           Добро пожаловать{user ? `, ${user.email}` : ''}
         </p>
@@ -100,9 +100,9 @@ export const ExploreDashboardPage = memo(function ExploreDashboardPage() {
         >
           <GlassCard className="p-6" glowColor="cyan">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
                 <Calendar size={20} className="text-[#00d4ff]" />
-                Последние матчи
+                <span className="text-gradient-animated">Последние матчи</span>
               </h3>
             </div>
             {matchesLoading ? (
@@ -153,9 +153,9 @@ export const ExploreDashboardPage = memo(function ExploreDashboardPage() {
         >
           <GlassCard className="p-6" glowColor="purple">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
                 <Trophy size={20} className="text-[#8b5cf6]" />
-                Активные турниры
+                <span className="text-gradient-animated">Активные турниры</span>
               </h3>
               <Link
                 to="/explore/tournaments"
@@ -210,7 +210,7 @@ export const ExploreDashboardPage = memo(function ExploreDashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-white flex items-center gap-2">
               <TrendingUp size={20} className="text-[#00d4ff]" />
-              Топ-бомбардиры
+              <span className="text-gradient-animated">Топ-бомбардиры</span>
             </h3>
             <div className="flex items-center gap-2">
               {season && (

@@ -4,7 +4,7 @@ import { Trophy, ArrowRight, Users } from 'lucide-react'
 import { GlassCard } from '@/shared/ui'
 import { cn } from '@/shared/lib/utils'
 import type { TournamentItem } from '@/shared/api/exploreTypes'
-import { cleanTournamentName } from '@/shared/lib/formatters'
+import { cleanTournamentName, formatGroupName } from '@/shared/lib/formatters'
 
 interface Props {
   tournament: TournamentItem
@@ -36,7 +36,11 @@ export function TournamentGroupCard({ tournament, groupName, birthYear, teamsCou
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-semibold text-white leading-tight">{cleanTournamentName(tournament.name)}</h3>
-              {groupName && <p className="text-xs text-[#8b5cf6] mt-1">{groupName}</p>}
+              {groupName && (
+                <span className="inline-block mt-1.5 text-xs px-2 py-0.5 rounded-full bg-[#8b5cf6]/20 text-[#8b5cf6] font-medium">
+                  {formatGroupName(groupName)}
+                </span>
+              )}
             </div>
           </div>
 

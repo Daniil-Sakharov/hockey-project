@@ -179,6 +179,35 @@ func (h *ExploreHandler) Seasons(w http.ResponseWriter, r *http.Request) {
 	h.writeJSON(w, http.StatusOK, dto.SeasonsResponse{Seasons: seasons})
 }
 
+// TournamentTeams returns teams for a tournament.
+func (h *ExploreHandler) TournamentTeams(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	tournamentID := r.PathValue("id")
+	birthYear := parseIntQuery(r, "birthYear", 0)
+	groupName := r.URL.Query().Get("group")
+
+	rows, err := h.service.GetTournamentTeams(ctx, tournamentID, birthYear, groupName)
+	if err != nil {
+		logger.Error(ctx, "Failed to get tournament teams: "+err.Error())
+		h.writeError(w, http.StatusInternalServerError, "Failed to get teams")
+		return
+	}
+
+	teams := make([]dto.TeamDTO, len(rows))
+	for i, t := range rows {
+		teams[i] = dto.TeamDTO{
+			ID:           t.ID,
+			Name:         t.Name,
+			City:         t.City,
+			LogoURL:      t.LogoURL,
+			PlayersCount: t.PlayersCount,
+			GroupName:    t.GroupName,
+			BirthYear:    t.BirthYear,
+		}
+	}
+	h.writeJSON(w, http.StatusOK, dto.TeamsResponse{Teams: teams})
+}
+
 func (h *ExploreHandler) writeJSON(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)

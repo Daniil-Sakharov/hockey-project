@@ -9,6 +9,7 @@ import type {
   PlayerProfile,
   PlayerStatEntry,
   TeamProfile,
+  TeamItem,
   RankingsData,
   RankingsFilters,
   MatchDetail,
@@ -51,6 +52,14 @@ export async function getTournamentScorers(id: string, limit?: number, birthYear
   if (groupName) params.group = groupName
   const { data } = await apiClient.get(`/explore/tournaments/${id}/scorers`, { params })
   return data.scorers
+}
+
+export async function getTournamentTeams(id: string, birthYear?: number, groupName?: string): Promise<TeamItem[]> {
+  const params: Record<string, string | number> = {}
+  if (birthYear) params.birthYear = birthYear
+  if (groupName) params.group = groupName
+  const { data } = await apiClient.get(`/explore/tournaments/${id}/teams`, { params })
+  return data.teams
 }
 
 export async function getSeasons(): Promise<string[]> {

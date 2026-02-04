@@ -5,6 +5,7 @@ import {
   getTournamentStandings,
   getTournamentMatches,
   getTournamentScorers,
+  getTournamentTeams,
   getSeasons,
   searchPlayers,
   getPlayerProfile,
@@ -54,6 +55,14 @@ export function useTournamentScorers(id: string, limit?: number, birthYear?: num
   return useQuery({
     queryKey: ['explore', 'tournaments', id, 'scorers', limit, birthYear, groupName],
     queryFn: () => getTournamentScorers(id, limit, birthYear, groupName),
+    enabled: !!id,
+  })
+}
+
+export function useTournamentTeams(id: string, birthYear?: number, groupName?: string) {
+  return useQuery({
+    queryKey: ['explore', 'tournaments', id, 'teams', birthYear, groupName],
+    queryFn: () => getTournamentTeams(id, birthYear, groupName),
     enabled: !!id,
   })
 }

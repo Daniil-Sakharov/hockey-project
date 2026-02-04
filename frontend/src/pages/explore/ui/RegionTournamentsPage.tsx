@@ -15,16 +15,19 @@ const REGIONS_MAP: Record<string, {
   gradient: string
   icon: React.ComponentType<{ size?: number; className?: string }>
 }> = {
-  pfo: { name: 'Приволжский', domain: 'pfo', description: 'ПФО', gradient: 'from-blue-500 to-cyan-400', icon: MapPin },
-  cfo: { name: 'Центральный', domain: 'cfo', description: 'ЦФО', gradient: 'from-red-500 to-rose-400', icon: Landmark },
-  sfo: { name: 'Сибирский', domain: 'sfo', description: 'СФО', gradient: 'from-sky-500 to-blue-400', icon: Mountain },
-  ufo: { name: 'Уральский', domain: 'ufo', description: 'УрФО', gradient: 'from-emerald-500 to-teal-400', icon: Mountain },
-  dfo: { name: 'Дальневосточный', domain: 'dfo', description: 'ДФО', gradient: 'from-orange-500 to-amber-400', icon: Mountain },
-  szfo: { name: 'Северо-Западный', domain: 'szfo', description: 'СЗФО', gradient: 'from-cyan-500 to-blue-400', icon: MapPin },
-  yfo: { name: 'Южный', domain: 'yfo', description: 'ЮФО', gradient: 'from-yellow-500 to-orange-400', icon: MapPin },
-  spb: { name: 'Санкт-Петербург', domain: 'spb', description: 'СПб', gradient: 'from-purple-500 to-indigo-400', icon: Landmark },
+  // Активные домены (парсятся)
+  ufo: { name: 'Уральский', source: 'junior', domain: 'ufo.fhr.ru', description: 'УрФО', gradient: 'from-emerald-500 to-teal-400', icon: Mountain },
+  // Будущие домены junior.fhr.ru
+  junior: { name: 'Всероссийские', source: 'junior', domain: 'junior.fhr.ru', description: 'Юниор', gradient: 'from-violet-500 to-purple-400', icon: Trophy },
+  pfo: { name: 'Приволжский', source: 'junior', domain: 'pfo.fhr.ru', description: 'ПФО', gradient: 'from-blue-500 to-cyan-400', icon: MapPin },
+  cfo: { name: 'Центральный', source: 'junior', domain: 'cfo.fhr.ru', description: 'ЦФО', gradient: 'from-red-500 to-rose-400', icon: Landmark },
+  sfo: { name: 'Сибирский', source: 'junior', domain: 'sfo.fhr.ru', description: 'СФО', gradient: 'from-sky-500 to-blue-400', icon: Mountain },
+  dfo: { name: 'Дальневосточный', source: 'junior', domain: 'dfo.fhr.ru', description: 'ДФО', gradient: 'from-orange-500 to-amber-400', icon: Mountain },
+  szfo: { name: 'Северо-Западный', source: 'junior', domain: 'szfo.fhr.ru', description: 'СЗФО', gradient: 'from-cyan-500 to-blue-400', icon: MapPin },
+  yfo: { name: 'Южный', source: 'junior', domain: 'yfo.fhr.ru', description: 'ЮФО', gradient: 'from-yellow-500 to-orange-400', icon: MapPin },
+  spb: { name: 'Санкт-Петербург', source: 'junior', domain: 'spb.fhr.ru', description: 'СПб', gradient: 'from-purple-500 to-indigo-400', icon: Landmark },
+  // Другие источники
   moscow: { name: 'Москва', source: 'fhmoscow', description: 'Москва и МО', gradient: 'from-red-500 to-orange-400', icon: Building2 },
-  junior: { name: 'Всероссийские', domain: 'junior', description: 'Юниор', gradient: 'from-violet-500 to-purple-400', icon: Trophy },
 }
 
 interface ExpandedCard {

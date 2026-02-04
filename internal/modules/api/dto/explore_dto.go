@@ -85,3 +85,19 @@ type ScorersResponse struct {
 type SeasonsResponse struct {
 	Seasons []string `json:"seasons"`
 }
+
+// TeamDTO represents a team in tournament.
+type TeamDTO struct {
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	City         string `json:"city,omitempty"`
+	LogoURL      string `json:"logoUrl,omitempty"`
+	PlayersCount int    `json:"playersCount"`
+	GroupName    string `json:"groupName,omitempty"`
+	BirthYear    int    `json:"birthYear,omitempty"`
+}
+
+// TeamsResponse represents tournament teams list.
+type TeamsResponse struct {
+	Teams []TeamDTO `json:"teams"`
+}

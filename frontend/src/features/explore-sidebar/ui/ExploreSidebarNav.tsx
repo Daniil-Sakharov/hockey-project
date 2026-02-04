@@ -120,6 +120,7 @@ export const ExploreSidebarNav = memo(function ExploreSidebarNav({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.03 }}
+              whileHover={isLocked ? undefined : { x: 4, transition: { type: 'spring' as const, stiffness: 400, damping: 15 } }}
             >
               {item.dividerBefore && (
                 <div
@@ -136,9 +137,9 @@ export const ExploreSidebarNav = memo(function ExploreSidebarNav({
                     'transition-all duration-200',
                     isLocked
                       ? 'cursor-default opacity-60'
-                      : 'hover:bg-[#00d4ff]/10',
+                      : 'hover:bg-white/[0.06]',
                     isActive && !isLocked
-                      ? 'bg-[#00d4ff]/15 text-[#00d4ff] nav-active'
+                      ? 'text-[#00d4ff] nav-active'
                       : isLocked
                         ? 'text-gray-600'
                         : 'text-gray-400 hover:text-white',
@@ -149,7 +150,7 @@ export const ExploreSidebarNav = memo(function ExploreSidebarNav({
                   if (isLocked) e.preventDefault()
                 }}
               >
-                <span className="relative flex-shrink-0 transition-transform duration-200 group-hover:scale-110">
+                <span className="icon-glow relative flex-shrink-0 transition-transform duration-200 group-hover:scale-110">
                   {isLocked ? (
                     <Lock size={20} className={TIER_COLORS[item.requiredTier!]} />
                   ) : (

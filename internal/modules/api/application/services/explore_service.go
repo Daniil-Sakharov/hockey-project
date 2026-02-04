@@ -109,10 +109,17 @@ func (s *ExploreService) GetTournaments(ctx context.Context, source, domain stri
 		argN++
 	}
 	if domain != "" {
-		// Support both full URL and short name: "pfo" -> "https://pfo.fhr.ru"
+		// Support multiple formats:
+		// "ufo" -> "https://ufo.fhr.ru"
+		// "ufo.fhr.ru" -> "https://ufo.fhr.ru"
+		// "https://ufo.fhr.ru" -> "https://ufo.fhr.ru"
 		domainURL := domain
 		if !strings.Contains(domain, "://") {
-			domainURL = "https://" + domain + ".fhr.ru"
+			if strings.HasSuffix(domain, ".fhr.ru") {
+				domainURL = "https://" + domain
+			} else {
+				domainURL = "https://" + domain + ".fhr.ru"
+			}
 		}
 		conditions = append(conditions, "t.domain = $"+strconv.Itoa(argN))
 		args = append(args, domainURL)
@@ -321,4 +328,54 @@ func stripProtocol(domain string) string {
 	domain = strings.TrimPrefix(domain, "https://")
 	domain = strings.TrimPrefix(domain, "http://")
 	return domain
+}
+
+// TeamRow represents a team in tournament with player count.
+type TeamRow struct {
+	ID           string `db:"id"`
+	Name         string `db:"name"`
+	City         string `db:"city"`
+	LogoURL      string `db:"logo_url"`
+	PlayersCount int    `db:"players_count"`
+	GroupName    string `db:"group_name"`
+	BirthYear    int    `db:"birth_year"`
+}
+
+// GetTournamentTeams returns teams for a tournament with optional filters.
+func (s *ExploreService) GetTournamentTeams(ctx context.Context, tournamentID string, birthYear int, groupName string) ([]TeamRow, error) {
+	query := `
+		SELECT
+			t.id, t.name, COALESCE(t.city, '') as city, COALESCE(t.logo_url, '') as logo_url,
+			pt.group_name, pt.birth_year,
+			COUNT(DISTINCT pt.player_id) as players_count
+		FROM teams t
+		JOIN player_teams pt ON pt.team_id = t.id
+		WHERE pt.tournament_id = $1
+	`
+	args := []interface{}{tournamentID}
+	argN := 2
+
+	if birthYear > 0 {
+		query += fmt.Sprintf(" AND pt.birth_year = $%d", argN)
+		args = append(args, birthYear)
+		argN++
+	}
+	if groupName != "" {
+		query += fmt.Sprintf(" AND pt.group_name = $%d", argN)
+		args = append(args, groupName)
+	}
+
+	query += " GROUP BY t.id, t.name, t.city, t.logo_url, pt.group_name, pt.birth_year"
+	query += " ORDER BY t.name ASC"
+
+	var rows []TeamRow
+	if err := s.db.SelectContext(ctx, &rows, query, args...); err != nil {
+		return nil, fmt.Errorf("failed to get tournament teams: %w", err)
+	}
+
+	for i := range rows {
+		rows[i].Name = titleCase(rows[i].Name)
+		rows[i].City = titleCase(rows[i].City)
+	}
+	return rows, nil
 }

@@ -113,6 +113,9 @@ export const ExploreSidebar = memo(function ExploreSidebar({
             <div className={cn('border-t border-white/5 p-4', isCollapsed && 'px-2')}>
               {!isCollapsed && <p className="text-xs text-gray-500">© 2025 StarRink</p>}
             </div>
+
+            {/* Neon edge line */}
+            <div className="sidebar-neon-edge" />
           </motion.aside>
         )}
       </AnimatePresence>

@@ -4,21 +4,35 @@ import { motion } from 'framer-motion'
 import { MapPin, Building2, Landmark, Mountain, Lock } from 'lucide-react'
 import { useTournaments } from '@/shared/api/useExploreQueries'
 
+// Регионы соответствуют доменам *.fhr.ru которые мы парсим
 const REGIONS = [
   {
-    id: 'pfo',
-    name: 'Приволжский',
+    id: 'ufo',
+    name: 'Уральский',
     source: 'junior',
-    description: 'Приволжский Федеральный Округ',
+    domain: 'ufo.fhr.ru',
+    description: 'Уральский Федеральный Округ',
+    icon: Mountain,
+    gradient: 'from-emerald-500 via-teal-400 to-emerald-600',
+    bgPattern: 'radial-gradient(circle at 80% 20%, rgba(16,185,129,0.15) 0%, transparent 50%)',
+    available: true,
+  },
+  {
+    id: 'junior',
+    name: 'Юниорская лига',
+    source: 'junior',
+    domain: 'junior.fhr.ru',
+    description: 'Всероссийские юниорские соревнования',
     icon: MapPin,
     gradient: 'from-blue-500 via-cyan-400 to-blue-600',
     bgPattern: 'radial-gradient(circle at 80% 20%, rgba(56,189,248,0.15) 0%, transparent 50%)',
-    available: true,
+    available: false,
   },
   {
     id: 'moscow',
     name: 'Москва',
     source: 'fhmoscow',
+    domain: 'fhmoscow.com',
     description: 'Москва и Московская область',
     icon: Building2,
     gradient: 'from-red-500 via-orange-400 to-red-600',
@@ -29,26 +43,18 @@ const REGIONS = [
     id: 'spb',
     name: 'Санкт-Петербург',
     source: 'fhspb',
+    domain: 'fhspb.ru',
     description: 'Санкт-Петербург и Ленинградская область',
     icon: Landmark,
     gradient: 'from-purple-500 via-indigo-400 to-purple-600',
     bgPattern: 'radial-gradient(circle at 80% 20%, rgba(139,92,246,0.15) 0%, transparent 50%)',
     available: false,
   },
-  {
-    id: 'ural',
-    name: 'Уральский',
-    source: 'ural',
-    description: 'Уральский Федеральный Округ',
-    icon: Mountain,
-    gradient: 'from-emerald-500 via-teal-400 to-emerald-600',
-    bgPattern: 'radial-gradient(circle at 80% 20%, rgba(16,185,129,0.15) 0%, transparent 50%)',
-    available: false,
-  },
 ] as const
 
 export const TournamentsListPage = memo(function TournamentsListPage() {
-  const { data: juniorTournaments } = useTournaments('junior')
+  // Загружаем турниры для УФО (единственный активный регион пока)
+  const { data: ufoTournaments } = useTournaments('junior', 'ufo.fhr.ru')
 
   return (
     <div className="space-y-8">
@@ -65,8 +71,9 @@ export const TournamentsListPage = memo(function TournamentsListPage() {
       <div className="grid gap-6 sm:grid-cols-2">
         {REGIONS.map((region, i) => {
           const Icon = region.icon
-          const tournamentCount = region.source === 'junior'
-            ? (juniorTournaments?.length ?? 0)
+          // Показываем количество турниров только для активных регионов
+          const tournamentCount = region.available && region.domain === 'ufo.fhr.ru'
+            ? (ufoTournaments?.length ?? 0)
             : 0
 
           return (
