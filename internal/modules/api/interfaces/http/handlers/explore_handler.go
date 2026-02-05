@@ -59,7 +59,10 @@ func (h *ExploreHandler) Tournaments(w http.ResponseWriter, r *http.Request) {
 	groupStats, _ := h.service.GetGroupStats(ctx, ids)
 
 	// Build lookup: tournamentID -> birthYear -> groupName -> stats
-	type gsKey struct{ tid, group string; year int }
+	type gsKey struct {
+		tid, group string
+		year       int
+	}
 	gsMap := make(map[gsKey]services.GroupStats, len(groupStats))
 	for _, gs := range groupStats {
 		gsMap[gsKey{gs.TournamentID, gs.GroupName, gs.BirthYear}] = gs
@@ -206,6 +209,60 @@ func (h *ExploreHandler) TournamentTeams(w http.ResponseWriter, r *http.Request)
 		}
 	}
 	h.writeJSON(w, http.StatusOK, dto.TeamsResponse{Teams: teams})
+}
+
+// TeamRoster returns team roster with players.
+func (h *ExploreHandler) TeamRoster(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	teamID := r.PathValue("teamId")
+	tournamentID := r.PathValue("tournamentId")
+	birthYear := parseIntQuery(r, "birthYear", 0)
+	groupName := r.URL.Query().Get("group")
+
+	teamInfo, err := h.service.GetTeamInfo(ctx, teamID)
+	if err != nil {
+		logger.Error(ctx, "Failed to get team info: "+err.Error())
+		h.writeError(w, http.StatusInternalServerError, "Failed to get team info")
+		return
+	}
+
+	players, err := h.service.GetTeamRoster(ctx, teamID, tournamentID, birthYear, groupName)
+	if err != nil {
+		logger.Error(ctx, "Failed to get team roster: "+err.Error())
+		h.writeError(w, http.StatusInternalServerError, "Failed to get roster")
+		return
+	}
+
+	playerDTOs := make([]dto.RosterPlayerDTO, len(players))
+	for i, p := range players {
+		birthDate := ""
+		if p.BirthDate != nil {
+			birthDate = *p.BirthDate
+		}
+		playerDTOs[i] = dto.RosterPlayerDTO{
+			ID:           p.PlayerID,
+			Name:         p.Name,
+			PhotoURL:     p.PhotoURL,
+			BirthDate:    birthDate,
+			Position:     p.Position,
+			JerseyNumber: p.JerseyNumber,
+			Height:       p.Height,
+			Weight:       p.Weight,
+			BirthYear:    p.BirthYear,
+			GroupName:    p.GroupName,
+			Handedness:   p.Handedness,
+		}
+	}
+
+	h.writeJSON(w, http.StatusOK, dto.TeamRosterResponse{
+		Team: dto.TeamInfoDTO{
+			ID:      teamInfo.ID,
+			Name:    teamInfo.Name,
+			City:    teamInfo.City,
+			LogoURL: teamInfo.LogoURL,
+		},
+		Players: playerDTOs,
+	})
 }
 
 func (h *ExploreHandler) writeJSON(w http.ResponseWriter, status int, data interface{}) {

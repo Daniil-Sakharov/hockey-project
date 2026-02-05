@@ -61,6 +61,8 @@ struct TournamentDetailView: View {
             MatchesTabView(matches: viewModel.matches)
         case .scorers:
             ScorersTabView(scorers: viewModel.scorers)
+        case .teams:
+            TeamsTabView(teams: viewModel.teams, tournamentId: route.tournamentId)
         }
     }
 

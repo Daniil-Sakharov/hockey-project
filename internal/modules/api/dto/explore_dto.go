@@ -17,15 +17,15 @@ type GroupStatsDTO struct {
 
 // TournamentItemDTO represents a tournament in list.
 type TournamentItemDTO struct {
-	ID               string                       `json:"id"`
-	Name             string                       `json:"name"`
-	Domain           string                       `json:"domain"`
-	Season           string                       `json:"season"`
-	Source           string                       `json:"source"`
-	BirthYearGroups  map[string][]GroupStatsDTO    `json:"birthYearGroups,omitempty"`
-	TeamsCount       int                           `json:"teamsCount"`
-	MatchesCount     int                           `json:"matchesCount"`
-	IsEnded          bool                          `json:"isEnded"`
+	ID              string                     `json:"id"`
+	Name            string                     `json:"name"`
+	Domain          string                     `json:"domain"`
+	Season          string                     `json:"season"`
+	Source          string                     `json:"source"`
+	BirthYearGroups map[string][]GroupStatsDTO `json:"birthYearGroups,omitempty"`
+	TeamsCount      int                        `json:"teamsCount"`
+	MatchesCount    int                        `json:"matchesCount"`
+	IsEnded         bool                       `json:"isEnded"`
 }
 
 // TournamentListResponse represents the tournaments list.
@@ -100,4 +100,33 @@ type TeamDTO struct {
 // TeamsResponse represents tournament teams list.
 type TeamsResponse struct {
 	Teams []TeamDTO `json:"teams"`
+}
+
+// TeamInfoDTO represents basic team info.
+type TeamInfoDTO struct {
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	City    string `json:"city,omitempty"`
+	LogoURL string `json:"logoUrl,omitempty"`
+}
+
+// RosterPlayerDTO represents a player in team roster.
+type RosterPlayerDTO struct {
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	PhotoURL     string `json:"photoUrl,omitempty"`
+	BirthDate    string `json:"birthDate,omitempty"`
+	Position     string `json:"position,omitempty"`
+	JerseyNumber int    `json:"jerseyNumber"`
+	Height       int    `json:"height,omitempty"`
+	Weight       int    `json:"weight,omitempty"`
+	BirthYear    int    `json:"birthYear,omitempty"`
+	GroupName    string `json:"groupName,omitempty"`
+	Handedness   string `json:"handedness,omitempty"`
+}
+
+// TeamRosterResponse represents team roster with players.
+type TeamRosterResponse struct {
+	Team    TeamInfoDTO       `json:"team"`
+	Players []RosterPlayerDTO `json:"players"`
 }

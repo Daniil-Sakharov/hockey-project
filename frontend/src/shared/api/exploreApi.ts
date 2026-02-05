@@ -13,6 +13,7 @@ import type {
   RankingsData,
   RankingsFilters,
   MatchDetail,
+  TeamRosterResponse,
 } from './exploreTypes'
 
 export async function getExploreOverview(): Promise<ExploreOverview> {
@@ -153,4 +154,17 @@ export async function getMatchDetail(id: string): Promise<MatchDetail> {
     homeLineup: data.homeLineup ?? [],
     awayLineup: data.awayLineup ?? [],
   }
+}
+
+export async function getTeamRoster(
+  teamId: string,
+  tournamentId: string,
+  birthYear?: number,
+  groupName?: string
+): Promise<TeamRosterResponse> {
+  const params: Record<string, string | number> = {}
+  if (birthYear) params.birthYear = birthYear
+  if (groupName) params.group = groupName
+  const { data } = await apiClient.get(`/explore/teams/${teamId}/roster/${tournamentId}`, { params })
+  return data
 }

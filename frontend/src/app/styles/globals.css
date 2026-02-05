@@ -215,7 +215,51 @@
 
   /* Icon glow on active nav */
   .nav-active .icon-glow {
-    filter: drop-shadow(0 0 6px rgba(0, 212, 255, 0.6));
+    filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.7));
+  }
+
+  /* Sidebar ambient light from top */
+  .sidebar-ambient-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 300px;
+    background: radial-gradient(ellipse at 50% -20%, rgba(0, 212, 255, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Wider glow for active nav item */
+  .nav-active::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(ellipse at 20% 50%, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Inactive nav icons subtle cyan tint */
+  .nav-icon-tinted {
+    color: #64748b;
+    transition: color 0.2s ease, filter 0.2s ease;
+  }
+
+  .nav-icon-tinted:hover {
+    color: #94a3b8;
+    filter: drop-shadow(0 0 4px rgba(0, 212, 255, 0.3));
+  }
+
+  /* Nav row hover glow */
+  .nav-row-glow:hover {
+    background: linear-gradient(90deg, rgba(0, 212, 255, 0.08) 0%, transparent 80%);
+  }
+
+  /* Gradient dividers */
+  .sidebar-divider {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0, 212, 255, 0.2) 0%, rgba(139, 92, 246, 0.1) 50%, transparent 100%);
   }
 
   /* GlassCard shimmer effect on hover */
@@ -248,6 +292,20 @@
   @keyframes shimmer {
     from { transform: translateX(-100%); }
     to { transform: translateX(100%); }
+  }
+
+  /* Rankings row logo marquee */
+  @keyframes logo-scroll {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
+  }
+
+  .logo-marquee {
+    display: flex;
+    gap: 2.5rem;
+    animation: logo-scroll var(--scroll-duration, 20s) linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
   }
 }
 

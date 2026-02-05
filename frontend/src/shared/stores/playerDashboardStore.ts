@@ -51,7 +51,8 @@ export const usePlayerDashboardStore = create<PlayerDashboardStore>((set, get) =
   },
 
   // Fetch player data (mock)
-  fetchPlayerData: async (_playerId: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  fetchPlayerData: async (playerId: string) => {
     set({ isLoading: true, error: null })
 
     // Simulate API call
@@ -63,7 +64,8 @@ export const usePlayerDashboardStore = create<PlayerDashboardStore>((set, get) =
   },
 
   // Fetch team calendar (mock)
-  fetchTeamCalendar: async (_teamId: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  fetchTeamCalendar: async (teamId: string) => {
     set({ isLoading: true })
     await new Promise((resolve) => setTimeout(resolve, 500))
     // Mock data загружается отдельно
@@ -71,14 +73,16 @@ export const usePlayerDashboardStore = create<PlayerDashboardStore>((set, get) =
   },
 
   // Fetch achievements (mock)
-  fetchAchievements: async (_playerId: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  fetchAchievements: async (playerId: string) => {
     set({ isLoading: true })
     await new Promise((resolve) => setTimeout(resolve, 500))
     set({ isLoading: false })
   },
 
   // Fetch scout notifications (mock)
-  fetchScoutNotifications: async (_playerId: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  fetchScoutNotifications: async (playerId: string) => {
     set({ isLoading: true })
     await new Promise((resolve) => setTimeout(resolve, 500))
     set({ isLoading: false })

@@ -12,10 +12,14 @@ export function useMediaQuery(query: string): boolean {
     const mediaQuery = window.matchMedia(query)
     const handler = (event: MediaQueryListEvent) => setMatches(event.matches)
 
-    setMatches(mediaQuery.matches)
+    // Sync initial value if it changed after SSR hydration
+    if (mediaQuery.matches !== matches) {
+      setMatches(mediaQuery.matches)
+    }
     mediaQuery.addEventListener('change', handler)
 
     return () => mediaQuery.removeEventListener('change', handler)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query])
 
   return matches

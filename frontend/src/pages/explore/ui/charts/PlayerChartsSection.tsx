@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BarChart3, ChevronDown } from 'lucide-react'
@@ -34,7 +35,7 @@ export function aggregateBySeason(stats: PlayerStatEntry[]): SeasonAggregated[] 
       existing.plusMinus += s.plusMinus
       existing.penaltyMinutes += s.penaltyMinutes
     } else {
-      map.set(s.season, { season: s.season, ...s })
+      map.set(s.season, { ...s, season: s.season })
     }
   }
   return Array.from(map.values()).sort((a, b) => a.season.localeCompare(b.season))

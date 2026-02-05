@@ -85,7 +85,6 @@ export function HeroCard() {
 
               <PlayerCard3D
                 player={{ ...PLAYER_DATA, stats: animatedStats }}
-                animationProgress={animationProgress}
                 mousePosition={mousePosition}
                 scrollProgress={scrollProgress}
                 horizontalOffset={cardPosition}
@@ -271,7 +270,10 @@ function StatCounter({ label, value, color }: { label: string; value: number; co
 function GrowingChartBackground({ scrollProgress }: { scrollProgress: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const scrollProgressRef = useRef(scrollProgress)
-  scrollProgressRef.current = scrollProgress
+
+  useEffect(() => {
+    scrollProgressRef.current = scrollProgress
+  }, [scrollProgress])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -676,7 +678,6 @@ function GrowingChartBackground({ scrollProgress }: { scrollProgress: number }) 
       window.removeEventListener('resize', resize)
       cancelAnimationFrame(animationId)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

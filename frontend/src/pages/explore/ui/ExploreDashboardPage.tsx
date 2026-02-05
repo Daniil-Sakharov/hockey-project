@@ -28,7 +28,7 @@ export const ExploreDashboardPage = memo(function ExploreDashboardPage() {
   const { data: overview, isLoading: overviewLoading } = useExploreOverview()
   const { data: recentMatches, isLoading: matchesLoading } = useRecentResults(undefined, 5)
   const { data: tournaments, isLoading: tournamentsLoading } = useTournaments()
-  const { data: rankingsData, isLoading: scorersLoading } = useRankings('points', 5)
+  const { data: rankingsData, isLoading: scorersLoading } = useRankings({ sort: 'points', limit: 5 })
   const topScorers = rankingsData?.players
   const season = rankingsData?.season
 

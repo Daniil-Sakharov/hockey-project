@@ -8,11 +8,11 @@ import (
 
 // CalendarConfig интерфейс конфигурации парсера календаря FHSPB
 type CalendarConfig interface {
-	RequestDelay() int      // Задержка между запросами (мс)
-	GameWorkers() int       // Воркеры для матчей
-	ParseProtocol() bool    // Парсить протокол
-	ParseLineups() bool     // Парсить составы
-	SkipExisting() bool     // Пропускать существующие матчи
+	RequestDelay() int   // Задержка между запросами (мс)
+	GameWorkers() int    // Воркеры для матчей
+	ParseProtocol() bool // Парсить протокол
+	ParseLineups() bool  // Парсить составы
+	SkipExisting() bool  // Пропускать существующие матчи
 }
 
 // CalendarParser интерфейс парсера календаря

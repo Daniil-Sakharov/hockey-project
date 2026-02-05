@@ -22,7 +22,7 @@ func (s *service) Run(ctx context.Context) error {
 	s.logger.Printf("📋 Найдено турниров: %d\n", totalTournaments)
 
 	// 3. Создаём Worker Pool для параллельного парсинга
-	const workerCount = 5
+	const workerCount = 2
 	s.logger.Printf("🚀 Запускаем %d параллельных воркеров...\n", workerCount)
 
 	pool := NewTournamentWorkerPool(ctx, s, workerCount)

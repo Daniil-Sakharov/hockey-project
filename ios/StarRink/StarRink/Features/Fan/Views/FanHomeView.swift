@@ -76,7 +76,9 @@ struct FanHomeView: View {
             } else {
                 VStack(spacing: 0) {
                     ForEach(Array(viewModel.topScorers.enumerated()), id: \.element.id) { index, scorer in
-                        FanScorerRow(scorer: scorer)
+                        NavigationLink(value: PlayerRoute(playerId: scorer.id)) {
+                            FanScorerRow(scorer: scorer)
+                        }
                         if index < viewModel.topScorers.count - 1 {
                             Divider().background(Color.srBorder.opacity(0.3))
                         }
@@ -104,7 +106,9 @@ struct FanHomeView: View {
             } else {
                 VStack(spacing: AppSpacing.sm) {
                     ForEach(viewModel.recentMatches) { match in
-                        FanMatchCard(match: match)
+                        NavigationLink(value: MatchRoute(matchId: match.id)) {
+                            FanMatchCard(match: match)
+                        }
                     }
                 }
             }

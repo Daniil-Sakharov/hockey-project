@@ -70,7 +70,9 @@ struct CalendarView: View {
 
                     VStack(spacing: 0) {
                         ForEach(group.matches) { match in
-                            CalendarMatchRow(match: match)
+                            NavigationLink(value: MatchRoute(matchId: match.id)) {
+                                CalendarMatchRow(match: match)
+                            }
                             Divider().background(Color.srBorder.opacity(0.3))
                         }
                     }

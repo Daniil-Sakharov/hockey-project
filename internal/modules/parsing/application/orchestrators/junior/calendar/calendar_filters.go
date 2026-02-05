@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/domain/entities"
 	jrcal "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/junior/calendar"
@@ -55,14 +56,23 @@ func (o *Orchestrator) processCalendarWithFilters(ctx context.Context, tournamen
 		return o.processCalendar(ctx, tournament.ID, tournament.Domain+tournament.URL)
 	}
 
-	// Итерируем по годам
-	for _, yearLink := range yearLinks {
-		if err := o.processYearCalendar(ctx, tournament, yearLink); err != nil {
-			logger.Warn(ctx, "Failed to process year",
-				zap.Int("year", yearLink.Year),
-				zap.Error(err))
-		}
+	// Параллельная обработка годов
+	var wg sync.WaitGroup
+	for _, yl := range yearLinks {
+		wg.Add(1)
+		go func(yearLink types.YearLink) {
+			defer wg.Done()
+			if ctx.Err() != nil {
+				return
+			}
+			if err := o.processYearCalendar(ctx, tournament, yearLink); err != nil {
+				logger.Warn(ctx, "Failed to process year",
+					zap.Int("year", yearLink.Year),
+					zap.Error(err))
+			}
+		}(yl)
 	}
+	wg.Wait()
 
 	return nil
 }

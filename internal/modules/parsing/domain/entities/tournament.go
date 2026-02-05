@@ -27,7 +27,7 @@ type Tournament struct {
 	CreatedAt           time.Time  `db:"created_at"`
 	LastPlayersParsedAt *time.Time `db:"last_players_parsed_at"`
 	LastStatsParsedAt   *time.Time `db:"last_stats_parsed_at"`
-	BirthYearGroupsRaw *string    `db:"birth_year_groups"`
+	BirthYearGroupsRaw  *string    `db:"birth_year_groups"`
 
 	// FallbackBirthYears — годы рождения со страницы списка турниров (не хранится в БД)
 	FallbackBirthYears []int `db:"-"`

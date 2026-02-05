@@ -16,6 +16,7 @@ import {
   getRankings,
   getRankingsFilters,
   getMatchDetail,
+  getTeamRoster,
 } from './exploreApi'
 import type { RankingsParams } from './exploreApi'
 
@@ -151,5 +152,18 @@ export function useMatchDetail(id: string) {
     queryKey: ['explore', 'matches', id],
     queryFn: () => getMatchDetail(id),
     enabled: !!id,
+  })
+}
+
+export function useTeamRoster(
+  teamId: string,
+  tournamentId: string,
+  birthYear?: number,
+  groupName?: string
+) {
+  return useQuery({
+    queryKey: ['explore', 'teams', teamId, 'roster', tournamentId, birthYear, groupName],
+    queryFn: () => getTeamRoster(teamId, tournamentId, birthYear, groupName),
+    enabled: !!teamId && !!tournamentId,
   })
 }

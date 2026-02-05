@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/purity */
 import { memo, useEffect, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'

@@ -6,26 +6,6 @@ import { SidebarToggle } from '@/features/sidebar-navigation'
 import { ExploreSidebarNav } from './ExploreSidebarNav'
 import { useAuthStore } from '@/shared/stores'
 
-function HockeyLogo({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="3" fill="currentColor" />
-      <path d="M2 12c0-4 3-8 10-8s10 4 10 8" />
-      <path d="M4 18l3-6" />
-      <path d="M20 18l-3-6" />
-      <path d="M4 18h16" strokeWidth="2.5" />
-    </svg>
-  )
-}
-
 interface ExploreSidebarProps {
   isOpen: boolean
   isCollapsed: boolean

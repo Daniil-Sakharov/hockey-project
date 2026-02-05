@@ -14,7 +14,6 @@ export function Player({
   position = [0, 0, 0],
   rotation = [0, 0, 0],
   color = '#00d4ff',
-  playerNumber: _playerNumber = 10,
   isAnalyzing = false,
 }: PlayerProps) {
   const groupRef = useRef<Group>(null)

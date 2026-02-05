@@ -10,21 +10,21 @@ import (
 )
 
 var domainLabels = map[string]string{
-	"https://pfo.fhr.ru":    "ПФО",
-	"https://cfo.fhr.ru":    "ЦФО",
-	"https://spb.fhr.ru":    "СПб",
-	"https://junior.fhr.ru": "Юниор",
-	"https://dfo.fhr.ru":    "ДФО",
-	"https://komi.fhr.ru":   "Коми",
+	"https://pfo.fhr.ru":     "ПФО",
+	"https://cfo.fhr.ru":     "ЦФО",
+	"https://spb.fhr.ru":     "СПб",
+	"https://junior.fhr.ru":  "Юниор",
+	"https://dfo.fhr.ru":     "ДФО",
+	"https://komi.fhr.ru":    "Коми",
 	"https://kuzbass.fhr.ru": "Кузбасс",
-	"https://len.fhr.ru":    "Ленобласть",
-	"https://nsk.fhr.ru":    "Новосибирск",
-	"https://sam.fhr.ru":    "Самара",
-	"https://sfo.fhr.ru":    "СФО",
-	"https://szfo.fhr.ru":   "СЗФО",
-	"https://ufo.fhr.ru":    "УрФО",
-	"https://vrn.fhr.ru":    "Воронеж",
-	"https://yfo.fhr.ru":    "ЮФО",
+	"https://len.fhr.ru":     "Ленобласть",
+	"https://nsk.fhr.ru":     "Новосибирск",
+	"https://sam.fhr.ru":     "Самара",
+	"https://sfo.fhr.ru":     "СФО",
+	"https://szfo.fhr.ru":    "СЗФО",
+	"https://ufo.fhr.ru":     "УрФО",
+	"https://vrn.fhr.ru":     "Воронеж",
+	"https://yfo.fhr.ru":     "ЮФО",
 }
 
 // GetRankingsFilters returns available filter values for the current season.

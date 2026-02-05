@@ -426,17 +426,17 @@ type mihfConfigAdapter struct {
 	cfg modules.MIHFConfig
 }
 
-func (a *mihfConfigAdapter) MinBirthYear() int          { return a.cfg.MinBirthYear }
-func (a *mihfConfigAdapter) MaxBirthYear() int          { return a.cfg.MaxBirthYear }
-func (a *mihfConfigAdapter) SeasonWorkers() int         { return a.cfg.SeasonWorkers }
-func (a *mihfConfigAdapter) TournamentWorkers() int     { return a.cfg.TournamentWorkers }
-func (a *mihfConfigAdapter) TeamWorkers() int           { return a.cfg.TeamWorkers }
-func (a *mihfConfigAdapter) PlayerWorkers() int         { return a.cfg.PlayerWorkers }
-func (a *mihfConfigAdapter) RetryEnabled() bool         { return a.cfg.RetryEnabled }
-func (a *mihfConfigAdapter) RetryMaxAttempts() int      { return a.cfg.RetryMaxAttempts }
-func (a *mihfConfigAdapter) RetryDelay() time.Duration  { return a.cfg.RetryDelay }
-func (a *mihfConfigAdapter) MaxSeasons() int            { return a.cfg.MaxSeasons }
-func (a *mihfConfigAdapter) TestSeason() string         { return a.cfg.TestSeason }
+func (a *mihfConfigAdapter) MinBirthYear() int         { return a.cfg.MinBirthYear }
+func (a *mihfConfigAdapter) MaxBirthYear() int         { return a.cfg.MaxBirthYear }
+func (a *mihfConfigAdapter) SeasonWorkers() int        { return a.cfg.SeasonWorkers }
+func (a *mihfConfigAdapter) TournamentWorkers() int    { return a.cfg.TournamentWorkers }
+func (a *mihfConfigAdapter) TeamWorkers() int          { return a.cfg.TeamWorkers }
+func (a *mihfConfigAdapter) PlayerWorkers() int        { return a.cfg.PlayerWorkers }
+func (a *mihfConfigAdapter) RetryEnabled() bool        { return a.cfg.RetryEnabled }
+func (a *mihfConfigAdapter) RetryMaxAttempts() int     { return a.cfg.RetryMaxAttempts }
+func (a *mihfConfigAdapter) RetryDelay() time.Duration { return a.cfg.RetryDelay }
+func (a *mihfConfigAdapter) MaxSeasons() int           { return a.cfg.MaxSeasons }
+func (a *mihfConfigAdapter) TestSeason() string        { return a.cfg.TestSeason }
 
 // ============================================================================
 // Junior Parser
@@ -499,10 +499,10 @@ type juniorConfigAdapter struct {
 	maxTournaments int
 }
 
-func (a *juniorConfigAdapter) BaseURL() string       { return a.cfg.BaseURL }
-func (a *juniorConfigAdapter) DomainWorkers() int    { return a.cfg.DomainWorkers }
-func (a *juniorConfigAdapter) MinBirthYear() int     { return a.cfg.MinBirthYear }
-func (a *juniorConfigAdapter) MaxTournaments() int   { return a.maxTournaments }
+func (a *juniorConfigAdapter) BaseURL() string     { return a.cfg.BaseURL }
+func (a *juniorConfigAdapter) DomainWorkers() int  { return a.cfg.DomainWorkers }
+func (a *juniorConfigAdapter) MinBirthYear() int   { return a.cfg.MinBirthYear }
+func (a *juniorConfigAdapter) MaxTournaments() int { return a.maxTournaments }
 
 // ============================================================================
 // FHSPB Parser
@@ -645,18 +645,18 @@ type fhmoscowConfigAdapter struct {
 	cfg modules.FHMoscowConfig
 }
 
-func (a *fhmoscowConfigAdapter) MinBirthYear() int          { return a.cfg.MinBirthYear }
-func (a *fhmoscowConfigAdapter) SeasonWorkers() int         { return a.cfg.SeasonWorkers }
-func (a *fhmoscowConfigAdapter) TournamentWorkers() int     { return a.cfg.TournamentWorkers }
-func (a *fhmoscowConfigAdapter) TeamWorkers() int           { return a.cfg.TeamWorkers }
-func (a *fhmoscowConfigAdapter) PlayerWorkers() int         { return a.cfg.PlayerWorkers }
-func (a *fhmoscowConfigAdapter) RetryEnabled() bool         { return a.cfg.RetryEnabled }
-func (a *fhmoscowConfigAdapter) RetryMaxAttempts() int      { return a.cfg.RetryMaxAttempts }
-func (a *fhmoscowConfigAdapter) RetryDelay() time.Duration  { return a.cfg.RetryDelay }
-func (a *fhmoscowConfigAdapter) MaxSeasons() int            { return a.cfg.MaxSeasons }
-func (a *fhmoscowConfigAdapter) TestSeason() string         { return a.cfg.TestSeason }
-func (a *fhmoscowConfigAdapter) ScanPlayers() bool          { return a.cfg.ScanPlayers }
-func (a *fhmoscowConfigAdapter) MaxPlayerID() int           { return a.cfg.MaxPlayerID }
+func (a *fhmoscowConfigAdapter) MinBirthYear() int         { return a.cfg.MinBirthYear }
+func (a *fhmoscowConfigAdapter) SeasonWorkers() int        { return a.cfg.SeasonWorkers }
+func (a *fhmoscowConfigAdapter) TournamentWorkers() int    { return a.cfg.TournamentWorkers }
+func (a *fhmoscowConfigAdapter) TeamWorkers() int          { return a.cfg.TeamWorkers }
+func (a *fhmoscowConfigAdapter) PlayerWorkers() int        { return a.cfg.PlayerWorkers }
+func (a *fhmoscowConfigAdapter) RetryEnabled() bool        { return a.cfg.RetryEnabled }
+func (a *fhmoscowConfigAdapter) RetryMaxAttempts() int     { return a.cfg.RetryMaxAttempts }
+func (a *fhmoscowConfigAdapter) RetryDelay() time.Duration { return a.cfg.RetryDelay }
+func (a *fhmoscowConfigAdapter) MaxSeasons() int           { return a.cfg.MaxSeasons }
+func (a *fhmoscowConfigAdapter) TestSeason() string        { return a.cfg.TestSeason }
+func (a *fhmoscowConfigAdapter) ScanPlayers() bool         { return a.cfg.ScanPlayers }
+func (a *fhmoscowConfigAdapter) MaxPlayerID() int          { return a.cfg.MaxPlayerID }
 
 // ============================================================================
 // Junior Calendar
@@ -735,9 +735,9 @@ type juniorCalendarConfigAdapter struct {
 	maxTournaments int
 }
 
-func (a *juniorCalendarConfigAdapter) RequestDelay() int      { return 150 }
-func (a *juniorCalendarConfigAdapter) TournamentWorkers() int { return 3 }
-func (a *juniorCalendarConfigAdapter) GameWorkers() int       { return 5 }
+func (a *juniorCalendarConfigAdapter) RequestDelay() int      { return 500 }
+func (a *juniorCalendarConfigAdapter) TournamentWorkers() int { return 2 }
+func (a *juniorCalendarConfigAdapter) GameWorkers() int       { return 2 }
 func (a *juniorCalendarConfigAdapter) ParseProtocol() bool    { return true }
 func (a *juniorCalendarConfigAdapter) ParseLineups() bool     { return true }
 func (a *juniorCalendarConfigAdapter) SkipExisting() bool     { return true }

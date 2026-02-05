@@ -38,6 +38,8 @@ type RankedPlayerRow struct {
 	BirthDate      time.Time `db:"birth_date"`
 	Team           string    `db:"team_name"`
 	TeamID         string    `db:"team_id"`
+	TeamLogoURL    string    `db:"team_logo_url"`
+	TeamCity       string    `db:"team_city"`
 	Games          int       `db:"games"`
 	Goals          int       `db:"goals"`
 	Assists        int       `db:"assists"`
@@ -199,8 +201,10 @@ func (s *ExploreMatchesService) GetRankings(ctx context.Context, sortBy string, 
 
 	query := fmt.Sprintf(`
 		SELECT p.id, p.name, COALESCE(p.photo_url, '') as photo_url, COALESCE(p.position, '') as position, p.birth_date,
-			COALESCE((SELECT t.name FROM player_teams pt JOIN teams t ON pt.team_id = t.id WHERE pt.player_id = p.id AND pt.is_active = true LIMIT 1), '') as team_name,
-			COALESCE((SELECT pt.team_id FROM player_teams pt WHERE pt.player_id = p.id AND pt.is_active = true LIMIT 1), '') as team_id,
+			COALESCE(team_info.team_name, '') as team_name,
+			COALESCE(team_info.team_id, '') as team_id,
+			COALESCE(team_info.team_logo_url, '') as team_logo_url,
+			COALESCE(team_info.team_city, '') as team_city,
 			COALESCE(SUM(ps.games), 0)::int as games,
 			COALESCE(SUM(ps.goals), 0)::int as total_goals,
 			COALESCE(SUM(ps.assists), 0)::int as total_assists,
@@ -214,7 +218,16 @@ func (s *ExploreMatchesService) GetRankings(ctx context.Context, sortBy string, 
 			AND ($4 = '' OR tr.domain = $4)
 			AND ($5 = '' OR ps.tournament_id = $5)
 			AND ($6 = '' OR ps.group_name = $6)
-		GROUP BY p.id, p.name, p.position, p.birth_date
+		LEFT JOIN LATERAL (
+			SELECT t.name as team_name, t.id as team_id, COALESCE(t.logo_url, '') as team_logo_url, COALESCE(t.city, '') as team_city
+			FROM player_teams pt2
+			JOIN tournaments tr2 ON pt2.tournament_id = tr2.id
+			JOIN teams t ON pt2.team_id = t.id
+			WHERE pt2.player_id = p.id AND tr2.season = $1
+			ORDER BY pt2.is_active DESC, (t.logo_url IS NOT NULL AND t.logo_url != '') DESC, tr2.start_date DESC NULLS LAST
+			LIMIT 1
+		) team_info ON true
+		GROUP BY p.id, p.name, p.position, p.birth_date, team_info.team_name, team_info.team_id, team_info.team_logo_url, team_info.team_city
 		HAVING SUM(ps.games) > 0
 		ORDER BY %s DESC
 		LIMIT $2
@@ -228,6 +241,8 @@ func (s *ExploreMatchesService) GetRankings(ctx context.Context, sortBy string, 
 		BirthDate      time.Time `db:"birth_date"`
 		Team           string    `db:"team_name"`
 		TeamID         string    `db:"team_id"`
+		TeamLogoURL    string    `db:"team_logo_url"`
+		TeamCity       string    `db:"team_city"`
 		Games          int       `db:"games"`
 		Goals          int       `db:"total_goals"`
 		Assists        int       `db:"total_assists"`
@@ -246,7 +261,7 @@ func (s *ExploreMatchesService) GetRankings(ctx context.Context, sortBy string, 
 		players[i] = RankedPlayerRow{
 			ID: r.ID, Name: r.Name, PhotoURL: r.PhotoURL,
 			Position: mapPositionToAPI(r.Position), BirthDate: r.BirthDate,
-			Team: titleCase(r.Team), TeamID: r.TeamID,
+			Team: titleCase(r.Team), TeamID: r.TeamID, TeamLogoURL: r.TeamLogoURL, TeamCity: r.TeamCity,
 			Games: r.Games, Goals: r.Goals, Assists: r.Assists, Points: r.Points,
 			PlusMinus: r.PlusMinus, PenaltyMinutes: r.PenaltyMinutes,
 		}
@@ -289,27 +304,27 @@ type MatchDetailRow struct {
 
 // MatchEventRow represents a match event from DB.
 type MatchEventRow struct {
-	ID            string  `db:"id"`
-	EventType     string  `db:"event_type"`
-	Period        *int    `db:"period"`
-	TimeMinutes   *int    `db:"time_minutes"`
-	TimeSeconds   *int    `db:"time_seconds"`
-	IsHome        *bool   `db:"is_home"`
-	TeamID        string  `db:"team_id"`
-	TeamName      string  `db:"team_name"`
-	TeamLogoURL   string  `db:"team_logo_url"`
-	ScorerID      string  `db:"scorer_id"`
-	ScorerName    string  `db:"scorer_name"`
-	ScorerPhoto   string  `db:"scorer_photo"`
-	Assist1ID     string  `db:"assist1_id"`
-	Assist1Name   string  `db:"assist1_name"`
-	Assist2ID     string  `db:"assist2_id"`
-	Assist2Name   string  `db:"assist2_name"`
-	GoalType      string  `db:"goal_type"`
-	PenaltyMins   *int    `db:"penalty_minutes"`
-	PenaltyReason string  `db:"penalty_reason"`
-	PenaltyPlayerID   string `db:"penalty_player_id"`
-	PenaltyPlayerName string `db:"penalty_player_name"`
+	ID                 string `db:"id"`
+	EventType          string `db:"event_type"`
+	Period             *int   `db:"period"`
+	TimeMinutes        *int   `db:"time_minutes"`
+	TimeSeconds        *int   `db:"time_seconds"`
+	IsHome             *bool  `db:"is_home"`
+	TeamID             string `db:"team_id"`
+	TeamName           string `db:"team_name"`
+	TeamLogoURL        string `db:"team_logo_url"`
+	ScorerID           string `db:"scorer_id"`
+	ScorerName         string `db:"scorer_name"`
+	ScorerPhoto        string `db:"scorer_photo"`
+	Assist1ID          string `db:"assist1_id"`
+	Assist1Name        string `db:"assist1_name"`
+	Assist2ID          string `db:"assist2_id"`
+	Assist2Name        string `db:"assist2_name"`
+	GoalType           string `db:"goal_type"`
+	PenaltyMins        *int   `db:"penalty_minutes"`
+	PenaltyReason      string `db:"penalty_reason"`
+	PenaltyPlayerID    string `db:"penalty_player_id"`
+	PenaltyPlayerName  string `db:"penalty_player_name"`
 	PenaltyPlayerPhoto string `db:"penalty_player_photo"`
 }
 

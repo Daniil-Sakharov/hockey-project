@@ -61,8 +61,8 @@ func (wp *WorkerPool) worker(id int) {
 			Task:        task,
 		}
 
-		// Rate limiting: 200ms между запросами (было 300ms)
-		time.Sleep(200 * time.Millisecond)
+		// Rate limiting: 500ms между запросами (щадящий режим для серверов)
+		time.Sleep(500 * time.Millisecond)
 	}
 }
 

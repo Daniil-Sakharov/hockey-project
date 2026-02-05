@@ -19,7 +19,7 @@ function TeamLogo({ url, name }: { url?: string; name: string }) {
     <img
       src={url}
       alt={name}
-      className="h-20 w-20 object-contain drop-shadow-[0_0_12px_rgba(0,212,255,0.3)]"
+      className="h-20 w-20 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
       onError={() => setHasError(true)}
     />
   )
@@ -28,9 +28,12 @@ function TeamLogo({ url, name }: { url?: string; name: string }) {
 interface Props {
   team: TeamItem
   index: number
+  tournamentId: string
+  birthYear?: number
+  groupName?: string
 }
 
-export function TeamCard({ team, index }: Props) {
+export function TeamCard({ team, index, tournamentId, birthYear, groupName }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
   const [isHovered, setIsHovered] = useState(false)
@@ -50,8 +53,11 @@ export function TeamCard({ team, index }: Props) {
 
   const gradientAngle = (index * 40) % 360
 
+  // Build roster URL with query params
+  const rosterUrl = `/explore/teams/${team.id}/roster/${tournamentId}?birthYear=${birthYear || ''}&group=${groupName || ''}`
+
   return (
-    <Link to={`/explore/teams/${team.id}`}>
+    <Link to={rosterUrl}>
       <div
         ref={cardRef}
         className="relative group"

@@ -22,21 +22,21 @@ func NewJuniorService(client *junior.Client) *juniorService {
 // TODO: вернуть полный список после тестирования
 func (s *juniorService) ParseDomains(ctx context.Context) ([]string, error) {
 	return []string{
+		"https://szfo.fhr.ru",
 		"https://ufo.fhr.ru",
-		// "https://junior.fhr.ru",
-		// "https://cfo.fhr.ru",
-		// "https://dfo.fhr.ru",
-		// "https://komi.fhr.ru",
-		// "https://kuzbass.fhr.ru",
-		// "https://len.fhr.ru",
-		// "https://nsk.fhr.ru",
-		// "https://pfo.fhr.ru",
-		// "https://sam.fhr.ru",
-		// "https://sfo.fhr.ru",
-		// "https://spb.fhr.ru",
-		// "https://szfo.fhr.ru",
-		// "https://vrn.fhr.ru",
-		// "https://yfo.fhr.ru",
+		"https://junior.fhr.ru",
+		"https://cfo.fhr.ru",
+		"https://dfo.fhr.ru",
+		"https://komi.fhr.ru",
+		"https://kuzbass.fhr.ru",
+		"https://len.fhr.ru",
+		"https://nsk.fhr.ru",
+		"https://pfo.fhr.ru",
+		"https://sam.fhr.ru",
+		"https://sfo.fhr.ru",
+		"https://spb.fhr.ru",
+		"https://vrn.fhr.ru",
+		"https://yfo.fhr.ru",
 	}, nil
 }
 

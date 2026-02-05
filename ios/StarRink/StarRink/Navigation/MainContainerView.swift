@@ -89,6 +89,18 @@ struct MainContainerView: View {
                 }
             }
             .toolbarBackground(.hidden, for: .navigationBar)
+            .navigationDestination(for: MatchRoute.self) { route in
+                MatchDetailView(matchId: route.matchId)
+            }
+            .navigationDestination(for: TeamRoute.self) { route in
+                TeamProfileView(teamId: route.teamId, teamName: route.teamName)
+            }
+            .navigationDestination(for: TeamRosterRoute.self) { route in
+                TeamRosterView(teamId: route.teamId, tournamentId: route.tournamentId, teamName: route.teamName)
+            }
+            .navigationDestination(for: PlayerRoute.self) { route in
+                PlayerProfileView(playerId: route.playerId)
+            }
         }
         .scrollContentBackground(.hidden)
         .background(Color.clear)

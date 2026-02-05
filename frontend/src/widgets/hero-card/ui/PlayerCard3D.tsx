@@ -20,7 +20,6 @@ interface PlayerCardData {
 
 interface PlayerCard3DProps {
   player: PlayerCardData
-  animationProgress: number
   mousePosition: { x: number; y: number }
   scrollProgress: number
   horizontalOffset: number
@@ -28,7 +27,6 @@ interface PlayerCard3DProps {
 
 export function PlayerCard3D({
   player,
-  animationProgress,
   mousePosition,
   scrollProgress,
   horizontalOffset,
@@ -40,7 +38,6 @@ export function PlayerCard3D({
   // Smooth values
   const rotationRef = useRef({ x: 0, y: 0 })
   const positionRef = useRef({ x: 0 })
-  const scaleRef = useRef(0)
 
   // Card dimensions
   const cardWidth = 2.4
@@ -281,7 +278,3 @@ function StatItem({
   )
 }
 
-// Easing function
-function easeOutExpo(t: number): number {
-  return t === 1 ? 1 : 1 - Math.pow(2, -10 * t)
-}

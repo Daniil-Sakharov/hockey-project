@@ -6,7 +6,7 @@ scheduler:
     # Парсеры (order 1-10) - запускаются первыми
     junior_parser:
       cron: "0 2 * * *"
-      enabled: true
+      enabled: false
       timeout: 1h
       max_tournaments: 0
       order: 1
@@ -50,7 +50,7 @@ scheduler:
     # Календари (order 21-30) - после парсеров и статистики
     junior_calendar:
       cron: "0 6 * * *"
-      enabled: false
+      enabled: true
       timeout: 2h
       max_tournaments: 0
       order: 21

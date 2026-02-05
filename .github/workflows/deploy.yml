@@ -16,7 +16,6 @@ jobs:
   build-and-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
-    # Only run if CI passed (for workflow_run trigger) or manual trigger
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: read
@@ -69,8 +68,8 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "deploy/compose/production/docker-compose.yml,deploy/config,config"
-          target: "/opt/hockey-bot/"
+          source: "deploy/compose/production/docker-compose.yml,deploy/config/nginx,config"
+          target: "/opt/hockey/"
           strip_components: 0
 
       - name: Deploy via SSH
@@ -80,41 +79,55 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /opt/hockey-bot
-            
-            # Создаём директории для данных
-            mkdir -p /opt/hockey-bot/data/{postgres,prometheus,loki,tempo,grafana}
-            
-            # Права для prometheus (nobody:nobody = 65534:65534)
-            sudo chown -R 65534:65534 /opt/hockey-bot/data/prometheus
-            # Права для grafana (grafana user = 472)
-            sudo chown -R 472:472 /opt/hockey-bot/data/grafana
-            
-            # Логин в GitHub Container Registry
+            cd /opt/hockey
+
+            # Create data directories
+            mkdir -p /opt/hockey/data/{postgres,certbot/conf,certbot/www}
+            mkdir -p /opt/hockey/config/nginx
+            mkdir -p /opt/hockey/frontend
+
+            # Copy nginx config to the right place
+            cp -r /opt/hockey/deploy/config/nginx/* /opt/hockey/config/nginx/ 2>/dev/null || true
+
+            # Create .env from GitHub Secrets
+            cat > /opt/hockey/deploy/compose/production/.env << 'ENVEOF'
+            GITHUB_REPOSITORY=daniil-sakharov/hockey-project
+            POSTGRES_USER=hockey
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_DB=hockey_stats
+            APP_ENV=production
+            LOG_LEVEL=info
+            ENVEOF
+
+            # Login to GitHub Container Registry
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            
-            # Пулим новый образ
+
+            # Pull new image
             docker compose -f deploy/compose/production/docker-compose.yml pull
 
-            # Останавливаем старые сервисы и удаляем orphan контейнеры
+            # Stop old services
             docker compose -f deploy/compose/production/docker-compose.yml down --remove-orphans || true
 
-            # Запускаем только postgres для миграций
+            # Start only postgres for migrations
             docker compose -f deploy/compose/production/docker-compose.yml up -d postgres
 
-            # Ждём пока postgres станет healthy
-            echo "⏳ Waiting for postgres to be healthy..."
+            # Wait for postgres to be healthy
+            echo "Waiting for postgres to be healthy..."
             timeout 60 bash -c 'until docker compose -f deploy/compose/production/docker-compose.yml ps postgres | grep -q "healthy"; do sleep 2; done'
 
-            # Запускаем миграции (без || true - деплой должен упасть при ошибке)
-            echo "🔄 Running migrations..."
+            # Run migrations
+            echo "Running migrations..."
             docker compose -f deploy/compose/production/docker-compose.yml --profile migrate run --rm migrate
 
-            # Запускаем все сервисы
-            echo "🚀 Starting all services..."
-            docker compose -f deploy/compose/production/docker-compose.yml up -d --force-recreate
+            # Extract frontend from docker image to /opt/hockey/frontend
+            echo "Extracting frontend..."
+            docker run --rm -v /opt/hockey/frontend:/out ghcr.io/${{ env.IMAGE_NAME }}:latest sh -c "cp -r /app/frontend/dist/* /out/"
 
-            # Чистим старые образы
+            # Start all services
+            echo "Starting all services..."
+            docker compose -f deploy/compose/production/docker-compose.yml up -d
+
+            # Cleanup old images
             docker image prune -f
 
-            echo "✅ Deploy completed!"
+            echo "Deploy completed!"

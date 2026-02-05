@@ -120,7 +120,15 @@ export const TournamentDetailPage = memo(function TournamentDetailPage() {
       {/* Tab content */}
       <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
         {activeTab === 'standings' && <StandingsTab standings={standings ?? []} isLoading={standingsLoading} />}
-        {activeTab === 'teams' && <TeamsTab teams={teams ?? []} isLoading={teamsLoading} />}
+        {activeTab === 'teams' && (
+          <TeamsTab
+            teams={teams ?? []}
+            isLoading={teamsLoading}
+            tournamentId={id ?? ''}
+            birthYear={birthYear}
+            groupName={groupName}
+          />
+        )}
         {activeTab === 'matches' && <MatchesTab matches={matches ?? []} isLoading={matchesLoading} />}
         {activeTab === 'scorers' && <ScorersTab scorers={scorers ?? []} isLoading={scorersLoading} />}
       </motion.div>

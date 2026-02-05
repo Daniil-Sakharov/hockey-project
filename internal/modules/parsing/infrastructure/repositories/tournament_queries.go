@@ -80,4 +80,3 @@ func (r *TournamentPostgres) List(ctx context.Context) ([]*entities.Tournament, 
 	}
 	return tournaments, nil
 }
-

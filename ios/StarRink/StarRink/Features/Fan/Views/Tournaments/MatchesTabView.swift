@@ -52,27 +52,29 @@ struct MatchesTabView: View {
     }
 
     private func matchRow(_ match: MatchDTO) -> some View {
-        HStack(spacing: AppSpacing.sm) {
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(match.homeTeam)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.srTextPrimary)
-                    .lineLimit(1)
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
+        NavigationLink(value: MatchRoute(matchId: match.id)) {
+            HStack(spacing: AppSpacing.sm) {
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(match.homeTeam)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.srTextPrimary)
+                        .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity, alignment: .trailing)
 
-            scoreView(match)
+                scoreView(match)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(match.awayTeam)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.srTextPrimary)
-                    .lineLimit(1)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(match.awayTeam)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.srTextPrimary)
+                        .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, AppSpacing.sm)
+            .padding(.vertical, 10)
         }
-        .padding(.horizontal, AppSpacing.sm)
-        .padding(.vertical, 10)
     }
 
     private func scoreView(_ match: MatchDTO) -> some View {

@@ -25,9 +25,12 @@ const itemVariants = {
 interface Props {
   teams: TeamItem[]
   isLoading: boolean
+  tournamentId: string
+  birthYear?: number
+  groupName?: string
 }
 
-export function TeamsTab({ teams, isLoading }: Props) {
+export function TeamsTab({ teams, isLoading, tournamentId, birthYear, groupName }: Props) {
   if (isLoading) {
     return (
       <div className="flex justify-center py-16">
@@ -63,7 +66,13 @@ export function TeamsTab({ teams, isLoading }: Props) {
       >
         {teams.map((team, index) => (
           <motion.div key={team.id} variants={itemVariants}>
-            <TeamCard team={team} index={index} />
+            <TeamCard
+              team={team}
+              index={index}
+              tournamentId={tournamentId}
+              birthYear={birthYear}
+              groupName={groupName}
+            />
           </motion.div>
         ))}
       </motion.div>

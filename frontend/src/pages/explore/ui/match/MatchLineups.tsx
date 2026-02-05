@@ -1,6 +1,6 @@
 import { memo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Users2, User, Shield } from 'lucide-react'
+import { User, Shield } from 'lucide-react'
 import { GlassCard } from '@/shared/ui'
 import type { LineupPlayer, MatchTeam } from '@/shared/api/exploreTypes'
 import { cn } from '@/shared/lib/utils'

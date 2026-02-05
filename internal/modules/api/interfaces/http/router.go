@@ -82,6 +82,7 @@ func (r *Router) Setup() http.Handler {
 	r.mux.HandleFunc("GET /api/v1/explore/players/{id}/stats", r.explorePlayersHandler.PlayerStats)
 	r.mux.HandleFunc("GET /api/v1/explore/players/{id}", r.explorePlayersHandler.PlayerProfile)
 	r.mux.HandleFunc("GET /api/v1/explore/players", r.explorePlayersHandler.SearchPlayers)
+	r.mux.HandleFunc("GET /api/v1/explore/teams/{teamId}/roster/{tournamentId}", r.exploreHandler.TeamRoster)
 	r.mux.HandleFunc("GET /api/v1/explore/teams/{id}", r.explorePlayersHandler.TeamProfile)
 	r.mux.HandleFunc("GET /api/v1/explore/results", r.exploreMatchesHandler.RecentResults)
 	r.mux.HandleFunc("GET /api/v1/explore/calendar", r.exploreMatchesHandler.UpcomingMatches)

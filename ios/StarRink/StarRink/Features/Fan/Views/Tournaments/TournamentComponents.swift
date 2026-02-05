@@ -13,6 +13,21 @@ struct PlayerRoute: Hashable {
     let playerId: String
 }
 
+struct MatchRoute: Hashable {
+    let matchId: String
+}
+
+struct TeamRoute: Hashable {
+    let teamId: String
+    let teamName: String
+}
+
+struct TeamRosterRoute: Hashable {
+    let teamId: String
+    let tournamentId: String
+    let teamName: String
+}
+
 // MARK: - Region Model
 
 struct Region: Identifiable, Hashable {

@@ -28,6 +28,7 @@ import {
   MatchDetailPage,
   RankingsPage,
   PredictionsPage,
+  TeamRosterPage,
 } from '@/pages/explore'
 
 // Route guards
@@ -99,6 +100,7 @@ export function RouterProvider() {
           <Route path="calendar" element={<MatchCalendarPage />} />
           <Route path="rankings" element={<RankingsPage />} />
           <Route path="predictions" element={<PredictionsPage />} />
+          <Route path="teams/:teamId/roster/:tournamentId" element={<TeamRosterPage />} />
           <Route path="favorites" element={<ExplorePlaceholder title="Избранное" description="Отслеживание игроков (PRO)" />} />
           <Route path="settings" element={<ExplorePlaceholder title="Настройки" description="Настройки профиля" />} />
         </Route>
