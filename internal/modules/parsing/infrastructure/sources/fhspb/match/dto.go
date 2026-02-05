@@ -88,8 +88,8 @@ type GoalieStatsDTO struct {
 	PlayerURL      string
 	PlayerName     string
 	Number         int
-	Played         bool    // Играл ли
-	TimeOnIce      int     // в секундах
+	Played         bool // Играл ли
+	TimeOnIce      int  // в секундах
 	GoalsAgainst   int
 	ShotsAgainst   int
 	SavePercentage float64

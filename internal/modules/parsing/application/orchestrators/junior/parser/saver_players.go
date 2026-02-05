@@ -3,10 +3,9 @@ package parser
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
-
-	"strconv"
 
 	"github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/domain/entities"
 	"github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/junior/types"

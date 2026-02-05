@@ -10,12 +10,12 @@ import (
 )
 
 var (
-	groupURLRegex       = regexp.MustCompile(`/championat/(\d{4})/groups/(\d+)`)
-	tournamentURLRegex  = regexp.MustCompile(`/championat/(\d{4})/groups/(\d+)/tournament/(\d+)$`)
-	subTournamentRegex  = regexp.MustCompile(`/championat/(\d{4})/groups/(\d+)/tournament/(\d+)/sub/(\d+)`)
-	birthYearRegex      = regexp.MustCompile(`(\d{4})\s*г\.?\s*р\.?`)
-	birthYearSimple     = regexp.MustCompile(`(\d{4})`)
-	groupNameRegex      = regexp.MustCompile(`[Гг]руппа\s+([А-Яа-яA-Za-z])`)
+	groupURLRegex      = regexp.MustCompile(`/championat/(\d{4})/groups/(\d+)`)
+	tournamentURLRegex = regexp.MustCompile(`/championat/(\d{4})/groups/(\d+)/tournament/(\d+)$`)
+	subTournamentRegex = regexp.MustCompile(`/championat/(\d{4})/groups/(\d+)/tournament/(\d+)/sub/(\d+)`)
+	birthYearRegex     = regexp.MustCompile(`(\d{4})\s*г\.?\s*р\.?`)
+	birthYearSimple    = regexp.MustCompile(`(\d{4})`)
+	groupNameRegex     = regexp.MustCompile(`[Гг]руппа\s+([А-Яа-яA-Za-z])`)
 )
 
 // ParseGroups парсит группы турниров для сезона

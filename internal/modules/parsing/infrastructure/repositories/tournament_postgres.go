@@ -83,7 +83,7 @@ func (r *TournamentPostgres) Update(ctx context.Context, t *entities.Tournament)
 }
 
 // UpdateBirthYearGroups обновляет JSONB поле birth_year_groups
-func (r *TournamentPostgres) UpdateBirthYearGroups(ctx context.Context, id string, birthYearGroupsJSON string) error {
+func (r *TournamentPostgres) UpdateBirthYearGroups(ctx context.Context, id, birthYearGroupsJSON string) error {
 	query := `UPDATE tournaments SET birth_year_groups = $2::jsonb WHERE id = $1`
 	_, err := r.db.ExecContext(ctx, query, id, birthYearGroupsJSON)
 	if err != nil {

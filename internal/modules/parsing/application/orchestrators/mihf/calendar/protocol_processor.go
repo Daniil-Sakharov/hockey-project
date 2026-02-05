@@ -12,8 +12,8 @@ import (
 
 // processProtocol обрабатывает протокол матча
 func (o *Orchestrator) processProtocol(ctx context.Context, match dto.MatchDTO,
-	tournament dto.TournamentDTO, sub dto.SubTournamentDTO) (int, error) {
-
+	tournament dto.TournamentDTO, sub dto.SubTournamentDTO,
+) (int, error) {
 	if match.ProtoURL == "" {
 		return 0, nil
 	}

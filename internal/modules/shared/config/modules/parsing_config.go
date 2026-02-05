@@ -107,8 +107,8 @@ type FHMoscowConfig struct {
 	MaxSeasons        int           `env:"FHMOSCOW_MAX_SEASONS" default:"0"`
 	TestSeason        string        `env:"FHMOSCOW_TEST_SEASON" default:""`
 	// Player scanning (since team roster pages are JavaScript-rendered)
-	ScanPlayers  bool `env:"FHMOSCOW_SCAN_PLAYERS" default:"true"`
-	MaxPlayerID  int  `env:"FHMOSCOW_MAX_PLAYER_ID" default:"15000"`
+	ScanPlayers bool `env:"FHMOSCOW_SCAN_PLAYERS" default:"true"`
+	MaxPlayerID int  `env:"FHMOSCOW_MAX_PLAYER_ID" default:"15000"`
 }
 
 // IsValid проверяет валидность конфигурации парсинга

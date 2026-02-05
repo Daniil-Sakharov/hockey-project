@@ -14,8 +14,8 @@ import (
 
 // saveMatch сохраняет матч в базу данных
 func (o *Orchestrator) saveMatch(ctx context.Context, match dto.MatchDTO,
-	season dto.SeasonDTO, tournament dto.TournamentDTO, sub dto.SubTournamentDTO) error {
-
+	season dto.SeasonDTO, tournament dto.TournamentDTO, sub dto.SubTournamentDTO,
+) error {
 	tournamentID := fmt.Sprintf("msk:%s-%s-%s", tournament.ID, sub.ID, tournament.GroupID)
 	// Team ID format: msk:{tournament_id}-{sub_id}-{group_id}:{team_id}
 	homeTeamID := fmt.Sprintf("msk:%s-%s-%s:%s", tournament.ID, sub.ID, tournament.GroupID, match.HomeTeamID)

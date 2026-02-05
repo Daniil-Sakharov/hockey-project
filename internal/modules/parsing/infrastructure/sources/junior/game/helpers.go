@@ -30,8 +30,10 @@ func parseScoreText(text string) (home, away int, ok bool) {
 	return h, a, true
 }
 
-var timeRegex = regexp.MustCompile(`(\d+):(\d+)`)
-var periodRegex = regexp.MustCompile(`(\d)\s*период`)
+var (
+	timeRegex   = regexp.MustCompile(`(\d+):(\d+)`)
+	periodRegex = regexp.MustCompile(`(\d)\s*период`)
+)
 
 func parseGameTime(text string) (period, min, sec int) {
 	if m := periodRegex.FindStringSubmatch(text); len(m) >= 2 {

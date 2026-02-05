@@ -12,20 +12,14 @@ import (
 
 	// FHMoscow parser
 	fhmoscowOrchestrator "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/application/orchestrators/fhmoscow"
-	// Junior calendar
-	juniorCalendar "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/application/orchestrators/junior/calendar"
-	jrCalendarParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/junior/calendar"
-	jrGameParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/junior/game"
-	jrStandingsParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/junior/standings"
+	// FHSPB calendar
+	fhspbCalendarOrch "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/application/orchestrators/fhspb/calendar"
 	// FHSPB parser
 	fhspbParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/application/orchestrators/fhspb/parser"
 	fhspbParserOrch "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/application/orchestrators/fhspb/parser/orchestrator"
 	fhspbStats "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/application/orchestrators/fhspb/stats"
-	// FHSPB calendar
-	fhspbCalendarOrch "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/application/orchestrators/fhspb/calendar"
-	fhspbCalendarParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/fhspb/calendar"
-	fhspbMatchParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/fhspb/match"
-	fhspbStandingsParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/fhspb/standings"
+	// Junior calendar
+	juniorCalendar "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/application/orchestrators/junior/calendar"
 	// Junior parser
 	juniorParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/application/orchestrators/junior/parser"
 	juniorStats "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/application/orchestrators/junior/stats"
@@ -41,7 +35,13 @@ import (
 	// Sources
 	"github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/fhmoscow"
 	"github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/fhspb"
+	fhspbCalendarParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/fhspb/calendar"
+	fhspbMatchParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/fhspb/match"
+	fhspbStandingsParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/fhspb/standings"
 	"github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/junior"
+	jrCalendarParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/junior/calendar"
+	jrGameParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/junior/game"
+	jrStandingsParser "github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/junior/standings"
 	"github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/junior/stats"
 	"github.com/Daniil-Sakharov/HockeyProject/internal/modules/parsing/infrastructure/sources/mihf"
 	// Scheduler
