@@ -13,6 +13,21 @@ struct PlayerRoute: Hashable {
     let playerId: String
 }
 
+struct MatchRoute: Hashable {
+    let matchId: String
+}
+
+struct TeamRoute: Hashable {
+    let teamId: String
+    let teamName: String
+}
+
+struct TeamRosterRoute: Hashable {
+    let teamId: String
+    let tournamentId: String
+    let teamName: String
+}
+
 // MARK: - Region Model
 
 struct Region: Identifiable, Hashable {
@@ -25,13 +40,32 @@ struct Region: Identifiable, Hashable {
 
 extension Region {
     static let allRegions: [Region] = [
-        Region(id: "volga", name: "Приволжский ФО", icon: "building.2.fill", domain: "volga.juniorhl.ru", source: "junior"),
-        Region(id: "moscow", name: "Москва", icon: "star.fill", domain: "moscow.fhr.ru", source: "fhmoscow"),
-        Region(id: "spb", name: "Санкт-Петербург", icon: "snowflake", domain: "spb.fhr.ru", source: "fhspb"),
-        Region(id: "ural", name: "Урал", icon: "mountain.2.fill", domain: "ural.fhr.ru", source: "ural"),
-        Region(id: "cfo", name: "ЦФО", icon: "mappin.circle.fill", domain: "cfo.fhr.ru", source: "cfo"),
-        Region(id: "siberia", name: "Сибирь", icon: "wind.snow", domain: "siberia.fhr.ru", source: "siberia"),
+        Region(id: "pfo", name: "ПФО", icon: "building.2.fill", domain: "https://pfo.fhr.ru", source: "junior"),
+        Region(id: "ufo", name: "УрФО", icon: "mountain.2.fill", domain: "https://ufo.fhr.ru", source: "junior"),
+        Region(id: "cfo", name: "ЦФО", icon: "mappin.circle.fill", domain: "https://cfo.fhr.ru", source: "junior"),
+        Region(id: "sfo", name: "СФО", icon: "wind.snow", domain: "https://sfo.fhr.ru", source: "junior"),
+        Region(id: "szfo", name: "СЗФО", icon: "snowflake", domain: "https://szfo.fhr.ru", source: "junior"),
+        Region(id: "yfo", name: "ЮФО", icon: "sun.max.fill", domain: "https://yfo.fhr.ru", source: "junior"),
+        Region(id: "dfo", name: "ДФО", icon: "globe.asia.australia.fill", domain: "https://dfo.fhr.ru", source: "junior"),
+        Region(id: "junior", name: "Юниор", icon: "star.fill", domain: "https://junior.fhr.ru", source: "junior"),
+        Region(id: "spb", name: "СПб", icon: "building.columns.fill", domain: "https://spb.fhr.ru", source: "fhspb"),
+        Region(id: "komi", name: "Коми", icon: "tree.fill", domain: "https://komi.fhr.ru", source: "junior"),
+        Region(id: "sam", name: "Самара", icon: "leaf.fill", domain: "https://sam.fhr.ru", source: "junior"),
+        Region(id: "nsk", name: "Новосибирск", icon: "building.fill", domain: "https://nsk.fhr.ru", source: "junior"),
+        Region(id: "vrn", name: "Воронеж", icon: "house.fill", domain: "https://vrn.fhr.ru", source: "junior"),
+        Region(id: "len", name: "Ленобласть", icon: "map.fill", domain: "https://len.fhr.ru", source: "junior"),
     ]
+
+    static func fromDomain(_ domain: String) -> Region? {
+        allRegions.first { $0.domain == domain }
+    }
+
+    static func labelForDomain(_ domain: String) -> String {
+        fromDomain(domain)?.name ?? domain
+            .replacingOccurrences(of: "https://", with: "")
+            .replacingOccurrences(of: ".fhr.ru", with: "")
+            .uppercased()
+    }
 }
 
 // MARK: - Region Card

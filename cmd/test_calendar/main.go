@@ -176,9 +176,9 @@ func main() {
 	log.Println("📋 Sample data:")
 
 	type goal struct {
-		Period  int    `db:"period"`
-		Minutes int    `db:"time_minutes"`
-		Seconds int    `db:"time_seconds"`
+		Period  int `db:"period"`
+		Minutes int `db:"time_minutes"`
+		Seconds int `db:"time_seconds"`
 	}
 	var goals []goal
 	db.Select(&goals, "SELECT period, time_minutes, time_seconds FROM match_events WHERE source = 'junior' AND event_type = 'goal' LIMIT 5")

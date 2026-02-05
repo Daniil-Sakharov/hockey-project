@@ -15,16 +15,25 @@ const REGIONS_MAP: Record<string, {
   gradient: string
   icon: React.ComponentType<{ size?: number; className?: string }>
 }> = {
-  pfo: { name: 'Приволжский', domain: 'pfo', description: 'ПФО', gradient: 'from-blue-500 to-cyan-400', icon: MapPin },
-  cfo: { name: 'Центральный', domain: 'cfo', description: 'ЦФО', gradient: 'from-red-500 to-rose-400', icon: Landmark },
-  sfo: { name: 'Сибирский', domain: 'sfo', description: 'СФО', gradient: 'from-sky-500 to-blue-400', icon: Mountain },
-  ufo: { name: 'Уральский', domain: 'ufo', description: 'УрФО', gradient: 'from-emerald-500 to-teal-400', icon: Mountain },
-  dfo: { name: 'Дальневосточный', domain: 'dfo', description: 'ДФО', gradient: 'from-orange-500 to-amber-400', icon: Mountain },
-  szfo: { name: 'Северо-Западный', domain: 'szfo', description: 'СЗФО', gradient: 'from-cyan-500 to-blue-400', icon: MapPin },
-  yfo: { name: 'Южный', domain: 'yfo', description: 'ЮФО', gradient: 'from-yellow-500 to-orange-400', icon: MapPin },
-  spb: { name: 'Санкт-Петербург', domain: 'spb', description: 'СПб', gradient: 'from-purple-500 to-indigo-400', icon: Landmark },
+  // Федеральные округа
+  junior: { name: 'Юниорская лига', source: 'junior', domain: 'https://junior.fhr.ru', description: 'Всероссийские соревнования', gradient: 'from-violet-500 to-purple-400', icon: Trophy },
+  szfo: { name: 'СЗФО', source: 'junior', domain: 'https://szfo.fhr.ru', description: 'Северо-Западный федеральный округ', gradient: 'from-cyan-500 to-blue-400', icon: MapPin },
+  ufo: { name: 'УФО', source: 'junior', domain: 'https://ufo.fhr.ru', description: 'Уральский федеральный округ', gradient: 'from-emerald-500 to-teal-400', icon: Mountain },
+  cfo: { name: 'ЦФО', source: 'junior', domain: 'https://cfo.fhr.ru', description: 'Центральный федеральный округ', gradient: 'from-red-500 to-rose-400', icon: Landmark },
+  dfo: { name: 'ДФО', source: 'junior', domain: 'https://dfo.fhr.ru', description: 'Дальневосточный федеральный округ', gradient: 'from-orange-500 to-amber-400', icon: Mountain },
+  pfo: { name: 'ПФО', source: 'junior', domain: 'https://pfo.fhr.ru', description: 'Приволжский федеральный округ', gradient: 'from-blue-500 to-cyan-400', icon: MapPin },
+  sfo: { name: 'СФО', source: 'junior', domain: 'https://sfo.fhr.ru', description: 'Сибирский федеральный округ', gradient: 'from-sky-500 to-blue-400', icon: Mountain },
+  yfo: { name: 'ЮФО', source: 'junior', domain: 'https://yfo.fhr.ru', description: 'Южный федеральный округ', gradient: 'from-yellow-500 to-orange-400', icon: MapPin },
+  // Регионы
+  spb: { name: 'Санкт-Петербург', source: 'junior', domain: 'https://spb.fhr.ru', description: 'Санкт-Петербург', gradient: 'from-purple-500 to-indigo-400', icon: Landmark },
+  len: { name: 'Ленинградская обл.', source: 'junior', domain: 'https://len.fhr.ru', description: 'Ленинградская область', gradient: 'from-indigo-500 to-violet-400', icon: MapPin },
+  nsk: { name: 'Новосибирск', source: 'junior', domain: 'https://nsk.fhr.ru', description: 'Новосибирская область', gradient: 'from-teal-500 to-emerald-400', icon: Building2 },
+  sam: { name: 'Самара', source: 'junior', domain: 'https://sam.fhr.ru', description: 'Самарская область', gradient: 'from-pink-500 to-rose-400', icon: Building2 },
+  vrn: { name: 'Воронеж', source: 'junior', domain: 'https://vrn.fhr.ru', description: 'Воронежская область', gradient: 'from-amber-500 to-yellow-400', icon: Building2 },
+  komi: { name: 'Коми', source: 'junior', domain: 'https://komi.fhr.ru', description: 'Республика Коми', gradient: 'from-lime-500 to-green-400', icon: Mountain },
+  kuzbass: { name: 'Кузбасс', source: 'junior', domain: 'https://kuzbass.fhr.ru', description: 'Кемеровская область', gradient: 'from-slate-500 to-gray-400', icon: Mountain },
+  // Другие источники
   moscow: { name: 'Москва', source: 'fhmoscow', description: 'Москва и МО', gradient: 'from-red-500 to-orange-400', icon: Building2 },
-  junior: { name: 'Всероссийские', domain: 'junior', description: 'Юниор', gradient: 'from-violet-500 to-purple-400', icon: Trophy },
 }
 
 interface ExpandedCard {

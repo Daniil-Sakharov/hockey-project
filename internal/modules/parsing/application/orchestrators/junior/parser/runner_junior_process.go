@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	teamWorkers = 10 // Worker Pool для команд (10 параллельно)
+	teamWorkers = 3 // Worker Pool для команд (3 параллельно, чтобы не перегружать сервер)
 )
 
 // processTournaments обрабатывает турниры (команды → игроки) с Worker Pool

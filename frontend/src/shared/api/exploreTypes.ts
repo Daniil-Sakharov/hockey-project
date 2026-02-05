@@ -13,6 +13,16 @@ export interface GroupStats {
   matchesCount: number
 }
 
+export interface TeamItem {
+  id: string
+  name: string
+  city?: string
+  logoUrl?: string
+  playersCount: number
+  groupName?: string
+  birthYear?: number
+}
+
 export interface TournamentItem {
   id: string
   name: string
@@ -91,6 +101,7 @@ export interface PlayerItem {
   birthYear: number
   team: string
   teamId: string
+  teamLogoUrl?: string
   jerseyNumber: number
   photoUrl?: string
   stats?: PlayerStats
@@ -104,6 +115,7 @@ export interface PlayerProfile {
   birthYear: number
   team: string
   teamId: string
+  teamLogoUrl?: string
   jerseyNumber: number
   height?: number
   weight?: number
@@ -156,6 +168,8 @@ export interface RankedPlayer {
   birthYear: number
   team: string
   teamId: string
+  teamLogoUrl?: string
+  teamCity?: string
   games: number
   goals: number
   assists: number
@@ -271,4 +285,31 @@ export interface MatchDetail {
   events: MatchEvent[]
   homeLineup: LineupPlayer[]
   awayLineup: LineupPlayer[]
+}
+
+// Team Roster Types
+export interface TeamInfo {
+  id: string
+  name: string
+  city?: string
+  logoUrl?: string
+}
+
+export interface RosterPlayer {
+  id: string
+  name: string
+  photoUrl?: string
+  birthDate?: string
+  position?: string
+  jerseyNumber: number
+  height?: number
+  weight?: number
+  birthYear?: number
+  groupName?: string
+  handedness?: string
+}
+
+export interface TeamRosterResponse {
+  team: TeamInfo
+  players: RosterPlayer[]
 }

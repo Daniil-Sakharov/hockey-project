@@ -13,16 +13,16 @@ type MatchEvent struct {
 	TimeSeconds *int   `db:"time_seconds"`
 
 	// Для голов
-	ScorerPlayerID   *string `db:"scorer_player_id"`
-	Assist1PlayerID  *string `db:"assist1_player_id"`
-	Assist2PlayerID  *string `db:"assist2_player_id"`
-	TeamID           *string `db:"team_id"`
-	GoalType         *string `db:"goal_type"`
-	GoaliePlayerID   *string `db:"goalie_player_id"`   // Вратарь (NULL если пустые ворота)
+	ScorerPlayerID   *string  `db:"scorer_player_id"`
+	Assist1PlayerID  *string  `db:"assist1_player_id"`
+	Assist2PlayerID  *string  `db:"assist2_player_id"`
+	TeamID           *string  `db:"team_id"`
+	GoalType         *string  `db:"goal_type"`
+	GoaliePlayerID   *string  `db:"goalie_player_id"`    // Вратарь (NULL если пустые ворота)
 	HomePlayersOnIce []string `db:"home_players_on_ice"` // Игроки дома на льду
 	AwayPlayersOnIce []string `db:"away_players_on_ice"` // Игроки гостей на льду
-	ScoreHome        *int    `db:"score_home"`         // Счёт после гола (домашние)
-	ScoreAway        *int    `db:"score_away"`         // Счёт после гола (гости)
+	ScoreHome        *int     `db:"score_home"`          // Счёт после гола (домашние)
+	ScoreAway        *int     `db:"score_away"`          // Счёт после гола (гости)
 
 	// Для штрафов
 	PenaltyPlayerID   *string `db:"penalty_player_id"`
@@ -48,10 +48,10 @@ const (
 
 // Goal type constants
 const (
-	GoalTypeEven       = "even"
-	GoalTypePowerPlay  = "pp"
-	GoalTypeShortHand  = "sh"
-	GoalTypeEmptyNet   = "en"
+	GoalTypeEven      = "even"
+	GoalTypePowerPlay = "pp"
+	GoalTypeShortHand = "sh"
+	GoalTypeEmptyNet  = "en"
 )
 
 // IsGoal проверяет является ли событие голом

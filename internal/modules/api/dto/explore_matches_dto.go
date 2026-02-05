@@ -34,6 +34,8 @@ type RankedPlayerDTO struct {
 	BirthYear      int    `json:"birthYear"`
 	Team           string `json:"team"`
 	TeamID         string `json:"teamId"`
+	TeamLogoURL    string `json:"teamLogoUrl,omitempty"`
+	TeamCity       string `json:"teamCity,omitempty"`
 	Games          int    `json:"games"`
 	Goals          int    `json:"goals"`
 	Assists        int    `json:"assists"`
@@ -78,25 +80,25 @@ type RankingsFiltersResponse struct {
 
 // MatchDetailDTO represents detailed match information.
 type MatchDetailDTO struct {
-	ID           string              `json:"id"`
-	ExternalID   string              `json:"externalId"`
-	HomeTeam     MatchTeamDTO        `json:"homeTeam"`
-	AwayTeam     MatchTeamDTO        `json:"awayTeam"`
-	HomeScore    *int                `json:"homeScore"`
-	AwayScore    *int                `json:"awayScore"`
-	ScoreByPeriod *ScoreByPeriodDTO  `json:"scoreByPeriod,omitempty"`
-	ResultType   string              `json:"resultType,omitempty"`
-	Date         string              `json:"date"`
-	Time         string              `json:"time"`
-	Tournament   TournamentInfoDTO   `json:"tournament"`
-	Venue        string              `json:"venue,omitempty"`
-	Status       string              `json:"status"`
-	GroupName    string              `json:"groupName,omitempty"`
-	BirthYear    *int                `json:"birthYear,omitempty"`
-	MatchNumber  *int                `json:"matchNumber,omitempty"`
-	Events       []MatchEventDTO     `json:"events"`
-	HomeLineup   []LineupPlayerDTO   `json:"homeLineup"`
-	AwayLineup   []LineupPlayerDTO   `json:"awayLineup"`
+	ID            string            `json:"id"`
+	ExternalID    string            `json:"externalId"`
+	HomeTeam      MatchTeamDTO      `json:"homeTeam"`
+	AwayTeam      MatchTeamDTO      `json:"awayTeam"`
+	HomeScore     *int              `json:"homeScore"`
+	AwayScore     *int              `json:"awayScore"`
+	ScoreByPeriod *ScoreByPeriodDTO `json:"scoreByPeriod,omitempty"`
+	ResultType    string            `json:"resultType,omitempty"`
+	Date          string            `json:"date"`
+	Time          string            `json:"time"`
+	Tournament    TournamentInfoDTO `json:"tournament"`
+	Venue         string            `json:"venue,omitempty"`
+	Status        string            `json:"status"`
+	GroupName     string            `json:"groupName,omitempty"`
+	BirthYear     *int              `json:"birthYear,omitempty"`
+	MatchNumber   *int              `json:"matchNumber,omitempty"`
+	Events        []MatchEventDTO   `json:"events"`
+	HomeLineup    []LineupPlayerDTO `json:"homeLineup"`
+	AwayLineup    []LineupPlayerDTO `json:"awayLineup"`
 }
 
 // MatchTeamDTO represents a team in match detail.
@@ -127,36 +129,36 @@ type TournamentInfoDTO struct {
 
 // MatchEventDTO represents a match event (goal, penalty).
 type MatchEventDTO struct {
-	Type        string  `json:"type"`
-	Period      *int    `json:"period,omitempty"`
-	Time        string  `json:"time,omitempty"`
-	IsHome      bool    `json:"isHome"`
-	TeamName    string  `json:"teamName,omitempty"`
-	TeamLogoURL string  `json:"teamLogoUrl,omitempty"`
-	PlayerID    string  `json:"playerId,omitempty"`
-	PlayerName  string  `json:"playerName,omitempty"`
-	PlayerPhoto string  `json:"playerPhoto,omitempty"`
-	Assist1ID   string  `json:"assist1Id,omitempty"`
-	Assist1Name string  `json:"assist1Name,omitempty"`
-	Assist2ID   string  `json:"assist2Id,omitempty"`
-	Assist2Name string  `json:"assist2Name,omitempty"`
-	GoalType    string  `json:"goalType,omitempty"`
-	PenaltyMins *int    `json:"penaltyMins,omitempty"`
-	PenaltyText string  `json:"penaltyText,omitempty"`
+	Type        string `json:"type"`
+	Period      *int   `json:"period,omitempty"`
+	Time        string `json:"time,omitempty"`
+	IsHome      bool   `json:"isHome"`
+	TeamName    string `json:"teamName,omitempty"`
+	TeamLogoURL string `json:"teamLogoUrl,omitempty"`
+	PlayerID    string `json:"playerId,omitempty"`
+	PlayerName  string `json:"playerName,omitempty"`
+	PlayerPhoto string `json:"playerPhoto,omitempty"`
+	Assist1ID   string `json:"assist1Id,omitempty"`
+	Assist1Name string `json:"assist1Name,omitempty"`
+	Assist2ID   string `json:"assist2Id,omitempty"`
+	Assist2Name string `json:"assist2Name,omitempty"`
+	GoalType    string `json:"goalType,omitempty"`
+	PenaltyMins *int   `json:"penaltyMins,omitempty"`
+	PenaltyText string `json:"penaltyText,omitempty"`
 }
 
 // LineupPlayerDTO represents a player in match lineup.
 type LineupPlayerDTO struct {
-	PlayerID       string  `json:"playerId"`
-	PlayerName     string  `json:"playerName"`
-	PlayerPhoto    string  `json:"playerPhoto,omitempty"`
-	JerseyNumber   *int    `json:"jerseyNumber,omitempty"`
-	Position       string  `json:"position,omitempty"`
-	Goals          int     `json:"goals"`
-	Assists        int     `json:"assists"`
-	Points         int     `json:"points"`
-	PenaltyMinutes int     `json:"penaltyMinutes"`
-	PlusMinus      int     `json:"plusMinus"`
-	Saves          *int    `json:"saves,omitempty"`
-	GoalsAgainst   *int    `json:"goalsAgainst,omitempty"`
+	PlayerID       string `json:"playerId"`
+	PlayerName     string `json:"playerName"`
+	PlayerPhoto    string `json:"playerPhoto,omitempty"`
+	JerseyNumber   *int   `json:"jerseyNumber,omitempty"`
+	Position       string `json:"position,omitempty"`
+	Goals          int    `json:"goals"`
+	Assists        int    `json:"assists"`
+	Points         int    `json:"points"`
+	PenaltyMinutes int    `json:"penaltyMinutes"`
+	PlusMinus      int    `json:"plusMinus"`
+	Saves          *int   `json:"saves,omitempty"`
+	GoalsAgainst   *int   `json:"goalsAgainst,omitempty"`
 }

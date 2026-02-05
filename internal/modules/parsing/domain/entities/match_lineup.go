@@ -20,9 +20,9 @@ type MatchLineup struct {
 	PlusMinus      int `db:"plus_minus"`
 
 	// Для вратарей
-	Saves       *int `db:"saves"`
+	Saves        *int `db:"saves"`
 	GoalsAgainst *int `db:"goals_against"`
-	TimeOnIce   *int `db:"time_on_ice"`
+	TimeOnIce    *int `db:"time_on_ice"`
 
 	Source    string    `db:"source"`
 	CreatedAt time.Time `db:"created_at"`

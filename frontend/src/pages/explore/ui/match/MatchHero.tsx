@@ -2,6 +2,7 @@ import { memo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Shield, MapPin, Calendar, Clock, Trophy } from 'lucide-react'
 import { GlassCard } from '@/shared/ui'
+import { formatGroupName } from '@/shared/lib/formatters'
 import type { MatchDetail } from '@/shared/api/exploreTypes'
 
 function TeamLogo({ url, name, size = 64 }: { url?: string; name: string; size?: number }) {
@@ -75,7 +76,7 @@ export const MatchHero = memo(function MatchHero({ match }: Props) {
           {match.tournament.name}
         </Link>
         {match.groupName && (
-          <span className="text-sm text-gray-500">• {match.groupName}</span>
+          <span className="text-sm text-gray-500">• {formatGroupName(match.groupName)}</span>
         )}
         {match.birthYear && (
           <span className="text-sm text-gray-500">• {match.birthYear} г.р.</span>

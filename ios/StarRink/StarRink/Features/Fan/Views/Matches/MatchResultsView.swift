@@ -70,7 +70,9 @@ struct MatchResultsView: View {
 
                     VStack(spacing: AppSpacing.sm) {
                         ForEach(group.matches) { match in
-                            MatchResultCard(match: match)
+                            NavigationLink(value: MatchRoute(matchId: match.id)) {
+                                MatchResultCard(match: match)
+                            }
                         }
                     }
                     .padding(.horizontal, AppSpacing.screenHorizontal)

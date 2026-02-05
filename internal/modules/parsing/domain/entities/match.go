@@ -22,14 +22,14 @@ type Match struct {
 	HomeScoreOT *int `db:"home_score_ot"`
 	AwayScoreOT *int `db:"away_score_ot"`
 
-	MatchNumber  *int       `db:"match_number"`
-	ScheduledAt  *time.Time `db:"scheduled_at"`
-	Status       string     `db:"status"`
-	ResultType   *string    `db:"result_type"`
-	Venue        *string    `db:"venue"`
-	GroupName    *string    `db:"group_name"`
-	BirthYear    *int       `db:"birth_year"`
-	VideoURL     *string    `db:"video_url"`
+	MatchNumber *int       `db:"match_number"`
+	ScheduledAt *time.Time `db:"scheduled_at"`
+	Status      string     `db:"status"`
+	ResultType  *string    `db:"result_type"`
+	Venue       *string    `db:"venue"`
+	GroupName   *string    `db:"group_name"`
+	BirthYear   *int       `db:"birth_year"`
+	VideoURL    *string    `db:"video_url"`
 
 	Source        string    `db:"source"`
 	Domain        *string   `db:"domain"`

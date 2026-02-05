@@ -109,10 +109,17 @@ func (s *ExploreService) GetTournaments(ctx context.Context, source, domain stri
 		argN++
 	}
 	if domain != "" {
-		// Support both full URL and short name: "pfo" -> "https://pfo.fhr.ru"
+		// Support multiple formats:
+		// "ufo" -> "https://ufo.fhr.ru"
+		// "ufo.fhr.ru" -> "https://ufo.fhr.ru"
+		// "https://ufo.fhr.ru" -> "https://ufo.fhr.ru"
 		domainURL := domain
 		if !strings.Contains(domain, "://") {
-			domainURL = "https://" + domain + ".fhr.ru"
+			if strings.HasSuffix(domain, ".fhr.ru") {
+				domainURL = "https://" + domain
+			} else {
+				domainURL = "https://" + domain + ".fhr.ru"
+			}
 		}
 		conditions = append(conditions, "t.domain = $"+strconv.Itoa(argN))
 		args = append(args, domainURL)
@@ -321,4 +328,135 @@ func stripProtocol(domain string) string {
 	domain = strings.TrimPrefix(domain, "https://")
 	domain = strings.TrimPrefix(domain, "http://")
 	return domain
+}
+
+// TeamRow represents a team in tournament with player count.
+type TeamRow struct {
+	ID           string `db:"id"`
+	Name         string `db:"name"`
+	City         string `db:"city"`
+	LogoURL      string `db:"logo_url"`
+	PlayersCount int    `db:"players_count"`
+	GroupName    string `db:"group_name"`
+	BirthYear    int    `db:"birth_year"`
+}
+
+// TeamInfoRow represents team info for roster page.
+type TeamInfoRow struct {
+	ID      string `db:"id"`
+	Name    string `db:"name"`
+	City    string `db:"city"`
+	LogoURL string `db:"logo_url"`
+}
+
+// RosterPlayerRow represents a player in team roster.
+type RosterPlayerRow struct {
+	PlayerID     string  `db:"player_id"`
+	Name         string  `db:"name"`
+	PhotoURL     string  `db:"photo_url"`
+	BirthDate    *string `db:"birth_date"`
+	Position     string  `db:"position"`
+	JerseyNumber int     `db:"jersey_number"`
+	Height       int     `db:"height"`
+	Weight       int     `db:"weight"`
+	BirthYear    int     `db:"birth_year"`
+	GroupName    string  `db:"group_name"`
+	Handedness   string  `db:"handedness"`
+}
+
+// GetTournamentTeams returns teams for a tournament with optional filters.
+func (s *ExploreService) GetTournamentTeams(ctx context.Context, tournamentID string, birthYear int, groupName string) ([]TeamRow, error) {
+	query := `
+		SELECT
+			t.id, t.name, COALESCE(t.city, '') as city, COALESCE(t.logo_url, '') as logo_url,
+			pt.group_name, pt.birth_year,
+			COUNT(DISTINCT pt.player_id) as players_count
+		FROM teams t
+		JOIN player_teams pt ON pt.team_id = t.id
+		WHERE pt.tournament_id = $1
+	`
+	args := []interface{}{tournamentID}
+	argN := 2
+
+	if birthYear > 0 {
+		query += fmt.Sprintf(" AND pt.birth_year = $%d", argN)
+		args = append(args, birthYear)
+		argN++
+	}
+	if groupName != "" {
+		query += fmt.Sprintf(" AND pt.group_name = $%d", argN)
+		args = append(args, groupName)
+	}
+
+	query += " GROUP BY t.id, t.name, t.city, t.logo_url, pt.group_name, pt.birth_year"
+	query += " ORDER BY t.name ASC"
+
+	var rows []TeamRow
+	if err := s.db.SelectContext(ctx, &rows, query, args...); err != nil {
+		return nil, fmt.Errorf("failed to get tournament teams: %w", err)
+	}
+
+	for i := range rows {
+		rows[i].Name = titleCase(rows[i].Name)
+		rows[i].City = titleCase(rows[i].City)
+	}
+	return rows, nil
+}
+
+// GetTeamInfo returns basic team info.
+func (s *ExploreService) GetTeamInfo(ctx context.Context, teamID string) (*TeamInfoRow, error) {
+	var row TeamInfoRow
+	query := `SELECT id, name, COALESCE(city, '') as city, COALESCE(logo_url, '') as logo_url FROM teams WHERE id = $1`
+	if err := s.db.GetContext(ctx, &row, query, teamID); err != nil {
+		return nil, fmt.Errorf("failed to get team info: %w", err)
+	}
+	row.Name = titleCase(row.Name)
+	row.City = titleCase(row.City)
+	return &row, nil
+}
+
+// GetTeamRoster returns players for a team in a tournament with optional filters.
+func (s *ExploreService) GetTeamRoster(ctx context.Context, teamID, tournamentID string, birthYear int, groupName string) ([]RosterPlayerRow, error) {
+	query := `
+		SELECT
+			pt.player_id,
+			p.name,
+			COALESCE(pt.photo_url, p.photo_url, '') as photo_url,
+			TO_CHAR(p.birth_date, 'YYYY-MM-DD') as birth_date,
+			COALESCE(pt.position, p.position, '') as position,
+			COALESCE(pt.jersey_number, 0) as jersey_number,
+			COALESCE(pt.height, p.height, 0) as height,
+			COALESCE(pt.weight, p.weight, 0) as weight,
+			COALESCE(pt.birth_year, 0) as birth_year,
+			COALESCE(pt.group_name, '') as group_name,
+			COALESCE(p.handedness, '') as handedness
+		FROM player_teams pt
+		JOIN players p ON p.id = pt.player_id
+		WHERE pt.team_id = $1 AND pt.tournament_id = $2
+	`
+	args := []interface{}{teamID, tournamentID}
+	argN := 3
+
+	if birthYear > 0 {
+		query += fmt.Sprintf(" AND pt.birth_year = $%d", argN)
+		args = append(args, birthYear)
+		argN++
+	}
+	if groupName != "" {
+		query += fmt.Sprintf(" AND pt.group_name = $%d", argN)
+		args = append(args, groupName)
+	}
+
+	query += " ORDER BY pt.jersey_number ASC, p.name ASC"
+
+	var rows []RosterPlayerRow
+	if err := s.db.SelectContext(ctx, &rows, query, args...); err != nil {
+		return nil, fmt.Errorf("failed to get team roster: %w", err)
+	}
+
+	for i := range rows {
+		rows[i].Name = titleCase(rows[i].Name)
+		rows[i].Position = titleCase(rows[i].Position)
+	}
+	return rows, nil
 }

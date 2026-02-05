@@ -30,14 +30,14 @@ type AuthResponse struct {
 
 // UserResponse represents user data in responses.
 type UserResponse struct {
-	ID               string     `json:"id"`
-	Email            string     `json:"email"`
-	Name             string     `json:"name"`
-	PlayerID         *string    `json:"player_id,omitempty"`
-	SubscriptionTier string     `json:"subscription_tier"`
+	ID                    string     `json:"id"`
+	Email                 string     `json:"email"`
+	Name                  string     `json:"name"`
+	PlayerID              *string    `json:"player_id,omitempty"`
+	SubscriptionTier      string     `json:"subscription_tier"`
 	SubscriptionExpiresAt *time.Time `json:"subscription_expires_at,omitempty"`
-	EmailVerified    bool       `json:"email_verified"`
-	CreatedAt        time.Time  `json:"created_at"`
+	EmailVerified         bool       `json:"email_verified"`
+	CreatedAt             time.Time  `json:"created_at"`
 }
 
 // LinkPlayerRequest represents request to link user to player.

@@ -15,10 +15,10 @@ var playerIDRegex = regexp.MustCompile(`/players/info/(\d+)`)
 type tableType int
 
 const (
-	tableTypeUnknown tableType = iota
-	tableTypeGoalies           // Вратари
-	tableTypeDefenders         // Защитники
-	tableTypeForwards          // Нападающие
+	tableTypeUnknown   tableType = iota
+	tableTypeGoalies             // Вратари
+	tableTypeDefenders           // Защитники
+	tableTypeForwards            // Нападающие
 )
 
 // ParseTeamStats парсит статистику игроков и вратарей команды

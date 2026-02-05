@@ -32,6 +32,10 @@ enum APIEndpoint {
     case exploreResults
     case exploreCalendar
     case teamProfile(id: String)
+    case matchDetail(id: String)
+    case rankingsFilters
+    case tournamentTeams(id: String)
+    case teamRoster(teamId: String, tournamentId: String)
 
     var path: String {
         switch self {
@@ -60,6 +64,10 @@ enum APIEndpoint {
         case .exploreResults: return "/api/v1/explore/results"
         case .exploreCalendar: return "/api/v1/explore/calendar"
         case .teamProfile(let id): return "/api/v1/explore/teams/\(id)"
+        case .matchDetail(let id): return "/api/v1/explore/matches/\(id)"
+        case .rankingsFilters: return "/api/v1/explore/rankings/filters"
+        case .tournamentTeams(let id): return "/api/v1/explore/tournaments/\(id)/teams"
+        case .teamRoster(let teamId, let tournamentId): return "/api/v1/explore/teams/\(teamId)/roster/\(tournamentId)"
         }
     }
 

@@ -13,20 +13,21 @@ import (
 
 // PlayerSearchRow represents a player search result from DB.
 type PlayerSearchRow struct {
-	ID           string `db:"id"`
-	Name         string `db:"name"`
-	Position     string `db:"position"`
+	ID           string    `db:"id"`
+	Name         string    `db:"name"`
+	Position     string    `db:"position"`
 	BirthDate    time.Time `db:"birth_date"`
-	Team         string `db:"team_name"`
-	TeamID       string `db:"team_id"`
-	JerseyNumber int    `db:"jersey_number"`
-	PhotoURL     string `db:"photo_url"`
-	Games        int    `db:"games"`
-	Goals        int    `db:"goals"`
-	Assists      int    `db:"assists"`
-	Points       int    `db:"points"`
-	PlusMinus    int    `db:"plus_minus"`
-	PenaltyMins  int    `db:"penalty_minutes"`
+	Team         string    `db:"team_name"`
+	TeamID       string    `db:"team_id"`
+	TeamLogoURL  string    `db:"team_logo_url"`
+	JerseyNumber int       `db:"jersey_number"`
+	PhotoURL     string    `db:"photo_url"`
+	Games        int       `db:"games"`
+	Goals        int       `db:"goals"`
+	Assists      int       `db:"assists"`
+	Points       int       `db:"points"`
+	PlusMinus    int       `db:"plus_minus"`
+	PenaltyMins  int       `db:"penalty_minutes"`
 }
 
 // PlayerProfileRow represents a full player profile from DB.
@@ -85,18 +86,21 @@ func (s *ExplorePlayersService) SearchPlayers(ctx context.Context, q, position, 
 		return nil, 0, fmt.Errorf("failed to count players: %w", err)
 	}
 
-	// Build season filter for stats subquery
+	// Build season filter for stats and team subqueries
 	seasonFilter := ""
+	teamSeasonFilter := ""
 	if season != "" {
 		seasonFilter = fmt.Sprintf("AND tt.season = $%d", argN)
+		teamSeasonFilter = fmt.Sprintf("AND tr.season = $%d", argN)
 		args = append(args, season)
 		argN++
 	}
 
-	// Fetch players with latest team + season-aggregated stats
+	// Fetch players with latest team (by tournament start_date) + season-aggregated stats
 	query := fmt.Sprintf(`
 		SELECT p.id, p.name, COALESCE(p.position, '') as position, p.birth_date,
 			COALESCE(t.name, '') as team_name, COALESCE(t.id, '') as team_id,
+			COALESCE(t.logo_url, '') as team_logo_url,
 			COALESCE(pt.jersey_number, 0) as jersey_number,
 			COALESCE(p.photo_url, '') as photo_url,
 			COALESCE(stats.games, 0) as games, COALESCE(stats.goals, 0) as goals,
@@ -104,8 +108,13 @@ func (s *ExplorePlayersService) SearchPlayers(ctx context.Context, q, position, 
 			COALESCE(stats.plus_minus, 0) as plus_minus, COALESCE(stats.penalty_minutes, 0) as penalty_minutes
 		FROM players p
 		LEFT JOIN LATERAL (
-			SELECT team_id, jersey_number FROM player_teams
-			WHERE player_id = p.id ORDER BY is_active DESC, tournament_id DESC LIMIT 1
+			SELECT pt2.team_id, pt2.jersey_number
+			FROM player_teams pt2
+			JOIN tournaments tr ON pt2.tournament_id = tr.id
+			JOIN teams tt ON pt2.team_id = tt.id
+			WHERE pt2.player_id = p.id %s
+			ORDER BY pt2.is_active DESC, (tt.logo_url IS NOT NULL AND tt.logo_url != '') DESC, tr.start_date DESC NULLS LAST
+			LIMIT 1
 		) pt ON true
 		LEFT JOIN teams t ON pt.team_id = t.id
 		LEFT JOIN LATERAL (
@@ -120,7 +129,7 @@ func (s *ExplorePlayersService) SearchPlayers(ctx context.Context, q, position, 
 		WHERE %s
 		ORDER BY stats.points DESC NULLS LAST, p.id
 		LIMIT $%d OFFSET $%d
-	`, seasonFilter, whereClause, argN, argN+1)
+	`, teamSeasonFilter, seasonFilter, whereClause, argN, argN+1)
 	args = append(args, limit, offset)
 
 	var rows []PlayerSearchRow
@@ -139,21 +148,26 @@ func (s *ExplorePlayersService) SearchPlayers(ctx context.Context, q, position, 
 func (s *ExplorePlayersService) GetPlayerProfile(ctx context.Context, id, season string) (*PlayerProfileRow, error) {
 	args := []interface{}{id}
 	seasonFilter := ""
+	teamSeasonFilter := ""
 	if season != "" {
 		seasonFilter = "JOIN tournaments tt ON ps.tournament_id = tt.id AND tt.season = $2"
+		teamSeasonFilter = "AND tr.season = $2"
 		args = append(args, season)
 	}
 
 	query := fmt.Sprintf(`
 		WITH player_team AS (
-			SELECT player_id, team_id, jersey_number
-			FROM player_teams
-			WHERE player_id = $1
-			ORDER BY is_active DESC, tournament_id DESC
+			SELECT pt2.player_id, pt2.team_id, pt2.jersey_number
+			FROM player_teams pt2
+			JOIN tournaments tr ON pt2.tournament_id = tr.id
+			JOIN teams tt ON pt2.team_id = tt.id
+			WHERE pt2.player_id = $1 %s
+			ORDER BY pt2.is_active DESC, (tt.logo_url IS NOT NULL AND tt.logo_url != '') DESC, tr.start_date DESC NULLS LAST
 			LIMIT 1
 		)
 		SELECT p.id, p.name, COALESCE(p.position, '') as position, p.birth_date,
 			COALESCE(t.name, '') as team_name, COALESCE(t.id, '') as team_id,
+			COALESCE(t.logo_url, '') as team_logo_url,
 			COALESCE(pt.jersey_number, 0) as jersey_number,
 			p.height, p.weight, COALESCE(p.handedness, '') as handedness,
 			COALESCE(p.birth_place, '') as birth_place, COALESCE(p.photo_url, '') as photo_url,
@@ -174,7 +188,7 @@ func (s *ExplorePlayersService) GetPlayerProfile(ctx context.Context, id, season
 		) stats ON true
 		WHERE p.id = $1
 		LIMIT 1
-	`, seasonFilter)
+	`, teamSeasonFilter, seasonFilter)
 	var row PlayerProfileRow
 	if err := s.db.GetContext(ctx, &row, query, args...); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

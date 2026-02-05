@@ -120,10 +120,11 @@ export const ExploreSidebarNav = memo(function ExploreSidebarNav({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.03 }}
+              whileHover={isLocked ? undefined : { x: 4, transition: { type: 'spring' as const, stiffness: 400, damping: 15 } }}
             >
               {item.dividerBefore && (
                 <div
-                  className={cn('my-3 border-t border-white/5', isCollapsed ? 'mx-1' : 'mx-2')}
+                  className={cn('my-3 sidebar-divider', isCollapsed ? 'mx-1' : 'mx-2')}
                 />
               )}
 
@@ -136,12 +137,12 @@ export const ExploreSidebarNav = memo(function ExploreSidebarNav({
                     'transition-all duration-200',
                     isLocked
                       ? 'cursor-default opacity-60'
-                      : 'hover:bg-[#00d4ff]/10',
+                      : 'nav-row-glow',
                     isActive && !isLocked
-                      ? 'bg-[#00d4ff]/15 text-[#00d4ff] nav-active'
+                      ? 'text-[#00d4ff] nav-active'
                       : isLocked
                         ? 'text-gray-600'
-                        : 'text-gray-400 hover:text-white',
+                        : 'text-gray-300 hover:text-white',
                     isCollapsed && 'justify-center px-2'
                   )
                 }
@@ -149,25 +150,34 @@ export const ExploreSidebarNav = memo(function ExploreSidebarNav({
                   if (isLocked) e.preventDefault()
                 }}
               >
-                <span className="relative flex-shrink-0 transition-transform duration-200 group-hover:scale-110">
-                  {isLocked ? (
-                    <Lock size={20} className={TIER_COLORS[item.requiredTier!]} />
-                  ) : (
-                    item.icon
-                  )}
-                </span>
-                {!isCollapsed && (
+                {({ isActive }) => (
                   <>
-                    <span className="flex-1 text-sm font-medium">{item.label}</span>
-                    {item.requiredTier && (
-                      <span
-                        className={cn(
-                          'ml-auto text-[10px] font-bold uppercase',
-                          TIER_COLORS[item.requiredTier]
+                    <span
+                      className={cn(
+                        'relative flex-shrink-0 transition-all duration-200 group-hover:scale-110',
+                        isActive && !isLocked ? 'icon-glow' : 'nav-icon-tinted'
+                      )}
+                    >
+                      {isLocked ? (
+                        <Lock size={20} className={TIER_COLORS[item.requiredTier!]} />
+                      ) : (
+                        item.icon
+                      )}
+                    </span>
+                    {!isCollapsed && (
+                      <>
+                        <span className="flex-1 text-sm font-medium">{item.label}</span>
+                        {item.requiredTier && (
+                          <span
+                            className={cn(
+                              'ml-auto text-[10px] font-bold uppercase',
+                              TIER_COLORS[item.requiredTier]
+                            )}
+                          >
+                            {item.requiredTier}
+                          </span>
                         )}
-                      >
-                        {item.requiredTier}
-                      </span>
+                      </>
                     )}
                   </>
                 )}

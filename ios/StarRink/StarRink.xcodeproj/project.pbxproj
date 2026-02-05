@@ -107,6 +107,21 @@
 		A1B2C3D4E5F61006 /* PenaltyChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60006 /* PenaltyChart.swift */; };
 		A1B2C3D4E5F61007 /* PlusMinusChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60007 /* PlusMinusChart.swift */; };
 		A1B2C3D4E5F61008 /* RadarChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60008 /* RadarChartView.swift */; };
+		F1A2B3C4D5E6F7A8B9C0D1E3 /* MatchDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F7A8B9C0D1E2 /* MatchDetailViewModel.swift */; };
+		F2A2B3C4D5E6F7A8B9C0D1E3 /* TeamRosterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A2B3C4D5E6F7A8B9C0D1E2 /* TeamRosterViewModel.swift */; };
+		F3A2B3C4D5E6F7A8B9C0D1E3 /* MatchDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A2B3C4D5E6F7A8B9C0D1E2 /* MatchDetailView.swift */; };
+		F4A2B3C4D5E6F7A8B9C0D1E3 /* MatchEventRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4A2B3C4D5E6F7A8B9C0D1E2 /* MatchEventRow.swift */; };
+		F5A2B3C4D5E6F7A8B9C0D1E3 /* MatchLineupSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A2B3C4D5E6F7A8B9C0D1E2 /* MatchLineupSection.swift */; };
+		F6A2B3C4D5E6F7A8B9C0D1E3 /* TeamsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A2B3C4D5E6F7A8B9C0D1E2 /* TeamsTabView.swift */; };
+		F7A2B3C4D5E6F7A8B9C0D1E3 /* TeamRosterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A2B3C4D5E6F7A8B9C0D1E2 /* TeamRosterView.swift */; };
+		F8A2B3C4D5E6F7A8B9C0D1E3 /* RankingPlayerRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A2B3C4D5E6F7A8B9C0D1E2 /* RankingPlayerRow.swift */; };
+		F9A2B3C4D5E6F7A8B9C0D1E3 /* RankingsFiltersSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A2B3C4D5E6F7A8B9C0D1E2 /* RankingsFiltersSection.swift */; };
+		FB10A2B3C4D5E6F7A8B90001 /* MatchDetailDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA10A2B3C4D5E6F7A8B90001 /* MatchDetailDTO.swift */; };
+		FB10A2B3C4D5E6F7A8B90002 /* RankingsFiltersDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA10A2B3C4D5E6F7A8B90002 /* RankingsFiltersDTO.swift */; };
+		FB10A2B3C4D5E6F7A8B90003 /* TournamentTeamsDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA10A2B3C4D5E6F7A8B90003 /* TournamentTeamsDTO.swift */; };
+		FB10A2B3C4D5E6F7A8B90004 /* TeamRosterDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA10A2B3C4D5E6F7A8B90004 /* TeamRosterDTO.swift */; };
+		FB10A2B3C4D5E6F7A8B90005 /* MatchDetailRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA10A2B3C4D5E6F7A8B90005 /* MatchDetailRepository.swift */; };
+		FB10A2B3C4D5E6F7A8B90006 /* TeamRosterRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA10A2B3C4D5E6F7A8B90006 /* TeamRosterRepository.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -211,6 +226,21 @@
 		A1B2C3D4E5F60006 /* PenaltyChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenaltyChart.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60007 /* PlusMinusChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusMinusChart.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60008 /* RadarChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarChartView.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E6F7A8B9C0D1E2 /* MatchDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchDetailViewModel.swift; sourceTree = "<group>"; };
+		F2A2B3C4D5E6F7A8B9C0D1E2 /* TeamRosterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamRosterViewModel.swift; sourceTree = "<group>"; };
+		F3A2B3C4D5E6F7A8B9C0D1E2 /* MatchDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchDetailView.swift; sourceTree = "<group>"; };
+		F4A2B3C4D5E6F7A8B9C0D1E2 /* MatchEventRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchEventRow.swift; sourceTree = "<group>"; };
+		F5A2B3C4D5E6F7A8B9C0D1E2 /* MatchLineupSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchLineupSection.swift; sourceTree = "<group>"; };
+		F6A2B3C4D5E6F7A8B9C0D1E2 /* TeamsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsTabView.swift; sourceTree = "<group>"; };
+		F7A2B3C4D5E6F7A8B9C0D1E2 /* TeamRosterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamRosterView.swift; sourceTree = "<group>"; };
+		F8A2B3C4D5E6F7A8B9C0D1E2 /* RankingPlayerRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankingPlayerRow.swift; sourceTree = "<group>"; };
+		F9A2B3C4D5E6F7A8B9C0D1E2 /* RankingsFiltersSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankingsFiltersSection.swift; sourceTree = "<group>"; };
+		FA10A2B3C4D5E6F7A8B90001 /* MatchDetailDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchDetailDTO.swift; sourceTree = "<group>"; };
+		FA10A2B3C4D5E6F7A8B90002 /* RankingsFiltersDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankingsFiltersDTO.swift; sourceTree = "<group>"; };
+		FA10A2B3C4D5E6F7A8B90003 /* TournamentTeamsDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TournamentTeamsDTO.swift; sourceTree = "<group>"; };
+		FA10A2B3C4D5E6F7A8B90004 /* TeamRosterDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamRosterDTO.swift; sourceTree = "<group>"; };
+		FA10A2B3C4D5E6F7A8B90005 /* MatchDetailRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchDetailRepository.swift; sourceTree = "<group>"; };
+		FA10A2B3C4D5E6F7A8B90006 /* TeamRosterRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamRosterRepository.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -363,6 +393,10 @@
 				FCEF6F1A20EE3CC5850B402A /* ExploreOverviewDTO.swift */,
 				7CAF0FC2CE3EEE306875FC3F /* RankingsDTO.swift */,
 				F51FD8B460EA1BDDD1CF61DF /* TeamProfileDTO.swift */,
+				FA10A2B3C4D5E6F7A8B90001 /* MatchDetailDTO.swift */,
+				FA10A2B3C4D5E6F7A8B90002 /* RankingsFiltersDTO.swift */,
+				FA10A2B3C4D5E6F7A8B90003 /* TournamentTeamsDTO.swift */,
+				FA10A2B3C4D5E6F7A8B90004 /* TeamRosterDTO.swift */,
 			);
 			path = DTOs;
 			sourceTree = "<group>";
@@ -378,6 +412,8 @@
 				2A9C3960806EB620E882C738 /* RankingsRepository.swift */,
 				D0F1A0359A85280254122BCF /* MatchesRepository.swift */,
 				6C432C9991A713A230008AD2 /* TeamProfileRepository.swift */,
+				FA10A2B3C4D5E6F7A8B90005 /* MatchDetailRepository.swift */,
+				FA10A2B3C4D5E6F7A8B90006 /* TeamRosterRepository.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -479,6 +515,8 @@
 		4000000000000056 = {
 			isa = PBXGroup;
 			children = (
+				F8A2B3C4D5E6F7A8B9C0D1E2 /* RankingPlayerRow.swift */,
+				F9A2B3C4D5E6F7A8B9C0D1E2 /* RankingsFiltersSection.swift */,
 				1000000000000024,
 			);
 			path = Views;
@@ -706,8 +744,10 @@
 				1000000000000062,
 				1000000000000063,
 				70137BFB69517D78AD87CCDC /* FanHomeViewModel.swift */,
+				F1A2B3C4D5E6F7A8B9C0D1E2 /* MatchDetailViewModel.swift */,
 				2A90F0AED1CAE81454F34CF6 /* MatchResultsViewModel.swift */,
 				5A5E5F1DBE62A082807FC5B6 /* TeamProfileViewModel.swift */,
+				F2A2B3C4D5E6F7A8B9C0D1E2 /* TeamRosterViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -738,6 +778,7 @@
 				1000000000000065,
 				1000000000000066,
 				1000000000000067,
+				F6A2B3C4D5E6F7A8B9C0D1E2 /* TeamsTabView.swift */,
 			);
 			path = Tournaments;
 			sourceTree = "<group>";
@@ -796,8 +837,11 @@
 		5DFF094BA235B9954003A1F2 /* Matches */ = {
 			isa = PBXGroup;
 			children = (
-				47FAA98E29F43DD025C8C037 /* MatchResultsView.swift */,
+				F3A2B3C4D5E6F7A8B9C0D1E2 /* MatchDetailView.swift */,
+				F4A2B3C4D5E6F7A8B9C0D1E2 /* MatchEventRow.swift */,
+				F5A2B3C4D5E6F7A8B9C0D1E2 /* MatchLineupSection.swift */,
 				DF93CC7F7D30DCC1341E6D9D /* MatchResultCard.swift */,
+				47FAA98E29F43DD025C8C037 /* MatchResultsView.swift */,
 			);
 			path = Matches;
 			sourceTree = "<group>";
@@ -807,6 +851,7 @@
 			children = (
 				88010010B9B1EAD72771063D /* TeamProfileView.swift */,
 				177431101EECFDA88FBD0FEE /* TeamRosterRow.swift */,
+				F7A2B3C4D5E6F7A8B9C0D1E2 /* TeamRosterView.swift */,
 			);
 			path = Teams;
 			sourceTree = "<group>";
@@ -979,6 +1024,21 @@
 				A1B2C3D4E5F61006 /* PenaltyChart.swift in Sources */,
 				A1B2C3D4E5F61007 /* PlusMinusChart.swift in Sources */,
 				A1B2C3D4E5F61008 /* RadarChartView.swift in Sources */,
+				F1A2B3C4D5E6F7A8B9C0D1E3 /* MatchDetailViewModel.swift in Sources */,
+				F2A2B3C4D5E6F7A8B9C0D1E3 /* TeamRosterViewModel.swift in Sources */,
+				F3A2B3C4D5E6F7A8B9C0D1E3 /* MatchDetailView.swift in Sources */,
+				F4A2B3C4D5E6F7A8B9C0D1E3 /* MatchEventRow.swift in Sources */,
+				F5A2B3C4D5E6F7A8B9C0D1E3 /* MatchLineupSection.swift in Sources */,
+				F6A2B3C4D5E6F7A8B9C0D1E3 /* TeamsTabView.swift in Sources */,
+				F7A2B3C4D5E6F7A8B9C0D1E3 /* TeamRosterView.swift in Sources */,
+				F8A2B3C4D5E6F7A8B9C0D1E3 /* RankingPlayerRow.swift in Sources */,
+				F9A2B3C4D5E6F7A8B9C0D1E3 /* RankingsFiltersSection.swift in Sources */,
+				FB10A2B3C4D5E6F7A8B90001 /* MatchDetailDTO.swift in Sources */,
+				FB10A2B3C4D5E6F7A8B90002 /* RankingsFiltersDTO.swift in Sources */,
+				FB10A2B3C4D5E6F7A8B90003 /* TournamentTeamsDTO.swift in Sources */,
+				FB10A2B3C4D5E6F7A8B90004 /* TeamRosterDTO.swift in Sources */,
+				FB10A2B3C4D5E6F7A8B90005 /* MatchDetailRepository.swift in Sources */,
+				FB10A2B3C4D5E6F7A8B90006 /* TeamRosterRepository.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

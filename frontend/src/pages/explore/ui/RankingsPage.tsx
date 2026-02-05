@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Medal, ArrowUpDown, Loader2 } from 'lucide-react'
 import { GlassCard } from '@/shared/ui'
 import { cn } from '@/shared/lib/utils'
+import { formatGroupName } from '@/shared/lib/formatters'
 import { useRankings, useRankingsFilters } from '@/shared/api/useExploreQueries'
 import type { RankedPlayer } from '@/shared/api/exploreTypes'
 import { RankingsFilters } from './player/RankingsFilters'
@@ -50,7 +51,7 @@ export const RankingsPage = memo(function RankingsPage() {
       const d = filters.domains.find((x) => x.domain === domain)
       if (d) parts.push(d.label)
     }
-    if (groupName) parts.push(groupName)
+    if (groupName) parts.push(formatGroupName(groupName))
     return parts.length > 0 ? parts.join(' · ') : 'По всей России'
   }, [domain, tournamentId, groupName, filters])
 

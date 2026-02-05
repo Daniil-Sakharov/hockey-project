@@ -2,12 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, feature/migrate-junior-parser-clean]
   pull_request:
     branches: [main, develop]
 
 env:
   GO_VERSION: '1.24'
+  NODE_VERSION: '22'
 
 jobs:
   lint:
@@ -70,8 +71,8 @@ jobs:
       - name: Run tests
         run: task test
 
-  build:
-    name: Build
+  build-backend:
+    name: Build Backend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -92,18 +93,37 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Install Task
-        run: |
-          sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+      - name: Build API
+        run: CGO_ENABLED=0 go build -o bin/api ./cmd/api
 
-      - name: Build parser
-        run: task build:parser
+      - name: Build Scheduler
+        run: CGO_ENABLED=0 go build -o bin/scheduler ./cmd/scheduler
 
-      - name: Build bot
-        run: task build:bot
+      - name: Build Migrate
+        run: CGO_ENABLED=0 go build -o bin/migrate ./cmd/migrate
 
-      - name: Build scheduler
-        run: task build:scheduler
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: cd frontend && npm ci
+
+      - name: Type check
+        run: cd frontend && npx tsc --noEmit
+
+      - name: Build
+        run: cd frontend && npm run build
 
   coverage:
     name: Coverage

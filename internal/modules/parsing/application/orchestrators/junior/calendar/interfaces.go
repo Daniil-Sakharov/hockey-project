@@ -11,13 +11,13 @@ import (
 
 // CalendarConfig интерфейс конфигурации парсера календаря
 type CalendarConfig interface {
-	RequestDelay() int           // Задержка между запросами (мс)
-	TournamentWorkers() int      // Воркеры для турниров
-	GameWorkers() int            // Воркеры для матчей
-	ParseProtocol() bool         // Парсить протокол
-	ParseLineups() bool          // Парсить составы
-	SkipExisting() bool          // Пропускать существующие матчи
-	MaxTournaments() int         // Глобальный лимит турниров (0 = без лимита)
+	RequestDelay() int      // Задержка между запросами (мс)
+	TournamentWorkers() int // Воркеры для турниров
+	GameWorkers() int       // Воркеры для матчей
+	ParseProtocol() bool    // Парсить протокол
+	ParseLineups() bool     // Парсить составы
+	SkipExisting() bool     // Пропускать существующие матчи
+	MaxTournaments() int    // Глобальный лимит турниров (0 = без лимита)
 }
 
 // CalendarParser интерфейс парсера календаря

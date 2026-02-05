@@ -19,6 +19,7 @@ type PlayerItemDTO struct {
 	BirthYear    int             `json:"birthYear"`
 	Team         string          `json:"team"`
 	TeamID       string          `json:"teamId"`
+	TeamLogoURL  string          `json:"teamLogoUrl,omitempty"`
 	JerseyNumber int             `json:"jerseyNumber"`
 	PhotoURL     string          `json:"photoUrl,omitempty"`
 	Stats        *PlayerStatsDTO `json:"stats,omitempty"`
@@ -39,6 +40,7 @@ type PlayerProfileResponse struct {
 	BirthYear    int             `json:"birthYear"`
 	Team         string          `json:"team"`
 	TeamID       string          `json:"teamId"`
+	TeamLogoURL  string          `json:"teamLogoUrl,omitempty"`
 	JerseyNumber int             `json:"jerseyNumber"`
 	Height       *int            `json:"height,omitempty"`
 	Weight       *int            `json:"weight,omitempty"`

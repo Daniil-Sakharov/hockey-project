@@ -1,10 +1,11 @@
 import { memo, useCallback } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Search, Filter, UserRound, ArrowRight, Loader2, Calendar } from 'lucide-react'
+import { Search, Filter, UserRound, Loader2, Calendar } from 'lucide-react'
 import { GlassCard } from '@/shared/ui'
 import { cn } from '@/shared/lib/utils'
 import { usePlayersSearch, useSeasons } from '@/shared/api/useExploreQueries'
+import { PlayerSearchCard } from './player/PlayerSearchCard'
 
 type PositionFilter = 'all' | 'forward' | 'defender' | 'goalie'
 
@@ -165,7 +166,7 @@ export const PlayersSearchPage = memo(function PlayersSearchPage() {
       ) : (
         <>
           {/* Players grid */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {players.map((player, i) => {
               const profileParams = new URLSearchParams()
               if (activeSeason) profileParams.set('season', activeSeason)
@@ -174,57 +175,11 @@ export const PlayersSearchPage = memo(function PlayersSearchPage() {
               return (
                 <motion.div
                   key={player.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 * Math.min(i, 10) }}
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: 0.04 * Math.min(i, 12), type: 'spring', stiffness: 300, damping: 25 }}
                 >
-                  <Link to={`/explore/players/${player.id}${profileQs ? `?${profileQs}` : ''}`}>
-                    <GlassCard className="p-4 hover:bg-white/[0.04] transition-colors cursor-pointer">
-                      <div className="flex items-start gap-3">
-                        {player.photoUrl ? (
-                          <img
-                            src={player.photoUrl}
-                            alt={player.name}
-                            className="h-12 w-12 rounded-xl object-cover flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#00d4ff]/20 text-[#00d4ff] flex-shrink-0">
-                            <UserRound size={24} />
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <h3 className="text-sm font-semibold text-white truncate">{player.name}</h3>
-                            {player.jerseyNumber > 0 && (
-                              <span className="text-xs text-gray-500">#{player.jerseyNumber}</span>
-                            )}
-                          </div>
-                          <p className="text-xs text-gray-400 mt-0.5">{player.team}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className={cn(
-                              'text-[10px] px-1.5 py-0.5 rounded font-medium',
-                              player.position === 'forward' ? 'bg-[#00d4ff]/20 text-[#00d4ff]' :
-                              player.position === 'defender' ? 'bg-[#8b5cf6]/20 text-[#8b5cf6]' :
-                              'bg-[#f59e0b]/20 text-[#f59e0b]'
-                            )}>
-                              {POSITION_LABELS[player.position] ?? player.position}
-                            </span>
-                            <span className="text-[10px] text-gray-600">{player.birthYear} г.р.</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {player.stats && (
-                        <div className="mt-3 flex items-center justify-between rounded-lg bg-white/5 px-3 py-2">
-                          <StatCell label="И" value={player.stats.games} />
-                          <StatCell label="Г" value={player.stats.goals} />
-                          <StatCell label="П" value={player.stats.assists} />
-                          <StatCell label="О" value={player.stats.points} highlight />
-                          <ArrowRight size={14} className="text-gray-600" />
-                        </div>
-                      )}
-                    </GlassCard>
-                  </Link>
+                  <PlayerSearchCard player={player} index={i} linkParams={profileQs} />
                 </motion.div>
               )
             })}
@@ -243,13 +198,3 @@ export const PlayersSearchPage = memo(function PlayersSearchPage() {
   )
 })
 
-function StatCell({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
-  return (
-    <div className="text-center">
-      <p className={cn('text-sm font-semibold', highlight ? 'text-[#00d4ff]' : 'text-white')}>
-        {value}
-      </p>
-      <p className="text-[10px] text-gray-500">{label}</p>
-    </div>
-  )
-}

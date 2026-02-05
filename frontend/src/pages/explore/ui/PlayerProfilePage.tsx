@@ -75,62 +75,86 @@ export const PlayerProfilePage = memo(function PlayerProfilePage() {
 
       {/* Hero card */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <GlassCard className="p-6" glowColor="cyan">
-          <div className="flex flex-col gap-6 md:flex-row md:items-start">
-            {/* Avatar */}
-            {player.photoUrl ? (
+        <GlassCard className="relative overflow-hidden" glowColor="cyan">
+          {/* Team logo background */}
+          {player.teamLogoUrl && (
+            <div className="absolute inset-0 flex items-center justify-end overflow-hidden pointer-events-none">
               <img
-                src={player.photoUrl}
-                alt={player.name}
-                className="h-24 w-24 rounded-2xl object-cover flex-shrink-0"
+                src={player.teamLogoUrl}
+                alt=""
+                className="w-80 h-80 object-contain opacity-[0.08] translate-x-20 drop-shadow-[0_0_16px_rgba(255,255,255,0.6)]"
               />
-            ) : (
-              <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br from-[#00d4ff] to-[#8b5cf6] flex-shrink-0">
-                <UserRound size={48} className="text-white" />
-              </div>
-            )}
+            </div>
+          )}
 
-            {/* Info */}
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-2xl font-bold text-white">{player.name}</h1>
-                {player.jerseyNumber > 0 && (
-                  <span className="text-lg text-gray-500">#{player.jerseyNumber}</span>
-                )}
-                {season && (
-                  <span className="text-sm text-[#8b5cf6] bg-[#8b5cf6]/10 px-2 py-0.5 rounded-lg">
-                    {season}
-                  </span>
-                )}
-              </div>
-
-              <Link
-                to={`/explore/teams/${player.teamId}`}
-                className="text-[#00d4ff] hover:underline text-sm"
-              >
-                {player.team}
-              </Link>
-
-              <div className="flex flex-wrap items-center gap-4 mt-3">
-                <span className={cn(
-                  'px-2 py-1 rounded-lg text-xs font-medium',
-                  player.position === 'forward' ? 'bg-[#00d4ff]/20 text-[#00d4ff]' :
-                  player.position === 'defender' ? 'bg-[#8b5cf6]/20 text-[#8b5cf6]' :
-                  'bg-[#f59e0b]/20 text-[#f59e0b]'
-                )}>
-                  {POSITION_LABELS[player.position] ?? player.position}
-                </span>
-
-                <InfoChip icon={<Calendar size={14} />} text={player.birthDate} />
-                {player.city && <InfoChip icon={<MapPin size={14} />} text={player.city} />}
-                {player.height && <InfoChip icon={<Ruler size={14} />} text={`${player.height} см`} />}
-                {player.weight && <InfoChip icon={<Weight size={14} />} text={`${player.weight} кг`} />}
-                {player.handedness && (
-                  <InfoChip
-                    icon={<Hand size={14} />}
-                    text={HANDEDNESS_LABELS[player.handedness] ?? player.handedness}
+          <div className="relative p-6">
+            <div className="flex flex-col gap-6 md:flex-row md:items-start">
+              {/* Avatar with team logo badge */}
+              <div className="relative flex-shrink-0">
+                {player.photoUrl ? (
+                  <img
+                    src={player.photoUrl}
+                    alt={player.name}
+                    className="h-28 w-28 rounded-2xl object-cover border-2 border-white/10"
                   />
+                ) : (
+                  <div className="flex h-28 w-28 items-center justify-center rounded-2xl bg-gradient-to-br from-[#00d4ff] to-[#8b5cf6]">
+                    <UserRound size={56} className="text-white" />
+                  </div>
                 )}
+                {/* Team logo badge */}
+                {player.teamLogoUrl && (
+                  <div className="absolute -bottom-2 -right-2 w-12 h-12 rounded-xl bg-[#0a0a0f]/90 p-1.5 border border-white/10 shadow-lg">
+                    <img src={player.teamLogoUrl} alt="" className="w-full h-full object-contain drop-shadow-[0_0_6px_rgba(255,255,255,0.5)]" />
+                  </div>
+                )}
+              </div>
+
+              {/* Info */}
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2 flex-wrap">
+                  <h1 className="text-2xl font-bold text-white">{player.name}</h1>
+                  {player.jerseyNumber > 0 && (
+                    <span className="text-xl font-bold text-[#00d4ff]">#{player.jerseyNumber}</span>
+                  )}
+                  {season && (
+                    <span className="text-sm text-[#8b5cf6] bg-[#8b5cf6]/10 px-2 py-0.5 rounded-lg">
+                      {season}
+                    </span>
+                  )}
+                </div>
+
+                <Link
+                  to={`/explore/teams/${player.teamId}`}
+                  className="inline-flex items-center gap-2 text-[#00d4ff] hover:underline text-sm"
+                >
+                  {player.teamLogoUrl && (
+                    <img src={player.teamLogoUrl} alt="" className="w-5 h-5 object-contain drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]" />
+                  )}
+                  {player.team}
+                </Link>
+
+                <div className="flex flex-wrap items-center gap-4 mt-4">
+                  <span className={cn(
+                    'px-3 py-1.5 rounded-lg text-xs font-semibold',
+                    player.position === 'forward' ? 'bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/30' :
+                    player.position === 'defender' ? 'bg-[#8b5cf6]/20 text-[#8b5cf6] border border-[#8b5cf6]/30' :
+                    'bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30'
+                  )}>
+                    {POSITION_LABELS[player.position] ?? player.position}
+                  </span>
+
+                  <InfoChip icon={<Calendar size={14} />} text={player.birthDate} />
+                  {player.city && <InfoChip icon={<MapPin size={14} />} text={player.city} />}
+                  {player.height && <InfoChip icon={<Ruler size={14} />} text={`${player.height} см`} />}
+                  {player.weight && <InfoChip icon={<Weight size={14} />} text={`${player.weight} кг`} />}
+                  {player.handedness && (
+                    <InfoChip
+                      icon={<Hand size={14} />}
+                      text={HANDEDNESS_LABELS[player.handedness] ?? player.handedness}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>

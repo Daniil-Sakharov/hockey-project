@@ -36,9 +36,9 @@ type ParsingConfig struct {
 // JuniorConfig конфигурация для Junior парсера
 type JuniorConfig struct {
 	BaseURL          string        `env:"JUNIOR_BASE_URL" validate:"url" default:"https://junior.fhr.ru"`
-	RequestDelay     time.Duration `env:"JUNIOR_REQUEST_DELAY" default:"100ms"`
-	WorkerCount      int           `env:"JUNIOR_WORKER_COUNT" validate:"min=1,max=50" default:"10"`
-	DomainWorkers    int           `env:"JUNIOR_DOMAIN_WORKERS" validate:"min=1,max=20" default:"5"`
+	RequestDelay     time.Duration `env:"JUNIOR_REQUEST_DELAY" default:"500ms"`
+	WorkerCount      int           `env:"JUNIOR_WORKER_COUNT" validate:"min=1,max=50" default:"3"`
+	DomainWorkers    int           `env:"JUNIOR_DOMAIN_WORKERS" validate:"min=1,max=20" default:"2"`
 	MinBirthYear     int           `env:"JUNIOR_MIN_BIRTH_YEAR" validate:"min=2000,max=2020" default:"2008"`
 	BatchSize        int           `env:"JUNIOR_BATCH_SIZE" validate:"min=1,max=1000" default:"100"`
 	EnableAllSeasons bool          `env:"JUNIOR_ENABLE_ALL_SEASONS" default:"true"`
@@ -46,8 +46,8 @@ type JuniorConfig struct {
 
 // JuniorStatsConfig конфигурация для Junior Stats парсера
 type JuniorStatsConfig struct {
-	RequestDelay      time.Duration `env:"JUNIOR_STATS_REQUEST_DELAY" default:"100ms"`
-	TournamentWorkers int           `env:"JUNIOR_STATS_TOURNAMENT_WORKERS" validate:"min=1,max=10" default:"3"`
+	RequestDelay      time.Duration `env:"JUNIOR_STATS_REQUEST_DELAY" default:"500ms"`
+	TournamentWorkers int           `env:"JUNIOR_STATS_TOURNAMENT_WORKERS" validate:"min=1,max=10" default:"2"`
 	BatchSize         int           `env:"JUNIOR_STATS_BATCH_SIZE" validate:"min=1,max=500" default:"100"`
 	SkipExisting      bool          `env:"JUNIOR_STATS_SKIP_EXISTING" default:"false"`
 }
@@ -107,8 +107,8 @@ type FHMoscowConfig struct {
 	MaxSeasons        int           `env:"FHMOSCOW_MAX_SEASONS" default:"0"`
 	TestSeason        string        `env:"FHMOSCOW_TEST_SEASON" default:""`
 	// Player scanning (since team roster pages are JavaScript-rendered)
-	ScanPlayers  bool `env:"FHMOSCOW_SCAN_PLAYERS" default:"true"`
-	MaxPlayerID  int  `env:"FHMOSCOW_MAX_PLAYER_ID" default:"15000"`
+	ScanPlayers bool `env:"FHMOSCOW_SCAN_PLAYERS" default:"true"`
+	MaxPlayerID int  `env:"FHMOSCOW_MAX_PLAYER_ID" default:"15000"`
 }
 
 // IsValid проверяет валидность конфигурации парсинга

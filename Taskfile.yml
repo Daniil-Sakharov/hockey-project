@@ -72,7 +72,7 @@ tasks:
     cmds:
       - |
         echo "🧪 Запускаем тесты..."
-        go test -v -race -cover ./cmd/... ./internal/... ./pkg/...
+        go test -v -race ./cmd/... ./internal/... ./pkg/...
 
   test:coverage:
     desc: "Запускает тесты с детальным покрытием"

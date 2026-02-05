@@ -29,7 +29,7 @@ final class FanHomeViewModel: ObservableObject {
         do {
             async let o = overviewRepo.getOverview()
             async let m = matchesRepo.getRecentResults(tournament: nil, limit: 5)
-            async let r = rankingsRepo.getRankings(sort: "points", limit: 3)
+            async let r = rankingsRepo.getRankings(sort: "points", limit: 3, birthYear: nil, domain: nil, tournamentId: nil, groupName: nil)
 
             let (overviewResult, matchesResult, rankingsResult) = try await (o, m, r)
             overview = overviewResult

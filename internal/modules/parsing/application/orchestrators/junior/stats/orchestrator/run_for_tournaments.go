@@ -19,7 +19,7 @@ func (s *service) RunForTournaments(ctx context.Context, tournaments []*entities
 	totalTournaments := len(tournaments)
 	s.logger.Printf("🏒 Запуск парсинга статистики для %d турниров...\n", totalTournaments)
 
-	const workerCount = 5
+	const workerCount = 2
 	s.logger.Printf("🚀 Запускаем %d параллельных воркеров...\n", workerCount)
 
 	pool := NewTournamentWorkerPool(ctx, s, workerCount)

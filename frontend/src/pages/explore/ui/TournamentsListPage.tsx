@@ -1,54 +1,97 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { MapPin, Building2, Landmark, Mountain, Lock } from 'lucide-react'
+import { MapPin, Loader2, Lock } from 'lucide-react'
 import { useTournaments } from '@/shared/api/useExploreQueries'
 
-const REGIONS = [
-  {
-    id: 'pfo',
-    name: 'Приволжский',
-    source: 'junior',
-    description: 'Приволжский Федеральный Округ',
-    icon: MapPin,
-    gradient: 'from-blue-500 via-cyan-400 to-blue-600',
-    bgPattern: 'radial-gradient(circle at 80% 20%, rgba(56,189,248,0.15) 0%, transparent 50%)',
-    available: true,
-  },
-  {
-    id: 'moscow',
-    name: 'Москва',
-    source: 'fhmoscow',
-    description: 'Москва и Московская область',
-    icon: Building2,
-    gradient: 'from-red-500 via-orange-400 to-red-600',
-    bgPattern: 'radial-gradient(circle at 80% 20%, rgba(239,68,68,0.15) 0%, transparent 50%)',
-    available: false,
-  },
-  {
-    id: 'spb',
-    name: 'Санкт-Петербург',
-    source: 'fhspb',
-    description: 'Санкт-Петербург и Ленинградская область',
-    icon: Landmark,
-    gradient: 'from-purple-500 via-indigo-400 to-purple-600',
-    bgPattern: 'radial-gradient(circle at 80% 20%, rgba(139,92,246,0.15) 0%, transparent 50%)',
-    available: false,
-  },
-  {
-    id: 'ural',
-    name: 'Уральский',
-    source: 'ural',
-    description: 'Уральский Федеральный Округ',
-    icon: Mountain,
-    gradient: 'from-emerald-500 via-teal-400 to-emerald-600',
-    bgPattern: 'radial-gradient(circle at 80% 20%, rgba(16,185,129,0.15) 0%, transparent 50%)',
-    available: false,
-  },
-] as const
+// Все доступные регионы с маппингом домен → название
+const ALL_REGIONS: { key: string; domain: string; name: string; description: string }[] = [
+  { key: 'junior', domain: 'junior.fhr.ru', name: 'Юниорская лига', description: 'Всероссийские юниорские соревнования' },
+  { key: 'szfo', domain: 'szfo.fhr.ru', name: 'СЗФО', description: 'Северо-Западный федеральный округ' },
+  { key: 'ufo', domain: 'ufo.fhr.ru', name: 'УФО', description: 'Уральский федеральный округ' },
+  { key: 'cfo', domain: 'cfo.fhr.ru', name: 'ЦФО', description: 'Центральный федеральный округ' },
+  { key: 'dfo', domain: 'dfo.fhr.ru', name: 'ДФО', description: 'Дальневосточный федеральный округ' },
+  { key: 'pfo', domain: 'pfo.fhr.ru', name: 'ПФО', description: 'Приволжский федеральный округ' },
+  { key: 'sfo', domain: 'sfo.fhr.ru', name: 'СФО', description: 'Сибирский федеральный округ' },
+  { key: 'yfo', domain: 'yfo.fhr.ru', name: 'ЮФО', description: 'Южный федеральный округ' },
+  { key: 'spb', domain: 'spb.fhr.ru', name: 'Санкт-Петербург', description: 'Санкт-Петербург' },
+  { key: 'len', domain: 'len.fhr.ru', name: 'Ленинградская обл.', description: 'Ленинградская область' },
+  { key: 'nsk', domain: 'nsk.fhr.ru', name: 'Новосибирск', description: 'Новосибирская область' },
+  { key: 'sam', domain: 'sam.fhr.ru', name: 'Самара', description: 'Самарская область' },
+  { key: 'vrn', domain: 'vrn.fhr.ru', name: 'Воронеж', description: 'Воронежская область' },
+  { key: 'komi', domain: 'komi.fhr.ru', name: 'Коми', description: 'Республика Коми' },
+  { key: 'kuzbass', domain: 'kuzbass.fhr.ru', name: 'Кузбасс', description: 'Кузбасс (Кемеровская область)' },
+]
+
+// Градиенты для карточек (циклически применяются к регионам)
+const GRADIENTS = [
+  { gradient: 'from-cyan-500 via-blue-400 to-cyan-600', bg: 'rgba(6,182,212,0.15)' },
+  { gradient: 'from-purple-500 via-indigo-400 to-purple-600', bg: 'rgba(139,92,246,0.15)' },
+  { gradient: 'from-emerald-500 via-teal-400 to-emerald-600', bg: 'rgba(16,185,129,0.15)' },
+  { gradient: 'from-orange-500 via-amber-400 to-orange-600', bg: 'rgba(249,115,22,0.15)' },
+  { gradient: 'from-pink-500 via-rose-400 to-pink-600', bg: 'rgba(236,72,153,0.15)' },
+  { gradient: 'from-blue-500 via-sky-400 to-blue-600', bg: 'rgba(59,130,246,0.15)' },
+]
+
+interface RegionData {
+  key: string
+  domain: string
+  name: string
+  description: string
+  tournamentCount: number
+  gradient: string
+  bgPattern: string
+  available: boolean
+}
 
 export const TournamentsListPage = memo(function TournamentsListPage() {
-  const { data: juniorTournaments } = useTournaments('junior')
+  // Загружаем все турниры
+  const { data: tournaments, isLoading } = useTournaments()
+
+  // Создаём данные для всех регионов с реальным количеством турниров
+  const regions = useMemo<RegionData[]>(() => {
+    // Считаем турниры по доменам
+    const domainCounts = new Map<string, number>()
+    if (tournaments?.length) {
+      for (const t of tournaments) {
+        // Извлекаем домен из URL (например, "https://pfo.fhr.ru" → "pfo.fhr.ru")
+        const domain = t.domain?.replace(/^https?:\/\//, '') || ''
+        if (domain) {
+          domainCounts.set(domain, (domainCounts.get(domain) || 0) + 1)
+        }
+      }
+    }
+
+    // Создаём массив всех регионов
+    return ALL_REGIONS.map((region, i) => {
+      const count = domainCounts.get(region.domain) || 0
+      const style = GRADIENTS[i % GRADIENTS.length]
+      return {
+        key: region.key,
+        domain: region.domain,
+        name: region.name,
+        description: region.description,
+        tournamentCount: count,
+        gradient: style.gradient,
+        bgPattern: style.bg,
+        available: count > 0,
+      }
+    }).sort((a, b) => {
+      // Сначала доступные, потом недоступные; внутри - по количеству турниров
+      if (a.available !== b.available) return a.available ? -1 : 1
+      return b.tournamentCount - a.tournamentCount
+    })
+  }, [tournaments])
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
+      </div>
+    )
+  }
+
+  const availableCount = regions.filter(r => r.available).length
 
   return (
     <div className="space-y-8">
@@ -58,56 +101,42 @@ export const TournamentsListPage = memo(function TournamentsListPage() {
         animate={{ opacity: 1, y: 0 }}
       >
         <h1 className="text-3xl font-bold text-white">Турниры</h1>
-        <p className="text-gray-400 mt-1">Выберите регион для просмотра турниров</p>
+        <p className="text-gray-400 mt-1">
+          {availableCount > 0
+            ? `${availableCount} из ${regions.length} регионов с турнирами`
+            : 'Выберите регион для просмотра турниров'}
+        </p>
       </motion.div>
 
       {/* Region cards grid */}
       <div className="grid gap-6 sm:grid-cols-2">
-        {REGIONS.map((region, i) => {
-          const Icon = region.icon
-          const tournamentCount = region.source === 'junior'
-            ? (juniorTournaments?.length ?? 0)
-            : 0
-
-          return (
-            <motion.div
-              key={region.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
-            >
-              {region.available ? (
-                <Link to={`/explore/tournaments/${region.id}`}>
-                  <RegionCard
-                    region={region}
-                    icon={Icon}
-                    tournamentCount={tournamentCount}
-                  />
-                </Link>
-              ) : (
-                <RegionCard
-                  region={region}
-                  icon={Icon}
-                  tournamentCount={0}
-                  disabled
-                />
-              )}
-            </motion.div>
-          )
-        })}
+        {regions.map((region, i) => (
+          <motion.div
+            key={region.key}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 + i * 0.05, duration: 0.4 }}
+          >
+            {region.available ? (
+              <Link to={`/explore/tournaments/${region.key}`}>
+                <RegionCard region={region} />
+              </Link>
+            ) : (
+              <RegionCard region={region} disabled />
+            )}
+          </motion.div>
+        ))}
       </div>
     </div>
   )
 })
 
 interface RegionCardProps {
-  region: (typeof REGIONS)[number]
-  icon: React.ComponentType<{ size?: number; className?: string }>
-  tournamentCount: number
+  region: RegionData
   disabled?: boolean
 }
 
-function RegionCard({ region, icon: Icon, tournamentCount, disabled }: RegionCardProps) {
+function RegionCard({ region, disabled }: RegionCardProps) {
   return (
     <div
       className={`
@@ -133,7 +162,7 @@ function RegionCard({ region, icon: Icon, tournamentCount, disabled }: RegionCar
                 ${!disabled ? 'group-hover:scale-110 transition-transform duration-300' : ''}
               `}
             >
-              <Icon size={26} className="text-white" />
+              <MapPin size={26} className="text-white" />
             </div>
 
             <div>
@@ -151,10 +180,10 @@ function RegionCard({ region, icon: Icon, tournamentCount, disabled }: RegionCar
         </div>
 
         {/* Stats row */}
-        {!disabled && tournamentCount > 0 && (
+        {!disabled && region.tournamentCount > 0 && (
           <div className="mt-5 flex items-center gap-3">
             <span className={`text-sm font-medium bg-gradient-to-r ${region.gradient} bg-clip-text text-transparent`}>
-              {tournamentCount} {pluralizeTournaments(tournamentCount)}
+              {region.tournamentCount} {pluralizeTournaments(region.tournamentCount)}
             </span>
             <span className="text-gray-600 text-xs">
               Нажмите для просмотра

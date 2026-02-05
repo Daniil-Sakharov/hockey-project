@@ -16,5 +16,5 @@ type TournamentRepository interface {
 	GetWithTeams(ctx context.Context, source string) ([]*entities.Tournament, error) // Турниры где есть команды
 	List(ctx context.Context) ([]*entities.Tournament, error)
 	Update(ctx context.Context, tournament *entities.Tournament) error
-	UpdateBirthYearGroups(ctx context.Context, id string, birthYearGroupsJSON string) error
+	UpdateBirthYearGroups(ctx context.Context, id, birthYearGroupsJSON string) error
 }

@@ -4,9 +4,9 @@ import "time"
 
 // MatchDTO представляет матч из календаря турнира
 type MatchDTO struct {
-	ExternalID   string // ID матча (54503)
-	MatchNumber  int    // Номер в календаре
-	Round        int    // Тур
+	ExternalID  string // ID матча (54503)
+	MatchNumber int    // Номер в календаре
+	Round       int    // Тур
 
 	HomeTeamID   string // ID команды A (домашняя)
 	HomeTeamName string

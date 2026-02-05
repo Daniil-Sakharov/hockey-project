@@ -45,27 +45,29 @@ struct StandingsTabView: View {
     }
 
     private func standingRow(_ s: StandingDTO) -> some View {
-        HStack(spacing: 0) {
-            positionBadge(s.position)
-                .frame(width: 28)
-            Text(s.team)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundColor(.srTextPrimary)
-                .lineLimit(1)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            statCell(s.games)
-            statCell(s.wins)
-            statCell(s.draws)
-            statCell(s.losses)
-            statCell(s.goalsFor)
-            statCell(s.goalsAgainst)
-            Text("\(s.points)")
-                .font(.system(size: 12, weight: .bold))
-                .foregroundColor(.srCyan)
-                .frame(width: 28, alignment: .center)
+        NavigationLink(value: TeamRoute(teamId: s.teamId, teamName: s.team)) {
+            HStack(spacing: 0) {
+                positionBadge(s.position)
+                    .frame(width: 28)
+                Text(s.team)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.srTextPrimary)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                statCell(s.games)
+                statCell(s.wins)
+                statCell(s.draws)
+                statCell(s.losses)
+                statCell(s.goalsFor)
+                statCell(s.goalsAgainst)
+                Text("\(s.points)")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.srCyan)
+                    .frame(width: 28, alignment: .center)
+            }
+            .padding(.horizontal, AppSpacing.sm)
+            .padding(.vertical, 8)
         }
-        .padding(.horizontal, AppSpacing.sm)
-        .padding(.vertical, 8)
     }
 
     private func positionBadge(_ pos: Int) -> some View {

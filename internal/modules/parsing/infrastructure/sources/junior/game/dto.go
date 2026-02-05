@@ -2,39 +2,39 @@ package game
 
 // GameDetailsDTO детальная информация о матче
 type GameDetailsDTO struct {
-	ExternalID    string         // ID матча
-	HomeScore     *int           // Счёт дома
-	AwayScore     *int           // Счёт гостей
-	HomeScoreP1   *int           // Счёт 1-го периода
-	AwayScoreP1   *int
-	HomeScoreP2   *int
-	AwayScoreP2   *int
-	HomeScoreP3   *int
-	AwayScoreP3   *int
-	HomeScoreOT   *int
-	AwayScoreOT   *int
-	ResultType    string         // regular, OT, SO
-	VideoURL      string         // URL видео
-	HomeTeamURL   string         // URL домашней команды
-	AwayTeamURL   string         // URL гостевой команды
-	BirthYear     int            // Год рождения (2008, 2009...)
-	GroupName     string         // Группа (А1, Б2...)
-	Goals         []GoalDTO      // Голы
-	Penalties     []PenaltyDTO   // Штрафы
-	GoalieEvents  []GoalieEventDTO // События вратарей (смена, выход)
-	EmptyNets     []EmptyNetDTO  // Пустые ворота
-	Timeouts      []TimeoutDTO   // Тайм-ауты
-	HomeLineup    []PlayerLineup // Состав дома
-	AwayLineup    []PlayerLineup // Состав гостей
+	ExternalID   string // ID матча
+	HomeScore    *int   // Счёт дома
+	AwayScore    *int   // Счёт гостей
+	HomeScoreP1  *int   // Счёт 1-го периода
+	AwayScoreP1  *int
+	HomeScoreP2  *int
+	AwayScoreP2  *int
+	HomeScoreP3  *int
+	AwayScoreP3  *int
+	HomeScoreOT  *int
+	AwayScoreOT  *int
+	ResultType   string           // regular, OT, SO
+	VideoURL     string           // URL видео
+	HomeTeamURL  string           // URL домашней команды
+	AwayTeamURL  string           // URL гостевой команды
+	BirthYear    int              // Год рождения (2008, 2009...)
+	GroupName    string           // Группа (А1, Б2...)
+	Goals        []GoalDTO        // Голы
+	Penalties    []PenaltyDTO     // Штрафы
+	GoalieEvents []GoalieEventDTO // События вратарей (смена, выход)
+	EmptyNets    []EmptyNetDTO    // Пустые ворота
+	Timeouts     []TimeoutDTO     // Тайм-ауты
+	HomeLineup   []PlayerLineup   // Состав дома
+	AwayLineup   []PlayerLineup   // Состав гостей
 }
 
 // GoalDTO информация о голе
 type GoalDTO struct {
-	Period       int    // Период (1, 2, 3, OT)
-	TimeMinutes  int    // Минуты
-	TimeSeconds  int    // Секунды
-	ScorerURL    string // URL забившего
-	ScorerName   string // Имя забившего
+	Period        int    // Период (1, 2, 3, OT)
+	TimeMinutes   int    // Минуты
+	TimeSeconds   int    // Секунды
+	ScorerURL     string // URL забившего
+	ScorerName    string // Имя забившего
 	Assist1URL    string // URL первого ассистента
 	Assist1Name   string
 	Assist1Number int    // Номер первого ассистента (для поиска в составе)

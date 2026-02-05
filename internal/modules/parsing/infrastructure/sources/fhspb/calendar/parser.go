@@ -11,12 +11,12 @@ import (
 )
 
 var (
-	matchIDRegex    = regexp.MustCompile(`MatchID=(\d+)`)
-	scoreRegex      = regexp.MustCompile(`(\d+)\s*:\s*(\d+)(ОТ|ПБ)?`)
-	dateRegex       = regexp.MustCompile(`(\d{2})\.(\d{2})\.(\d{4})`)
-	timeRegex       = regexp.MustCompile(`(\d{2}):(\d{2})`)
-	teamMatchRegex  = regexp.MustCompile(`(.+?)\s*-\s*(.+)`)
-	matchNumRegex   = regexp.MustCompile(`^\d+$`)
+	matchIDRegex   = regexp.MustCompile(`MatchID=(\d+)`)
+	scoreRegex     = regexp.MustCompile(`(\d+)\s*:\s*(\d+)(ОТ|ПБ)?`)
+	dateRegex      = regexp.MustCompile(`(\d{2})\.(\d{2})\.(\d{4})`)
+	timeRegex      = regexp.MustCompile(`(\d{2}):(\d{2})`)
+	teamMatchRegex = regexp.MustCompile(`(.+?)\s*-\s*(.+)`)
+	matchNumRegex  = regexp.MustCompile(`^\d+$`)
 )
 
 // Parser парсер календаря матчей FHSPB

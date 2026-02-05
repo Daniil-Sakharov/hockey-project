@@ -76,7 +76,7 @@ func (h *ExploreMatchesHandler) Rankings(w http.ResponseWriter, r *http.Request)
 	for i, p := range result.Players {
 		players[i] = dto.RankedPlayerDTO{
 			Rank: i + 1, ID: p.ID, Name: p.Name, PhotoURL: p.PhotoURL, Position: p.Position,
-			BirthYear: p.BirthDate.Year(), Team: p.Team, TeamID: p.TeamID,
+			BirthYear: p.BirthDate.Year(), Team: p.Team, TeamID: p.TeamID, TeamLogoURL: p.TeamLogoURL, TeamCity: p.TeamCity,
 			Games: p.Games, Goals: p.Goals, Assists: p.Assists, Points: p.Points,
 			PlusMinus: p.PlusMinus, PenaltyMinutes: p.PenaltyMinutes,
 		}

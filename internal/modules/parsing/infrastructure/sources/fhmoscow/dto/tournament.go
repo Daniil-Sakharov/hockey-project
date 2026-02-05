@@ -11,8 +11,10 @@ type TournamentDTO struct {
 	Name string `json:"name"` // "ПМ 2009 г.р. 25/26"
 }
 
-var birthYearRegex = regexp.MustCompile(`(\d{4})\s*г\.?\s*р\.?`)
-var seasonRegex = regexp.MustCompile(`(\d{2}/\d{2})$`)
+var (
+	birthYearRegex = regexp.MustCompile(`(\d{4})\s*г\.?\s*р\.?`)
+	seasonRegex    = regexp.MustCompile(`(\d{2}/\d{2})$`)
+)
 
 // ParseBirthYear извлекает год рождения из названия турнира
 func (t *TournamentDTO) ParseBirthYear() int {

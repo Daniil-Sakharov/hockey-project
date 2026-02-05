@@ -1,42 +1,39 @@
-# Build stage
-FROM golang:1.24-alpine AS builder
+# === FRONTEND BUILD ===
+FROM node:22-alpine AS frontend-builder
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ .
+RUN npm run build
 
+# === BACKEND BUILD ===
+FROM golang:1.23-alpine AS backend-builder
 WORKDIR /app
-
 RUN apk add --no-cache git
-
 COPY go.mod go.sum ./
 RUN go mod download
-
 COPY . .
 
-# Собираем все бинарники
-RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/bot ./cmd/bot
+# Собираем только нужные бинарники (без bot, fhspb_*)
+RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/api ./cmd/api
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/migrate ./cmd/migrate
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/scheduler ./cmd/scheduler
-RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/junior_parser ./cmd/junior_parser
-RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/junior_stats ./cmd/junior_stats
-RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/fhspb_parser ./cmd/fhspb_parser
-RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/fhspb_stats ./cmd/fhspb_stats
-RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/api ./cmd/api
 
-# Runtime stage
+# === RUNTIME ===
 FROM alpine:3.19
-
 RUN apk add --no-cache ca-certificates tzdata
 
-COPY --from=builder /bin/bot /app/bot
-COPY --from=builder /bin/migrate /app/migrate
-COPY --from=builder /bin/scheduler /app/scheduler
-COPY --from=builder /bin/junior_parser /app/junior_parser
-COPY --from=builder /bin/junior_stats /app/junior_stats
-COPY --from=builder /bin/fhspb_parser /app/fhspb_parser
-COPY --from=builder /bin/fhspb_stats /app/fhspb_stats
-COPY --from=builder /bin/api /app/api
-COPY --from=builder /app/migrations /app/migrations
-COPY --from=builder /app/config /app/config
+# Backend бинарники
+COPY --from=backend-builder /bin/api /app/api
+COPY --from=backend-builder /bin/migrate /app/migrate
+COPY --from=backend-builder /bin/scheduler /app/scheduler
+COPY --from=backend-builder /app/migrations /app/migrations
+COPY --from=backend-builder /app/config /app/config
+
+# Frontend статика
+COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 
 ENV TZ=Europe/Moscow
 WORKDIR /app
 
-CMD ["/app/bot"]
+CMD ["/app/api"]

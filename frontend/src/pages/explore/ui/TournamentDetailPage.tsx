@@ -1,20 +1,22 @@
 import { memo, useState } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Trophy, Calendar, TrendingUp, Loader2 } from 'lucide-react'
+import { ArrowLeft, Trophy, Calendar, TrendingUp, Users, Loader2 } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
-import { cleanTournamentName } from '@/shared/lib/formatters'
+import { cleanTournamentName, formatGroupName } from '@/shared/lib/formatters'
 import {
   useTournaments,
   useTournamentStandings,
   useTournamentMatches,
   useTournamentScorers,
+  useTournamentTeams,
 } from '@/shared/api/useExploreQueries'
 import { StandingsTab } from './tabs/StandingsTab'
 import { MatchesTab } from './tabs/MatchesTab'
 import { ScorersTab } from './tabs/ScorersTab'
+import { TeamsTab } from './tabs/TeamsTab'
 
-type Tab = 'standings' | 'matches' | 'scorers'
+type Tab = 'standings' | 'matches' | 'scorers' | 'teams'
 
 export const TournamentDetailPage = memo(function TournamentDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -32,6 +34,7 @@ export const TournamentDetailPage = memo(function TournamentDetailPage() {
   const { data: standings, isLoading: standingsLoading } = useTournamentStandings(id ?? '', birthYear, groupName)
   const { data: matches, isLoading: matchesLoading } = useTournamentMatches(id ?? '', undefined, birthYear, groupName)
   const { data: scorers, isLoading: scorersLoading } = useTournamentScorers(id ?? '', undefined, birthYear, groupName)
+  const { data: teams, isLoading: teamsLoading } = useTournamentTeams(id ?? '', birthYear, groupName)
 
   if (tournamentsLoading) {
     return (
@@ -54,6 +57,7 @@ export const TournamentDetailPage = memo(function TournamentDetailPage() {
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: 'standings', label: 'Таблица', icon: <Trophy size={16} /> },
+    { key: 'teams', label: 'Команды', icon: <Users size={16} /> },
     { key: 'matches', label: 'Матчи', icon: <Calendar size={16} /> },
     { key: 'scorers', label: 'Бомбардиры', icon: <TrendingUp size={16} /> },
   ]
@@ -71,7 +75,7 @@ export const TournamentDetailPage = memo(function TournamentDetailPage() {
         </Link>
         <h1 className="text-2xl font-bold text-white">
           {cleanTournamentName(tournament.name)}
-          {groupName && <span className="text-[#00d4ff]"> — {groupName}</span>}
+          {groupName && <span className="text-[#00d4ff]"> — {formatGroupName(groupName)}</span>}
         </h1>
         <div className="flex items-center gap-3 mt-1 flex-wrap">
           <span className="text-gray-400 text-sm">{tournament.domain}</span>
@@ -116,6 +120,15 @@ export const TournamentDetailPage = memo(function TournamentDetailPage() {
       {/* Tab content */}
       <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
         {activeTab === 'standings' && <StandingsTab standings={standings ?? []} isLoading={standingsLoading} />}
+        {activeTab === 'teams' && (
+          <TeamsTab
+            teams={teams ?? []}
+            isLoading={teamsLoading}
+            tournamentId={id ?? ''}
+            birthYear={birthYear}
+            groupName={groupName}
+          />
+        )}
         {activeTab === 'matches' && <MatchesTab matches={matches ?? []} isLoading={matchesLoading} />}
         {activeTab === 'scorers' && <ScorersTab scorers={scorers ?? []} isLoading={scorersLoading} />}
       </motion.div>

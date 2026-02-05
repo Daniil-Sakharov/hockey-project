@@ -42,8 +42,8 @@ func (h *ExplorePlayersHandler) SearchPlayers(w http.ResponseWriter, r *http.Req
 			ID: p.ID, Name: p.Name, Position: p.Position,
 			BirthDate: p.BirthDate.Format("2006-01-02"),
 			BirthYear: p.BirthDate.Year(),
-			Team: p.Team, TeamID: p.TeamID, JerseyNumber: p.JerseyNumber,
-			PhotoURL: p.PhotoURL,
+			Team:      p.Team, TeamID: p.TeamID, TeamLogoURL: p.TeamLogoURL,
+			JerseyNumber: p.JerseyNumber, PhotoURL: p.PhotoURL,
 			Stats: &dto.PlayerStatsDTO{
 				Games: p.Games, Goals: p.Goals, Assists: p.Assists,
 				Points: p.Points, PlusMinus: p.PlusMinus, PenaltyMinutes: p.PenaltyMins,
@@ -74,8 +74,9 @@ func (h *ExplorePlayersHandler) PlayerProfile(w http.ResponseWriter, r *http.Req
 		ID: player.ID, Name: player.Name, Position: player.Position,
 		BirthDate: player.BirthDate.Format("2006-01-02"),
 		BirthYear: player.BirthDate.Year(),
-		Team: player.Team, TeamID: player.TeamID, JerseyNumber: player.JerseyNumber,
-		Height: player.Height, Weight: player.Weight,
+		Team:      player.Team, TeamID: player.TeamID, TeamLogoURL: player.TeamLogoURL,
+		JerseyNumber: player.JerseyNumber,
+		Height:       player.Height, Weight: player.Weight,
 		Handedness: player.Handedness, City: player.BirthPlace, PhotoURL: player.PhotoURL,
 		Stats: &dto.PlayerStatsDTO{
 			Games: player.Games, Goals: player.Goals, Assists: player.Assists,
@@ -131,7 +132,7 @@ func (h *ExplorePlayersHandler) TeamProfile(w http.ResponseWriter, r *http.Reque
 			ID: p.ID, Name: p.Name, Position: p.Position,
 			BirthDate: p.BirthDate.Format("2006-01-02"),
 			BirthYear: p.BirthDate.Year(),
-			Team: p.Team, TeamID: p.TeamID, JerseyNumber: p.JerseyNumber,
+			Team:      p.Team, TeamID: p.TeamID, JerseyNumber: p.JerseyNumber,
 			PhotoURL: p.PhotoURL,
 			Stats: &dto.PlayerStatsDTO{
 				Games: p.Games, Goals: p.Goals, Assists: p.Assists,

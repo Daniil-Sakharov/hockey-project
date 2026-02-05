@@ -7,7 +7,7 @@ import { useAuthStore } from '@/shared/stores'
 
 export const LandingHeader = memo(function LandingHeader() {
   const [scrolled, setScrolled] = useState(false)
-  const { isAuthenticated, user } = useAuthStore()
+  const { isAuthenticated } = useAuthStore()
 
   useEffect(() => {
     const handleScroll = () => {

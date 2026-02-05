@@ -14,11 +14,11 @@ import (
 )
 
 type scanStats struct {
-	scanned   int64
-	saved     int64
-	skipped   int64
-	notFound  int64
-	errors    int64
+	scanned  int64
+	saved    int64
+	skipped  int64
+	notFound int64
+	errors   int64
 }
 
 // scanPlayers сканирует игроков по ID и сохраняет их профили

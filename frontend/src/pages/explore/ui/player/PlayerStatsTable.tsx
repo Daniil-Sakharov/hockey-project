@@ -1,6 +1,6 @@
 import type { NavigateFunction } from 'react-router-dom'
 import { Trophy } from 'lucide-react'
-import { cleanTournamentName } from '@/shared/lib/formatters'
+import { cleanTournamentName, formatGroupName } from '@/shared/lib/formatters'
 import type { PlayerStatEntry } from '@/shared/api/exploreTypes'
 
 export interface BirthYearGroup {
@@ -63,7 +63,7 @@ function StatsTable({
           onClick={() => navigate(`/explore/tournaments/detail/${tournamentId}?birthYear=${e.birthYear}&group=${encodeURIComponent(e.groupName)}`)}
           className="grid grid-cols-[1fr_repeat(6,40px)] text-xs px-3 py-1.5 rounded-lg cursor-pointer border border-transparent hover:border-[#8b5cf6]/50 transition-colors"
         >
-          <span className="text-gray-400">{e.groupName}</span>
+          <span className="text-gray-400">{formatGroupName(e.groupName)}</span>
           <span className="text-center text-gray-300">{e.games}</span>
           <span className="text-center text-gray-300">{e.goals}</span>
           <span className="text-center text-gray-300">{e.assists}</span>

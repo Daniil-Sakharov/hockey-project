@@ -61,8 +61,8 @@ func (o *Orchestrator) processSeason(ctx context.Context, season dto.SeasonDTO) 
 
 // processCalendar обрабатывает календарь одного подтурнира
 func (o *Orchestrator) processCalendar(ctx context.Context, season dto.SeasonDTO,
-	tournament dto.TournamentDTO, sub dto.SubTournamentDTO) (int, int, error) {
-
+	tournament dto.TournamentDTO, sub dto.SubTournamentDTO,
+) (int, int, error) {
 	calendarURL := sub.URL + "/calendar"
 	html, err := o.client.Get(calendarURL)
 	if err != nil {

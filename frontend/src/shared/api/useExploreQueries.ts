@@ -5,6 +5,7 @@ import {
   getTournamentStandings,
   getTournamentMatches,
   getTournamentScorers,
+  getTournamentTeams,
   getSeasons,
   searchPlayers,
   getPlayerProfile,
@@ -15,6 +16,7 @@ import {
   getRankings,
   getRankingsFilters,
   getMatchDetail,
+  getTeamRoster,
 } from './exploreApi'
 import type { RankingsParams } from './exploreApi'
 
@@ -54,6 +56,14 @@ export function useTournamentScorers(id: string, limit?: number, birthYear?: num
   return useQuery({
     queryKey: ['explore', 'tournaments', id, 'scorers', limit, birthYear, groupName],
     queryFn: () => getTournamentScorers(id, limit, birthYear, groupName),
+    enabled: !!id,
+  })
+}
+
+export function useTournamentTeams(id: string, birthYear?: number, groupName?: string) {
+  return useQuery({
+    queryKey: ['explore', 'tournaments', id, 'teams', birthYear, groupName],
+    queryFn: () => getTournamentTeams(id, birthYear, groupName),
     enabled: !!id,
   })
 }
@@ -142,5 +152,18 @@ export function useMatchDetail(id: string) {
     queryKey: ['explore', 'matches', id],
     queryFn: () => getMatchDetail(id),
     enabled: !!id,
+  })
+}
+
+export function useTeamRoster(
+  teamId: string,
+  tournamentId: string,
+  birthYear?: number,
+  groupName?: string
+) {
+  return useQuery({
+    queryKey: ['explore', 'teams', teamId, 'roster', tournamentId, birthYear, groupName],
+    queryFn: () => getTeamRoster(teamId, tournamentId, birthYear, groupName),
+    enabled: !!teamId && !!tournamentId,
   })
 }
